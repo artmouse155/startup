@@ -41,6 +41,16 @@ OR it's an game where you can fish up random emojis?
 
 LearnProPlusPremium: A website about learning new skills. You can upload
 
+## Text Dungeon Showdown
+
+Text Dungeon Showdown! You compete against other players to play a cooperative text adventure game.
+-You have cards that have different effects:
+Add MAGIC BAG to inventory
+Use most recent item in inventory
+Encounter a MAGIC POTION (+2✨)? <- The question mark means that the potion might increase magic unless something special happened.
+
+"You approach an archway at the end of the room. Etched in stone above the door reads: (use inspirational quote API to insert a quote here)"
+
 ## Github Notes
 
 I learned that Github can be used to store cloud repositories. I learned how to use commands such as "clone", "fetch", "push" and "pull" to make use of my repository.
