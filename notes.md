@@ -51,6 +51,10 @@ Encounter a MAGIC POTION (+2✨)? <- The question mark means that the potion mig
 
 "You approach an archway at the end of the room. Etched in stone above the door reads: (use inspirational quote API to insert a quote here)"
 
+At the end of each encounter, you fight a final enemy whose health is 10 \* (num players). The damage dealth is every stat combined. This gives you an incentive to help other players so you don't all just lose. If you kill the boss, the player with the highest stat wins. If the boss kills you, you all lose.
+
+There's gotta be a sort of randomness at the end so it isn't obvious who will win? Perhaps bosses have special abilities.
+
 ## Github Notes
 
 I learned that Github can be used to store cloud repositories. I learned how to use commands such as "clone", "fetch", "push" and "pull" to make use of my repository.
