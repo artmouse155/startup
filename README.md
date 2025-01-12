@@ -20,13 +20,6 @@ If there's three things that make video games awesome, it's teamwork, competitio
 
 ![Program Mockup](mockup.png)
 
-```mermaid
-sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
-```
-
 ### Key features
 
 - Secure login and account creation
