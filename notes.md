@@ -57,11 +57,15 @@ There's gotta be a sort of randomness at the end so it isn't obvious who will wi
 
 ## Demo Game Text
 
-Eldrond had barely finished stepping both feet inside the dungeon when **WHAM!** the gate slammed down behind him.
-"This doesn't look like Kansas anymore!" exclaimed Eldrond.
-Eldrond looked around and found himself in a small musty room that was filled with bugs. He looked ahead and saw an archway, and inscripted above the arch were the following words:
-“It's easy to stand in the crowd but it takes courage to stand alone.” - Ghandi
-Feeling inspired, Eldron began his trek into the unknown.
+> Eldrond had barely finished stepping both feet inside the dungeon when **WHAM!** the gate slammed down behind him.
+
+> "This doesn't look like Kansas anymore!" exclaimed Eldrond.
+
+> Eldrond looked around and found himself in a small musty room that was filled with bugs. He looked ahead and saw an archway, and inscripted above the arch were the following words:
+
+> “It's easy to stand in the crowd but it takes courage to stand alone.” - Ghandi
+
+> Feeling inspired, Eldron began his trek into the unknown.
 
 **Alice's Turn**
 
