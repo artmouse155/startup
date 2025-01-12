@@ -10,7 +10,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] A concise and compelling elevator pitch - I gave reasons players might want to engage with this game.
 - [x] Description of key features - I described the key features players might expect to interact with in the game.
 - [x] Description of how you will use each technology - I used the strengths of each technology to create a list of what each technology would include
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references. - I embedded a mockup of my project I created with NinjaMock using a Markdown image reference.
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references. - I embedded a mockup of my project I created with NinjaMock using a Markdown image reference.
 
 ### Elevator pitch
 
