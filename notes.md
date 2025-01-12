@@ -63,22 +63,34 @@ Eldrond looked around and found himself in a small musty room that was filled wi
 “It's easy to stand in the crowd but it takes courage to stand alone.” - Ghandi
 Feeling inspired, Eldron began his trek into the unknown.
 
-> **Alice:**
+**Alice's Turn**
+
 > As Elrond walked, his foot suddenly hit something small and hard. He looked down and... it was a book titled "A Summary of Every Book Ever Written".
+
 > "Gadzooks!" exclaimed Elrond. He sat on the floor and began to inspect its pages and before he knew it, he had read the whole thing!
+
 > **+5 📖 Intelligence**
 
-> **Bob:**
+**Bob's Turn**
+
 > Down a dark staircase, Elrond noticed a mysterious object glimmering in a hole in the rock on his left. Curious, He reached his hand in and pulled out...
+
 > A luxirous top hat!
+
 > Elrond tried the item on, noticed it was very fashionable, and satisfied, placed the clothing item back where he found it. Maybe his adventure was short-lived, but he felt that it somehow left a lasting mark on his appearance.
+
 > **+300 💄 Intelligence**
 
-> **Seth**
+**Seth's Turn**
+
 > After several hours of walking (and a few minutes of skipping) Elrond came across a well that looked so old, it was as if it would crumble to dust if he touched it.
+
 > He noticed the bucket was close to the surface of the well and so he took a look inside. He could see what was inside! It was...
+
 > A mysterious potion of unknown consequence!
+
 > Just barely able to reach it, Elrond grabbed the item and stuffed it into his inventory.
+
 > **Mysterious Potion Obtained**
 
 Exclamations:
