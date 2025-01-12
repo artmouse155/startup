@@ -14,7 +14,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-If there's three things that make video games awesome, it's teamwork, competition, and monster-infested dungeons. So why can't a video game have all three? In **Text Dungeon Showdown!**, Players must work together to help a common hero brave a mysterious adventure, while simeotaneously influencing the path of the character in a way that will help you win. Filled to the brim with epic battles, strategic maneuvers and text adventure shenanigans, **Text Dungeon Showdown!** is the _perfect_ game to
+If there's three things that make video games awesome, it's teamwork, competition, and monster-infested dungeons. So why can't a video game have all three? In **Text Dungeon Showdown!**, Players must work together to help a common hero brave a mysterious adventure, while simeotaneously influencing the path of the character in a way that will help you win. Filled to the brim with epic battles, strategic maneuvers and text adventure shenanigans, **Text Dungeon Showdown!** is the _perfect_ game for people to play, whether it be family and friends, or factions and foes. Settle it all... once and for all in: **Text Dungeon Showdown!**
 
 ### Design
 
