@@ -18,7 +18,7 @@ The cold iron gate **SLAMS** down behind you. You've entered into... **Text Dung
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] Proper use of Markdown - I made use of headers, bold text, and images.
-- [ ] A concise and compelling elevator pitch
+- [ ] A concise and compelling elevator pitch - I gave reasons players might want to engage with this game.
 - [ ] Description of key features
 - [ ] Description of how you will use each technology
 - [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.

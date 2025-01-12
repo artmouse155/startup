@@ -55,6 +55,50 @@ At the end of each encounter, you fight a final enemy whose health is 10 \* (num
 
 There's gotta be a sort of randomness at the end so it isn't obvious who will win? Perhaps bosses have special abilities.
 
+## Demo Game Text
+
+Eldrond had barely finished stepping both feet inside the dungeon when **WHAM!** the gate slammed down behind him.
+"This doesn't look like Kansas anymore!" exclaimed Eldrond.
+Eldrond looked around and found himself in a small musty room that was filled with bugs. He looked ahead and saw an archway, and inscripted above the arch were the following words:
+“It's easy to stand in the crowd but it takes courage to stand alone.” - Ghandi
+Feeling inspired, Eldron began his trek into the unknown.
+
+> **Alice:**
+> As Elrond walked, his foot suddenly hit something small and hard. He looked down and... it was a book titled "A Summary of Every Book Ever Written".
+> "Gadzooks!" exclaimed Elrond. He sat on the floor and began to inspect its pages and before he knew it, he had read the whole thing!
+> **+5 📖 Intelligence**
+
+> **Bob:**
+> Down a dark staircase, Elrond noticed a mysterious object glimmering in a hole in the rock on his left. Curious, He reached his hand in and pulled out...
+> A luxirous top hat!
+> Elrond tried the item on, noticed it was very fashionable, and satisfied, placed the clothing item back where he found it. Maybe his adventure was short-lived, but he felt that it somehow left a lasting mark on his appearance.
+> **+300 💄 Intelligence**
+
+> **Seth**
+> After several hours of walking (and a few minutes of skipping) Elrond came across a well that looked so old, it was as if it would crumble to dust if he touched it.
+> He noticed the bucket was close to the surface of the well and so he took a look inside. He could see what was inside! It was...
+> A mysterious potion of unknown consequence!
+> Just barely able to reach it, Elrond grabbed the item and stuffed it into his inventory.
+> **Mysterious Potion Obtained**
+
+Exclamations:
+Gadzooks!
+Great Scott!
+Nuggets!
+Great Googly Moogly!
+I'll be a monkey's uncle!
+Jinkies!
+Zoinks!
+Holy Guacamole!
+WHAT???!?!?!?
+
+Books:
+A Summary of Every Book Ever Written
+101 BYU Student Vacation Ideas (And why the MARB is the best one)
+So You're Stuck in a Text Adventure
+Platonic Liquids and Other Things Your Math Teachers Don't Tell You About
+The Book of Time
+
 ## Github Notes
 
 I learned that Github can be used to store cloud repositories. I learned how to use commands such as "clone", "fetch", "push" and "pull" to make use of my repository.
