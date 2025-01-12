@@ -1,37 +1,24 @@
 # Text Dungeon Showdown
 
-[My Notes](notes.md)
-
 The cold iron gate **SLAMS** down behind you. You've entered into... **Text Dungeon Showdown!**: the browser game where you and up to three friends write the story! Create the story of a brave hero facing traps and treasure in a dungeon. In this fun and strategic multiplayer experience, all of you must work together to drive the story forward, while at the same time competing in an epic battle to level up the hero in a way that will help you to win! Players must level up either the hero's ✨ Magic, 🦾 Strength, 📖 Intelligence or 💄 Charisma. But watch out! If you don't play your cards in the correct order, you might be foiled!
 
-> [!NOTE]
-> This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
-
-> [!NOTE]
-> If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
-
 ## 🚀 Specification Deliverable
-
-> [!NOTE]
-> Fill in this sections as the submission artifact for this deliverable. You can refer to this [example](https://github.com/webprogramming260/startup-example/blob/main/README.md) for inspiration.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] Proper use of Markdown - I made use of headers, bold text, and images.
-- [ ] A concise and compelling elevator pitch - I gave reasons players might want to engage with this game.
-- [ ] Description of key features
-- [ ] Description of how you will use each technology
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] A concise and compelling elevator pitch - I gave reasons players might want to engage with this game.
+- [x] Description of key features - I described the key features players might expect to interact with in the game.
+- [x] Description of how you will use each technology - I used the strengths of each technology to create a list of what each technology would include
+- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references. - I embedded a mockup of my project I created with NinjaMock using a Markdown image reference.
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+If there's three things that make video games awesome, it's teamwork, competition, and monster-infested dungeons. So why can't a video game have all three? In **Text Dungeon Showdown!**, Players must work together to help a common hero brave a mysterious adventure, while simeotaneously influencing the path of the character in a way that will help you win. Filled to the brim with epic battles, strategic maneuvers and text adventure shenanigans, **Text Dungeon Showdown!** is the _perfect_ game to
 
 ### Design
 
-![Design image](placeholder.png)
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+![Program Mockup](mockup.png)
 
 ```mermaid
 sequenceDiagram
@@ -42,20 +29,24 @@ sequenceDiagram
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Secure login and account creation
+- Persistent memory of game trophies
+- Leaderboard with top player trophy counts
+- Create game rooms and lobbies for users to interact
+- Engaging and unique text story shared across all users
+- Ability to perform actions which influence other users gameplay
+- Ability to earn in-game trophies based on completing multiplayer games
 
 ### Technologies
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - I will use HTML to create a page for home, login, play, and leaderboard, with appropriate use of buttons, hyperlinks, images and HTML layout.
+- **CSS** - visual CSS to make the game accessible on most device ratios and emphasize the most important parts of the application using bold fonts, colors, layout controls, and varying font sizes.
+- **React** - Handling of login screen, display of game screen, other player screens, and drag/drop of cards for the game. Also for changing elements such as the indicator of the current player.
+- **Service** - Call to server to get randomized possible player cards, adventure text related to cards and items, and icons of items.
+- **DB/Login** - Store user login information, along with the number of trophies they have earned. Then, stores a high score wall of all the trophies that players have earned.
+- **WebSocket** - I will use websocket to keep track of player lobbies for games, current active games, data related to the game, cards of players, game inventories and progress.
 
 ## 🚀 AWS deliverable
 
