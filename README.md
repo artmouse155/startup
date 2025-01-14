@@ -37,7 +37,7 @@ I am going to use the required technologies in the following ways.
 - **HTML** - I will use HTML to create a page for home, login, play, and leaderboard, with appropriate use of buttons, hyperlinks, images and HTML layout.
 - **CSS** - visual CSS to make the game accessible on most device ratios and emphasize the most important parts of the application using bold fonts, colors, layout controls, and varying font sizes.
 - **React** - Handling of login screen, display of game screen, other player screens, and drag/drop of cards for the game. Also for changing elements such as the indicator of the current player.
-- **Service** - Call to server to get randomized possible player cards, adventure text related to cards and items, and icons of items.
+- **Service** - Call to server to get randomized possible player cards, adventure text related to cards and items, and icons of items. I am going to call to an external api to insert a random inspiriational quote into my game.
 - **DB/Login** - Store user login information, along with the number of trophies they have earned. Then, stores a high score wall of all the trophies that players have earned.
 - **WebSocket** - I will use websocket to keep track of player lobbies for games, current active games, data related to the game, cards of players, game inventories and progress.
 
