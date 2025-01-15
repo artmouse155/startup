@@ -136,7 +136,15 @@ pull - get
 
 ## AWS Notes
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+I learned how to create an AWS server instance, how to register a domain name, and how to link the two together.
+
+I can access the console via secure shell (ssh) using this command:
+
+```
+➜  ssh -i [key pair file] ubuntu@[ip address]
+```
+
+My domain is [chaseodom.click](http://chaseodom.click)
 
 ## HTML Notes
 
