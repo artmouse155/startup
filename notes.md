@@ -200,3 +200,49 @@ HTML adds structure _and_ content to a web application
   `output for="range">0</output>`
 - `meter` Display value with a known range
   `<meter min = "0" max = "100" value = "50"></meter>`
+
+The input element is very versatile! Types of inputs include:
+
+```bash
+text
+password
+email
+tel //telephone
+url //url address
+number
+checkbox //inclusive selection
+radio //exclusive selection
+range //range limited number
+date //year, month, day
+datetime-local //date and time
+month //year, month
+week //week of year
+color //color
+file //local file
+submit //button to trigger form submission
+```
+
+Here is an example of a checked radio button from the lectures:
+
+```html
+<label for="checkbox1">Check me</label>
+<input type="checkbox" name="varCheckbox" value="checkbox1" checked />
+```
+
+Common attributes include:
+
+- `name` : name of the input. Submitted as the name of an input if the input is used in a form
+- `disabled` : disables user interactivity
+- `value` : initial value of the input
+- `required` : This attribute means a value is required for the form to be valid
+
+### Validating HTML input
+
+There is a `pattern` attribute that can validate input using regular expressions, meaning it won't be accepted if it doesn't follow the regex
+
+- Available on `text, search, url, tel, email, and password`
+
+> [!NOTE]
+> Good design gives users feedback early on about data vaildation.
+
+To make a checkbox (`<label type="checkbox">`) already checked, add the `checked` attribute.
