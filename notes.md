@@ -246,3 +246,57 @@ There is a `pattern` attribute that can validate input using regular expressions
 > Good design gives users feedback early on about data vaildation.
 
 To make a checkbox (`<label type="checkbox">`) already checked, add the `checked` attribute.
+
+### HTML media elements
+
+Five main ones: `img`, `audio`, `video`, `svg`, and `canvas`.
+`svg` and `canvas` are editable
+
+#### Images
+
+`img` elements contain `alt`ernate text and a `src` (source)
+
+EXAMPLE:
+
+```html
+<img
+  alt="mountain landscape"
+  src="https://images.pexels.com/photos/164170/pexels-photo-164170.jpeg"
+/>
+```
+
+<img alt="mountain landscape" src="https://images.pexels.com/photos/164170/pexels-photo-164170.jpeg" />
+
+#### Audio
+
+`audio` elements can have the `controls` attribute to let users control audio. Like images, they have a `src`. `loop` will loop, and `autoplay` (discouraged) will play the audio right when it is loaded.
+
+#### Video
+
+`video` elements are similar to `audio` elements in that they have `src`, `loop`, `autoplay` and `controls` tags. They also have a `width` tag.
+
+Sometimes when you request an external video, you need `crossorigin="anonymous"`
+
+#### Scalable Vector Graphic (SVG)
+
+Scalable vector graphics renders graphics inline with HTML.
+
+Example:
+
+```html
+<svg
+  viewBox="0 0 300 200"
+  xmlns="http://www.w3.org/2000/svg"
+  stroke="red"
+  fill="red"
+  style="border: 1px solid #000000"
+>
+  <circle cx="150" cy="100" r="50" />
+</svg>
+```
+
+which renders this:
+
+<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" stroke="red" fill="red" style="border: 1px solid #000000">
+  <circle cx="150" cy="100" r="50" />
+</svg>
