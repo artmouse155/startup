@@ -96,16 +96,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
 - [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
 - [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
+- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
 
-## 🚀 DB/Login deliverable
+## 🚀 DB deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **User registration** - I did not complete this part of the deliverable.
-- [ ] **User login and logout** - I did not complete this part of the deliverable.
 - [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
 - [ ] **Stores credentials in MongoDB** - I did not complete this part of the deliverable.
-- [ ] **Restricts functionality based on authentication** - I did not complete this part of the deliverable.
 
 ## 🚀 WebSocket deliverable
 
