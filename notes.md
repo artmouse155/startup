@@ -164,3 +164,39 @@ Secure Hypertext Transport Protocol (HTTPS) - requires a "negotiated secure conn
 ## HTML Notes
 
 HTML adds structure _and_ content to a web application
+
+### HTML Struture
+
+- `body`
+- `header`
+- `footer`
+- `main` - main content
+- `section`
+- `aside`
+- `p`aragraphs
+- `table`
+- `ol/ul` ordered / unordered list element
+- `div`isions
+- `span` - can be used to mark a person's name for example
+
+![HTML Structure](htmlStructure.jpg)
+
+### HTML Input
+
+- `form` | input container
+  `<form action="form.html method="post">`
+- `fieldset` labeled input grouping (use like div)
+- `input` | Multiple types of user input | `<input type="" />`
+- `select` | Selection dropdown:
+  `<select><option>1</option></select>`
+- `optgroup` Grouped selection drowpdown
+  `<optgroup><option>1</option><optgroup/>`
+- `option` Selection Option | `<option selected>option2</option>`
+- `textarea` multiline text input
+  `<textarea></textarea>`
+- `label` Individual input label
+  `<label for="range">Range: </label>`
+- `output` Output of input
+  `output for="range">0</output>`
+- `meter` Display value with a known range
+  `<meter min = "0" max = "100" value = "50"></meter>`
