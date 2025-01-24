@@ -7,6 +7,7 @@
 - [Course instruction](https://github.com/webprogramming260)
 - [Canvas](https://byu.instructure.com)
 - [MDN](https://developer.mozilla.org)
+- [VIM Editor Controls](https://www.redhat.com/en/blog/introduction-vi-editor)
 
 ## Brainstorming
 
@@ -162,4 +163,4 @@ Secure Hypertext Transport Protocol (HTTPS) - requires a "negotiated secure conn
 
 ## HTML Notes
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+HTML adds structure _and_ content to a web application
