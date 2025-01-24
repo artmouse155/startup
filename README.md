@@ -20,6 +20,21 @@ If there's three things that make video games awesome, it's teamwork, competitio
 
 ![Program Mockup](mockup.png)
 
+Here is a sequence diagram showing how users might interact with the server to play **Text Dungeon Showdown**:
+
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Bob
+    actor Seth
+    actor Chase
+    Alice->>Server: Play card
+    Server -->>Alice: Adventure Text
+    Server -->>Bob: Adventure Text
+    Server -->>Seth: Adventure Text
+    Server -->>Chase: Adventure Text
+```
+
 ### Key features
 
 - Secure login and account creation
