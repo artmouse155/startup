@@ -319,3 +319,14 @@ We can add `class` attributes to `div` elements
 
 Deployment successful as of 5:27 PM 1/24/25
 To access my pemkey, i can do `./../../CreameryBrownie.pem`
+
+### Extra HTML tidbits
+
+Set a standard viewport size:
+`<meta name="viewport" content="width=device-width, initial-scale=1.0" />`
+Add a wepage title:
+`<title>Simon HTML</title>`
+Add a webpage icon:
+`<link rel="icon" href="favicon.ico" />`
+
+Using `<menu>` instead of `ul` when users are interacting with it!
