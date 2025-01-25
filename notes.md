@@ -300,3 +300,22 @@ which renders this:
 <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" stroke="red" fill="red" style="border: 1px solid #000000">
   <circle cx="150" cy="100" r="50" />
 </svg>
+
+## Simon HTML
+
+We always want to call our top level page index.html
+
+> A submit button inside of a form element will cause the action to happen
+
+## Deployment
+
+Before adding any services, we can just use `deployFiles.sh` and run it like so:
+
+```bash
+./deployFiles.sh -k <yourpemkey> -h <yourdomain> -s simon
+```
+
+We can add `class` attributes to `div` elements
+
+Deployment successful as of 5:27 PM 1/24/25
+To access my pemkey, i can do `./../../CreameryBrownie.pem`
