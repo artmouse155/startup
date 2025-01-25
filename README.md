@@ -70,11 +70,11 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Proper HTML element usage** - I incorporated a wide array of HTML elements, from strucutral elements such as `main` and `header` to media elements such as `img` to input elements such as `input`
 - [x] **Links** - I included links between all of my pages.
 - [x] **Text** - I have text in my application.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
+- [x] **3rd party API placeholder** - I have a placeholder to an inspirational quotes API.
 - [x] **Images** - I have placeholder images in my application.
 - [x] **Login placeholder** - I have a login placeholder and I display the user's name.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] **DB data placeholder** - The content of the text adventure adventure database placeholder is contained within the `play.html` file.
+- [x] **WebSocket placeholder** - The text adventure adventure is a placeholder for real-time communication from the server with the contents of the adventure.
 
 ## 🚀 CSS deliverable
 
