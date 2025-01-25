@@ -67,12 +67,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] **HTML pages** - I created HTML pages for the home/login, the game play screen, and the leaderboard screen.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
+- [x] **Proper HTML element usage** - I incorporated a wide array of HTML elements, from strucutral elements such as `main` and `header` to media elements such as `img` to input elements such as `input`
+- [x] **Links** - I included links between all of my pages.
+- [x] **Text** - I have text in my application.
 - [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
+- [x] **Images** - I have placeholder images in my application.
+- [x] **Login placeholder** - I have a login placeholder and I display the user's name.
 - [ ] **DB data placeholder** - I did not complete this part of the deliverable.
 - [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
 
