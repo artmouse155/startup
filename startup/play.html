@@ -27,9 +27,20 @@
         <button type="submit">Log Out</button>
       </form>
       <hr />
-      <h2>Elrond's Big Adventure</h2>
-      <hr />
-      <section id="Text Adventure">
+      <table>
+        <thead>
+            <tr>
+            <th>Inventory</th>
+            <th>Elrond's Big Adventure</th>
+            <th>Standings</th>
+            </tr>
+        </thead>
+        <tr>
+        <td>
+            <p>inventory probably</p>
+        </td>
+        <td>
+        <div id="Text Adventure">
         <!--This entire section is database placeholder because this will all be generated from the database.-->
         <!--This section is also a websocket placeholder because this will be where players recieve information from the server-->
         Eldrond had barely finished stepping both feet inside the dungeon when
@@ -85,8 +96,38 @@
         A mysterious potion of unknown consequence!<br /><br />Just barely able
         to reach it, Elrond grabbed the item and stuffed it into his inventory.
         <br /><br /><b>Mysterious Potion Obtained</b><br />
-        <hr />
-      </section>
+        </div>
+        </td>
+        <td>
+        <div id="Other Players">
+            <div id="Player1">
+                <h4 id="name">📖 Alice 📖</h4>
+                <p id="Card Count">🃏X🃏🃏🃏</p>
+                <p id="Place">2nd</p>
+            </div>
+            <br/>
+            <div id="Player2">
+                <h4 id="name">💄 Alice 💄</h4>
+                <p id="Card Count">🃏🃏🃏🃏X</p>
+                <p id="Place">1st</p>
+            </div>
+            <br/>
+            <div id="Player3">
+                <h4 id="name">✨ Seth ✨</h4>
+                <p id="Card Count">🃏🃏🃏X🃏</p>
+                <p id="Place">4th</p>
+            </div>
+            <br/>
+            <div id="Player4">
+                <h4 id="name">🦾 Cosmo 🦾</h4>
+                <p id="Card Count">🃏X🃏🃏🃏</p>
+                <p id="Place">4th</p>
+            </div>
+        </div>
+        </td>
+        </tr>
+        </table>
+    <hr />
     <section id="Card Section">
         <h2>My Turn</h2>
         <button width="100px" height="200px">Read a magic inscription on the wall<br/><b>+ 5 ✨Magic</b></input>
@@ -95,33 +136,6 @@
         <button width="100px" height="200px">Enter cobweb-infested room<br/><b>+ 3 🦾Strength</b><br/><b>+ 2 (?)</b></input>
         <button width="100px" height="200px">Read a magic inscription on the wall<br/><b>+ 5 ✨Magic</b></input>
     </section> 
-    <hr />
-    <section id="Other Players">
-        <h1>Standings</h1>
-        <div id="Player1">
-            <h4 id="name">📖 Alice 📖</h4>
-            <p id="Card Count">🃏X🃏🃏🃏</p>
-            <p id="Place">2nd</p>
-        </div>
-        <br/>
-        <div id="Player2">
-            <h4 id="name">💄 Alice 💄</h4>
-            <p id="Card Count">🃏🃏🃏🃏X</p>
-            <p id="Place">1st</p>
-        </div>
-        <br/>
-        <div id="Player3">
-            <h4 id="name">✨ Seth ✨</h4>
-            <p id="Card Count">🃏🃏🃏X🃏</p>
-            <p id="Place">4th</p>
-        </div>
-        <br/>
-        <div id="Player4">
-            <h4 id="name">🦾 Cosmo 🦾</h4>
-            <p id="Card Count">🃏X🃏🃏🃏</p>
-            <p id="Place">4th</p>
-        </div>
-    </section>
     </main>
 
     <footer>
