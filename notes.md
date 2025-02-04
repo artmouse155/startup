@@ -379,3 +379,31 @@ section h2 {
 | Child            | A list of direct children  | `section > p`  | Any p that is a direct child of a section  |
 | General sibling  | A list of siblings         | `div ~ p`      | Any p that has a div sibling               |
 | Adjacent sibling | A list of adjacent sibling | `div + p`      | Any p that has an adjacent div sibling     |
+
+## Handy CSS things
+
+I couldn't get my CSS animation to work! I fixed it by making it "animation-duration" instead of "animaition-duration".
+
+#### Paths - For moving HTML elements
+
+https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+
+Five line commands
+| Command | Meaning | Example | Description |
+| ------- | ------- | ------- | ----------- |
+| `M` | Move (x y) | `M 10 20` or `m dx dy` | The first command. Move to an X and Y position. |
+| `L` | Line (new x, new y) | `L 5 15` or `l dx dy` | Draw a line from the current position. |
+| `H` | Horizontal line (x) | `H 20` or `h dx` | Draw a horizontal line. |
+| `V` | Vertical line (v) | `V 20` or `v dy` |
+
+All commands come in _two variants_.
+
+- An **uppercase letter** means absolute coordinates
+- A **lowercase letter** means relative coordinates
+
+##### Curves!
+
+You can also make cubic and quatradic bezier curves! You do this with `C / c` and `Q / q`
+You can make shorthand bezier curves with `S / s` and arcs with `A`.
+
+- These create ellipses!
