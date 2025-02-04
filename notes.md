@@ -8,6 +8,7 @@
 - [Canvas](https://byu.instructure.com)
 - [MDN](https://developer.mozilla.org)
 - [VIM Editor Controls](https://www.redhat.com/en/blog/introduction-vi-editor)
+- [Burning Text](https://cooltext.com/Logo-Design-Burning)
 
 ## Brainstorming
 
@@ -330,3 +331,5 @@ Add a webpage icon:
 `<link rel="icon" href="favicon.ico" />`
 
 Using `<menu>` instead of `ul` when users are interacting with it!
+
+Startup Deployment successful as of 7:17 PM 1/24/25
