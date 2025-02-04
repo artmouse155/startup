@@ -162,7 +162,7 @@ Caddy is a web service that allows us to expose all of our web services as a sin
 Hypertext Transport Protocol (HTTP)
 Secure Hypertext Transport Protocol (HTTPS) - requires a "negotiated secure connection" before data is exchanged
 
-## HTML Notes
+# HTML Notes
 
 HTML adds structure _and_ content to a web application
 
@@ -333,3 +333,32 @@ Add a webpage icon:
 Using `<menu>` instead of `ul` when users are interacting with it!
 
 Startup Deployment successful as of 7:17 PM 1/24/25
+
+# CSS Notes
+
+CSS is made up of many defining rulesets / `rules`.
+`property` corresponds to a `value`; whole thing is called a `declaration`.
+<img src="https://raw.githubusercontent.com/webprogramming260/.github/main/profile/css/introduction/cssDefinitions.jpg">
+
+- The **DOM Tree** represents the Document Object Model, or the heiarchy of data
+- The way in which CSS takes priority is according to the DOM; Lower levels will override higher levels
+
+![Overriding from lower level declarations](image-1.png)
+
+![The Box Model](image.png)
+
+Example CSS:
+
+```css
+body {
+  color: red;
+}
+
+header {
+  color: blue;
+}
+
+footer {
+  color: green;
+}
+```
