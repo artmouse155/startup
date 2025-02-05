@@ -363,7 +363,9 @@ footer {
 }
 ```
 
-## Combinators
+## Selectors
+
+### Combinators
 
 When we want CSS to apply to a specific combination of elements; for example, all `h2`s which are descendants of `section`s
 
@@ -380,9 +382,44 @@ section h2 {
 | General sibling  | A list of siblings         | `div ~ p`      | Any p that has a div sibling               |
 | Adjacent sibling | A list of adjacent sibling | `div + p`      | Any p that has an adjacent div sibling     |
 
-## Handy CSS things
+### Class Selectors
 
-I couldn't get my CSS animation to work! I fixed it by making it "animation-duration" instead of "animaition-duration".
+Do class selectors with a dot.
+HTML:
+
+```html
+<p class="introduction">Introduction</p>
+```
+
+CSS:
+
+```css
+.summary {
+  font-weight: bold;
+}
+```
+
+We can also combine it with the element tag to select all paragraphs with a class summary.
+
+```css
+p.summary {
+  font-weight: bold;
+}
+```
+
+### Attribute Selectors
+
+We can also create CSS code on the basis of attribute selectors, which can select all sorts of attributes.
+
+## Pseudo Selectors
+
+```css
+section:hover {
+  border-left: solid 1em purple;
+}
+```
+
+## SVG Paths
 
 #### Paths - For moving HTML elements
 
@@ -407,3 +444,32 @@ You can also make cubic and quatradic bezier curves! You do this with `C / c` an
 You can make shorthand bezier curves with `S / s` and arcs with `A`.
 
 - These create ellipses!
+
+## Animation
+
+I couldn't get my CSS animation to work! I fixed it by making it "animation-duration" instead of "animaition-duration".
+
+### Elements of a CSS Animation
+
+Animations need to have a name and a duration. Here is an example:
+
+```css
+p {
+  animation-name: grow;
+  animation-duration: 5s;
+}
+
+@keyframes grow {
+  from {
+    font-size: 20px;
+  }
+  90% {
+    font-size: 45px;
+  }
+  to {
+    font-size: 40px;
+  }
+}
+```
+
+We use `animation-name`, `animation-duration`, and `@keyframes`.
