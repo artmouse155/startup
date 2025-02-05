@@ -1,0 +1,42 @@
+header {
+  background-color: #3e70a7;
+  display: flex;
+  padding: 0px 10px;
+}
+
+nav {
+  flex-grow: 1;
+  display: flex;
+  align-self: center;
+  box-sizing: content-box;
+}
+
+menu {
+  display: flex;
+  margin: 0px;
+}
+
+.header-title {
+  align-self: center;
+  color: whitesmoke;
+  margin: 0px;
+}
+
+.header-menu {
+  display: flex;
+  color: green;
+  text-decoration: none;
+  flex-direction: column;
+}
+
+.header-menu-link {
+  display: flex;
+  text-decoration: none;
+  color: whitesmoke;
+  font-weight: bold;
+  padding: 15px 20px;
+}
+
+.header-menu-link:hover {
+  background-color: #ffffff22;
+}
