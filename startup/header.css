@@ -70,3 +70,12 @@ menu {
 .account_circle {
   margin-right: 10px;
 }
+
+@media (max-height: 700px) {
+  header {
+    display: none;
+  }
+  footer {
+    display: none;
+  }
+}
