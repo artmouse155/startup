@@ -182,6 +182,12 @@ HTML adds structure _and_ content to a web application
 
 ![HTML Structure](htmlStructure.jpg)
 
+You can have multiple classes assigned to the same element using spaces:
+
+```html
+<div class="box box1"></div>
+```
+
 ### HTML Input
 
 - `form` | input container
@@ -551,3 +557,41 @@ Example Code
 ```html
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 ```
+
+A `float` css property allows for content which is `inline` to wrap around it; Ex. image surrounded by text
+
+We can run certain code based on whether or not we are in portrait mode or landscape mode.
+
+```css
+@media (orientation: portrait) {
+  aside {
+    display: none;
+  }
+}
+```
+
+## CSS Grid
+
+Grid items can be in a freeform grid with the CSS grid display property: `display: grid;`
+Here is an example:
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: 300px;
+  grid-gap: 1em;
+}
+```
+
+TEST
+
+```diff
++ I like green
+eh
+- I like red
+```
+
+![alt text](image-3.png)
+
+## Flexbox
