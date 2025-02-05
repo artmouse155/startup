@@ -12,14 +12,22 @@
   <body>
     <header>
       <a class="header-title" href="index.html">
-        <img src="header_icon.png" width="30px">
+        <img src="header_icon.png" width="30px" />
       </a>
 
       <nav>
         <menu>
-          <li class="header-menu"><a href="index.html" class="header-menu-link header-text">Home</a></li>
-          <li class="header-menu"><a href="play.html" class="header-menu-link header-text">Play</a></li>
-          <li class="header-menu"><a href="leaderboard.html" class="header-menu-link header-text">Leaderboard</a></li>
+          <li class="header-menu">
+            <a href="index.html" class="header-menu-link header-text">Home</a>
+          </li>
+          <li class="header-menu">
+            <a href="play.html" class="header-menu-link header-text">Play</a>
+          </li>
+          <li class="header-menu">
+            <a href="leaderboard.html" class="header-menu-link header-text"
+              >Leaderboard</a
+            >
+          </li>
         </menu>
       </nav>
 
@@ -27,40 +35,48 @@
         <div class="trophy-section header-text">
           <b>🏆 37</b>
         </div>
-      <form method="get" action="index.html" >
-        <button type="submit" class="log-out-button">Log Out</button>
-      </form>
-      <p class="header-text">Cosmo</p>
-      <!--Account circle is from https://fonts.google.com/icons-->
-      <img src="account_circle.png" width="30px" class="account_circle">
-      
+        <form method="get" action="index.html">
+          <button type="submit" class="log-out-button">Log Out</button>
+        </form>
+        <p class="header-text">Cosmo</p>
+        <!--Account circle is from https://fonts.google.com/icons-->
+        <img src="account_circle.png" width="30px" class="account_circle" />
       </section>
-
     </header>
 
     <main>
       <section class="login-screen">
-        <h3>Login</h3>
-        <form method="get" action="play.html">
-        <label for="user_email">Email</label>
-        <input type="email" id="user_email" placeholder="cosmo@example.com" />
-        </br>
-        <label for="user_password">Password</label>
-        <input type="password" id="user_password" placeholder="password"/>
-        </br>
-        <button type="submit">
-            <img alt="submit" src="login.gif" height="50px">
-        </button>
-        <button type="submit">
-            <img alt="submit" src="sign up.gif" height="50px">
-        </button>
-        </form>
+        <h3 class="login-header">Login</h3>
+        <section class="login-body">
+          <form method="get" action="play.html" class="login-form">
+            <label for="user_email">Email</label>
+            <input
+              type="email"
+              id="user_email"
+              placeholder="cosmo@example.com"
+            />
+            <br />
+            <label for="user_password">Password</label>
+            <input type="password" id="user_password" placeholder="password" />
+            <br />
+            <div class="button-div">
+              <button type="submit" class="login-screen-button login-button">
+                Login
+              </button>
+              <button type="submit" class="login-screen-button signup-button">
+                Sign Up
+              </button>
+            </div>
+          </form>
+        </section>
       </section>
     </main>
 
     <footer>
       <span class="text-reset footer-item">Chase Odom</span>
-      <a class = "footer-item" href="https://github.com/artmouse155/startup">GitHub</a>
+      <a class="footer-item" href="https://github.com/artmouse155/startup"
+        >GitHub</a
+      >
     </footer>
   </body>
 </html>

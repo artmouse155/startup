@@ -1,8 +1,55 @@
 .login-screen {
   justify-self: center;
-  color: blue;
+  color: rgb(54, 54, 54);
+  background-color: rgb(255, 255, 255);
+  padding: 2em;
+  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.089);
 }
 
 .header-right {
   display: none;
+}
+
+.login-header {
+  text-align: center;
+}
+
+.login-body {
+  padding: 2em;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-div {
+  display: flex;
+  display: row;
+  align-content: space-between;
+}
+
+.login-screen-button {
+  border-radius: 5px;
+  border: 2px solid whitesmoke;
+  padding: 0.3em 0.7em;
+  font-weight: bold;
+  color: whitesmoke;
+  display: flex;
+}
+
+.login-button {
+  background-color: #a53e42;
+}
+
+.login-button:hover {
+  background-color: #cc4f55;
+}
+
+.signup-button {
+  background-color: #3e70a7;
+}
+
+.signup-button:hover {
+  background-color: #769fcc;
 }
