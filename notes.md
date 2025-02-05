@@ -500,3 +500,54 @@ Really cool slide in effect from aboe:
   }
 }
 ```
+
+You can use `animation-fill-mode: forwards;` to make an animation "stick".
+
+You can change the easing using easing such as "ease-out"
+
+You can transform using
+
+```css
+p {
+  transform: translateX(0%);
+}
+```
+
+## Responsive Design
+
+How we reconfigure for multiple devices!
+The `display` property is powerful at changing how elements are organized on a screen.
+
+This line of code tells the phone not to scale a page on mobile:
+
+Example Code
+
+```css
+.none {
+  display: none;
+}
+
+.block {
+  display: block;
+}
+
+.inline {
+  display: inline;
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+```
+
+![Funky Items](mage-2.png)
+
+```html
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+```
