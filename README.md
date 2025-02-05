@@ -82,7 +82,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 - [x] **Header, footer, and main content body** - I have headers, footers, and main content.
 - [x] **Navigation elements** - I have navigation elements.
-- [x] **Responsive to window resizing** - I made my page responsive to window resizing.
+- [ ] **Responsive to window resizing** - My application does not respond to resizing unfortunately.
 - [x] **Application elements** - I included several application elements.
 - [x] **Application text content** - My application includes various text content.
 - [x] **Application images** - My application includes several images.
