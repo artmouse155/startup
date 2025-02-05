@@ -365,6 +365,15 @@ footer {
 
 ## Selectors
 
+You can do multiple like this:
+
+```css
+td,
+th {
+  border: solid 1px black;
+}
+```
+
 ### Combinators
 
 When we want CSS to apply to a specific combination of elements; for example, all `h2`s which are descendants of `section`s
@@ -473,3 +482,21 @@ p {
 ```
 
 We use `animation-name`, `animation-duration`, and `@keyframes`.
+
+https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations
+
+Really cool slide in effect from aboe:
+
+```css
+@keyframes slide-in {
+  from {
+    translate: 150vw 0;
+    scale: 200% 1;
+  }
+
+  to {
+    translate: 0 0;
+    scale: 100% 1;
+  }
+}
+```
