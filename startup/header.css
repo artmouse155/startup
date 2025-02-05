@@ -66,3 +66,7 @@ menu {
 .log-out-button:hover {
   background-color: #cc4f55;
 }
+
+.account_circle {
+  margin-right: 10px;
+}
