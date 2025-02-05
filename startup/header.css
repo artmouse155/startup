@@ -14,12 +14,14 @@ nav {
 menu {
   display: flex;
   margin: 0px;
+  padding-left: 10px;
 }
 
 .header-title {
   align-self: center;
   color: whitesmoke;
   margin: 0px;
+  padding-left: 10px;
 }
 
 .header-menu {
