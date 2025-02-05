@@ -1,0 +1,36 @@
+.text-adventure {
+  background-color: #262626;
+  color: whitesmoke;
+  padding: 20px;
+  margin: 40px;
+  overflow: scroll;
+  height: 500px;
+  width: 400px;
+}
+
+.data-box {
+  background-color: whitesmoke;
+  border-radius: 5px;
+  text-align: center;
+  padding: 5px 20px;
+}
+
+.card-section {
+  display: flex;
+}
+
+.card {
+  background-color: whitesmoke;
+  border-radius: 5px;
+  margin: 20px;
+  padding: 20px;
+  text-align: center;
+}
+
+.card:hover {
+  scale: 1.2;
+}
+
+.my-turn {
+  display: none;
+}

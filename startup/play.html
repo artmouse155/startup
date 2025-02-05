@@ -52,21 +52,22 @@
         <tr>
         <td>
             <div id="Scores">
-            <div id="magic">
+            <div class="data-box" id="magic">
                 <h4 id="magic">✨ Magic</h4>
                 <p id=amt">0</p>
             </div>
             <br/>
-            <div id="strength">
+            <div class="data-box" id="strength">
                 <h4 id="">🦾 Strength</h4>
                 <p id="amt">0</p>
             </div>
-            <div id="intelligence">
+            <br/>
+            <div class="data-box" id="intelligence">
                 <h4 id="intelligence">📖 Intelligence</h4>
                 <p id="amt">5</p>
             </div>
             <br/>
-            <div id="charmisma">
+            <div class="data-box" id="charmisma">
                 <h4 id="charmisma">💄 Charmisma</h4>
                 <p id="amt">300</p>
             </div>
@@ -74,7 +75,7 @@
             </div>
         </td>
         <td>
-        <div id="Text Adventure">
+        <div class="text-adventure">
         <!--This entire section is database placeholder because this will all be generated from the database.-->
         <!--This section is also a websocket placeholder because this will be where players recieve information from the server-->
         Eldrond had barely finished stepping both feet inside the dungeon when
@@ -131,19 +132,20 @@
         to reach it, Elrond grabbed the item and stuffed it into his inventory.
         <br /><br /><b>Mysterious Potion Obtained</b><br />
         </div>
-        </td>
+        
+      </td>
         <td>
             <table>
                 <tr>
                     <td>
-                        <p>1</p>
+                        <p class="data-box">1</p>
                     </td>
-                    <td>
+                    <td >
                         <p>Potion</p>
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td class="data-box">
                         <p>2</p>
                     </td>
                     <td>
@@ -151,7 +153,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td class="data-box">
                         <p>3</p>
                     </td>
                     <td>
@@ -162,25 +164,25 @@
         </td>
         <td>
         <div id="Other Players">
-            <div id="Player1">
+            <div class="data-box" id="Player1">
                 <h4 id="name">📖 Alice 📖</h4>
                 <p id="Card Count">🃏X🃏🃏🃏</p>
                 <p id="Place">2nd</p>
             </div>
             <br/>
-            <div id="Player2">
+            <div class="data-box" id="Player2">
                 <h4 id="name">💄 Alice 💄</h4>
                 <p id="Card Count">🃏🃏🃏🃏X</p>
                 <p id="Place">1st</p>
             </div>
             <br/>
-            <div id="Player3">
+            <div class="data-box" id="Player3">
                 <h4 id="name">✨ Seth ✨</h4>
                 <p id="Card Count">🃏🃏🃏X🃏</p>
                 <p id="Place">4th</p>
             </div>
             <br/>
-            <div id="Player4">
+            <div class="data-box" id="Player4">
                 <h4 id="name">🦾 Cosmo 🦾</h4>
                 <p id="Card Count">🃏X🃏🃏🃏</p>
                 <p id="Place">4th</p>
@@ -190,8 +192,8 @@
         </tr>
         </table>
     <hr />
-    <section id="Card Section">
-        <h2>My Turn</h2>
+    <section class="card-section">
+        <h2 class="my-turn">My Turn</h2>
         <div class="card" width="100px" height="200px">Read a magic inscription on the wall<br/><b>+ 5 ✨Magic</b></div>
         <div class="card" width="100px" height="200px">Add <i>"Magic Telescope"</i> to inventory</input></div>
         <div class="card" width="100px" height="200px">Use topmost item in inventory</input></div>
