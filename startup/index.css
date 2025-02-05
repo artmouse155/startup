@@ -2,3 +2,7 @@
   justify-self: center;
   color: blue;
 }
+
+.header-right {
+  display: none;
+}

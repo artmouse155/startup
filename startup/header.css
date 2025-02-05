@@ -31,14 +31,38 @@ menu {
   flex-direction: column;
 }
 
-.header-menu-link {
+.header-text {
   display: flex;
-  text-decoration: none;
   color: whitesmoke;
+  text-decoration: none;
   font-weight: bold;
+  display: flex;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.header-menu-link {
   padding: 15px 20px;
 }
 
 .header-menu-link:hover {
   background-color: #ffffff22;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.log-out-button {
+  background-color: #a53e42;
+  border-radius: 5px;
+  border: 2px solid whitesmoke;
+  padding: 0.3em 0.7em;
+  font-weight: bold;
+  color: whitesmoke;
+}
+
+.log-out-button:hover {
+  background-color: #cc4f55;
 }
