@@ -3,7 +3,9 @@
   color: whitesmoke;
   padding: 20px;
   margin: 40px;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-color: rgb(121, 83, 115) rgb(56, 56, 56);
   height: 500px;
   width: 400px;
 }
@@ -13,6 +15,7 @@
   border-radius: 5px;
   text-align: center;
   padding: 5px 20px;
+  margin-bottom: 30px;
 }
 
 .card-section {
@@ -24,6 +27,8 @@
   border-radius: 5px;
   margin: 20px;
   padding: 20px;
+  height: 180px;
+  width: 120px;
   text-align: center;
 }
 

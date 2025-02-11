@@ -12,70 +12,69 @@
   <body>
     <header>
       <a class="header-title" href="index.html">
-        <img src="header_icon.png" width="30px">
+        <img src="header_icon.png" width="30px" />
       </a>
 
       <nav>
         <menu>
-          <li class="header-menu"><a href="index.html" class="header-menu-link header-text">Home</a></li>
-          <li class="header-menu"><a href="play.html" class="header-menu-link header-text">Play</a></li>
-          <li class="header-menu"><a href="leaderboard.html" class="header-menu-link header-text">Leaderboard</a></li>
+          <li class="header-menu">
+            <a href="index.html" class="header-menu-link header-text">Home</a>
+          </li>
+          <li class="header-menu">
+            <a href="play.html" class="header-menu-link header-text">Play</a>
+          </li>
+          <li class="header-menu">
+            <a href="leaderboard.html" class="header-menu-link header-text"
+              >Leaderboard</a
+            >
+          </li>
         </menu>
       </nav>
 
-      <section class="header-right">
+      <div class="header-right">
         <div class="trophy-section header-text">
           <b>🏆 37</b>
         </div>
-      <form method="get" action="index.html" >
-        <button type="submit" class="log-out-button">Log Out</button>
-      </form>
-      <p class="header-text">Cosmo</p>
-      <!--Account circle is from https://fonts.google.com/icons-->
-      <img src="account_circle.png" width="30px" class="account_circle">
-      
-      </section>
-
+        <form method="get" action="index.html">
+          <button type="submit" class="log-out-button">Log Out</button>
+        </form>
+        <p class="header-text">Cosmo</p>
+        <!--Account circle is from https://fonts.google.com/icons-->
+        <img src="account_circle.png" width="30px" class="account_circle" />
+      </div>
     </header>
 
     <main>
-      
-      <table>
-        <thead>
-            <tr>
-            <th>Scores</th>
-            <th>Elrond's Big Adventure</th>
-            <th>Inventory</th>
-            <th>Standings</th>
-            </tr>
-        </thead>
-        <tr>
-        <td>
-            <div id="Scores">
-            <div class="data-box" id="magic">
-                <h4 id="magic">✨ Magic</h4>
-                <p id=amt">0</p>
-            </div>
-            <br/>
-            <div class="data-box" id="strength">
-                <h4 id="">🦾 Strength</h4>
-                <p id="amt">0</p>
-            </div>
-            <br/>
-            <div class="data-box" id="intelligence">
-                <h4 id="intelligence">📖 Intelligence</h4>
-                <p id="amt">5</p>
-            </div>
-            <br/>
-            <div class="data-box" id="charmisma">
-                <h4 id="charmisma">💄 Charmisma</h4>
-                <p id="amt">300</p>
-            </div>
-            <br/>
-            </div>
-        </td>
-        <td>
-        <div class="text-adventure">
+      <div id="Scores">
+        <div class="data-box" id="magic">
+          <h4 id="magic">✨ Magic</h4>
+          <p id="amt">0</p>
+        </div>
+        <div class="data-box" id="strength">
+          <h4 id="">🦾 Strength</h4>
+          <p id="amt">0</p>
+        </div>
+        <div class="data-box" id="intelligence">
+          <h4 id="intelligence">📖 Intelligence</h4>
+          <p id="amt">5</p>
+        </div>
+        <div class="data-box" id="charisma">
+          <h4 id="charisma">💄 Char isma</h4>
+          <p id="amt">300</p>
+        </div>
+      </div>
+
+      <div class="data-box">
+        <p>1</p>
+      </div>
+      <div class="data-box">
+        <p>2</p>
+      </div>
+      <div class="data-box">
+        <p>3</p>
+      </div>
+
+      <div class="text-adventure">
         <!--This entire section is database placeholder because this will all be generated from the database.-->
         <!--This section is also a websocket placeholder because this will be where players recieve information from the server-->
         Eldrond had barely finished stepping both feet inside the dungeon when
@@ -131,80 +130,60 @@
         A mysterious potion of unknown consequence!<br /><br />Just barely able
         to reach it, Elrond grabbed the item and stuffed it into his inventory.
         <br /><br /><b>Mysterious Potion Obtained</b><br />
+      </div>
+
+      <div id="Other Players">
+        <div class="data-box" id="Player1">
+          <h4 id="name">📖 Alice 📖</h4>
+          <p id="Card Count">🃏X🃏🃏🃏</p>
+          <p id="Place">2nd</p>
         </div>
-        
-      </td>
-        <td>
-            <table>
-                <tr>
-                    <td>
-                        <p class="data-box">1</p>
-                    </td>
-                    <td >
-                        <p>Potion</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="data-box">
-                        <p>2</p>
-                    </td>
-                    <td>
-                        <p><></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="data-box">
-                        <p>3</p>
-                    </td>
-                    <td>
-                        <p><></p>
-                    </td>
-                </tr>
-            </table>
-        </td>
-        <td>
-        <div id="Other Players">
-            <div class="data-box" id="Player1">
-                <h4 id="name">📖 Alice 📖</h4>
-                <p id="Card Count">🃏X🃏🃏🃏</p>
-                <p id="Place">2nd</p>
-            </div>
-            <br/>
-            <div class="data-box" id="Player2">
-                <h4 id="name">💄 Alice 💄</h4>
-                <p id="Card Count">🃏🃏🃏🃏X</p>
-                <p id="Place">1st</p>
-            </div>
-            <br/>
-            <div class="data-box" id="Player3">
-                <h4 id="name">✨ Seth ✨</h4>
-                <p id="Card Count">🃏🃏🃏X🃏</p>
-                <p id="Place">4th</p>
-            </div>
-            <br/>
-            <div class="data-box" id="Player4">
-                <h4 id="name">🦾 Cosmo 🦾</h4>
-                <p id="Card Count">🃏X🃏🃏🃏</p>
-                <p id="Place">4th</p>
-            </div>
+        <div class="data-box" id="Player2">
+          <h4 id="name">💄 Alice 💄</h4>
+          <p id="Card Count">🃏🃏🃏🃏X</p>
+          <p id="Place">1st</p>
         </div>
-        </td>
-        </tr>
-        </table>
-    <hr />
-    <section class="card-section">
+        <div class="data-box" id="Player3">
+          <h4 id="name">✨ Seth ✨</h4>
+          <p id="Card Count">🃏🃏🃏X🃏</p>
+          <p id="Place">4th</p>
+        </div>
+        <div class="data-box" id="Player4">
+          <h4 id="name">🦾 Cosmo 🦾</h4>
+          <p id="Card Count">🃏X🃏🃏🃏</p>
+          <p id="Place">4th</p>
+        </div>
+      </div>
+
+      <div class="card-section">
         <h2 class="my-turn">My Turn</h2>
-        <div class="card" width="100px" height="200px">Read a magic inscription on the wall<br/><b>+ 5 ✨Magic</b></div>
-        <div class="card" width="100px" height="200px">Add <i>"Magic Telescope"</i> to inventory</input></div>
-        <div class="card" width="100px" height="200px">Use topmost item in inventory</input></div>
-        <div class="card" width="100px" height="200px">Enter cobweb-infested room<br/><b>+ 3 🦾Strength</b><br/><b>+ 2 (?)</b></div>
-        <div class="card" width="100px" height="200px">Read a magic inscription on the wall<br/><b>+ 5 ✨Magic</b></div>
-    </section> 
+        <div class="card">
+          <p>Read a magic inscription on the wall</p>
+          <p><b>+ 5 ✨Magic</b></p>
+        </div>
+        <div class="card">
+          <p>Add <i>"Magic Telescope"</i> to inventory</p>
+        </div>
+        <div class="card">
+          <p>Use topmost item in inventory</p>
+        </div>
+        <div class="card">
+          <p>Enter cobweb-infested room</p>
+          <p><b>+ 3 🦾Strength</b>"\n"<b>+ 2 (?)</b></p>
+        </div>
+        <div class="card">
+          <p>Read a magic inscription on the wall<br /></p>
+          <p><b>+ 5 ✨Magic</b></p>
+          <p></p>
+        </div>
+      </div>
     </main>
 
     <footer>
       <span class="text-reset footer-item">Chase Odom</span>
-      <a class = "footer-item" href="https://github.com/artmouse155/startup">GitHub</a>
+      <a class="footer-item" href="https://github.com/artmouse155/startup"
+        >GitHub</a
+      >
     </footer>
   </body>
 </html>
