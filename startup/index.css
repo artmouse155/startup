@@ -9,7 +9,7 @@ main {
 
 .login-screen {
   justify-self: center;
-  border-radius: 20px;
+  border-radius: 10px;
   color: rgb(54, 54, 54);
   background-color: rgb(255, 255, 255);
   padding: 3em;
@@ -39,13 +39,14 @@ main {
 
 .button-div {
   display: flex;
+  gap: 10px;
 }
 
 .login-screen-button {
   flex: 1;
   border-radius: 5px;
   border: 2px solid whitesmoke;
-  padding: 0.3em 0.7em;
+  padding: 0.7em 0.7em;
   font-weight: bold;
   color: whitesmoke;
 }

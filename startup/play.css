@@ -47,11 +47,12 @@ main {
 }
 
 .text-adventure {
-  background-color: #262626;
+  border-radius: 10px;
+  background-color: #333333;
   color: whitesmoke;
   overflow-x: hidden;
   overflow-y: scroll;
-  scrollbar-color: rgb(121, 83, 115) rgb(56, 56, 56);
+  scrollbar-color: rgb(121, 83, 115) rgba(56, 56, 56, 0);
   height: 200px;
   width: 500px;
   font-size: 0.8em;
@@ -133,6 +134,10 @@ main {
   font-size: 1em;
 }
 
+.current-playing-turn {
+  background-color: #c2cedb;
+}
+
 .players-box-name-and-cards {
   flex: 2;
   display: flex;
@@ -169,7 +174,7 @@ main {
 .place {
   display: flex;
   flex: 1;
-  background-color: rgb(41, 41, 41);
+  background-color: #333333;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
@@ -204,16 +209,15 @@ main {
 .card-section {
   display: flex;
   align-self: center;
-  justify-content: space-between;
-  width: 1000px;
+  gap: 20px;
+  padding: 10px;
 }
 
 .card {
-  background-color: rgb(189, 189, 189);
+  background-color: #c2cedb;
   box-sizing: border-box;
-  border: 10px solid rgb(121, 62, 62);
+  border: 10px solid #c2cedb;
   border-radius: 5px;
-  margin: 20px;
   padding: 0px;
   height: 180px;
   width: 120px;
