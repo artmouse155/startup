@@ -426,6 +426,13 @@ p.summary {
 
 We can also create CSS code on the basis of attribute selectors, which can select all sorts of attributes.
 
+```css
+[href="https://example.org"]
+{
+  color: blue;
+}
+```
+
 ## Pseudo Selectors
 
 ```css
