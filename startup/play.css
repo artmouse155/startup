@@ -1,5 +1,6 @@
 main {
-  justify-content: unset;
+  display: flex;
+  flex-direction: column;
 }
 
 .all-play-sections {
@@ -32,7 +33,6 @@ main {
 
 .aspect-boxes-container {
   display: flex;
-  flex: 1;
   flex-direction: column;
   justify-content: space-between;
 }
@@ -66,11 +66,13 @@ main {
 }
 
 .right-align-container {
+  justify-content: flex-end;
   display: flex;
   flex: 2;
 }
 
 .left-align-container {
+  display: flex;
   justify-items: left;
   flex: 2;
 }
