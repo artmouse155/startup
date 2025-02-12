@@ -155,7 +155,7 @@ main {
 .place {
   display: flex;
   flex: 1;
-  background-color: greenyellow;
+  background-color: rgb(41, 41, 41);
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
@@ -168,6 +168,8 @@ main {
 .place-text-container {
   display: flex;
   flex: row;
+  color: whitesmoke;
+  font-weight: bold;
 }
 
 .place-text {
