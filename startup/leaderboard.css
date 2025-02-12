@@ -1,3 +1,11 @@
+main {
+  display: flex;
+  padding: 1em;
+  align-items: center;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 table {
   background-color: white;
 }

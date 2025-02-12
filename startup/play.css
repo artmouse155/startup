@@ -1,3 +1,12 @@
+main {
+  justify-content: unset;
+}
+
+.all-play-sections {
+  display: flex;
+  flex-direction: column;
+}
+
 .text-and-inv-section {
   display: flex;
 }
@@ -8,12 +17,23 @@
 }
 
 .text-adventure-container {
+  flex: 1;
+  align-self: center;
 }
 
-.aspect-box {
+.aspect-boxes-container {
+  flex: 2;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.aspect-box {
+  width: 120px;
+}
+
+.aspect-box-text {
+  margin: 5px 0px;
 }
 
 .text-adventure {
@@ -22,10 +42,13 @@
   overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-color: rgb(121, 83, 115) rgb(56, 56, 56);
-  height: 300px;
+  height: 200px;
   width: 400px;
   font-size: 0.8em;
-  margin: 5px;
+  padding: 20px;
+}
+
+.text-adventure-text {
 }
 
 .centered-header {
@@ -33,20 +56,22 @@
 }
 
 .items-container {
+  flex: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .item-box {
+  align-self: center;
   background-color: whitesmoke;
   border: 5px solid rgb(167, 167, 167);
   border-radius: 5px;
 
   border-radius: 5px;
   margin-bottom: 20px;
-  width: 60px;
-  height: 60px;
+  width: 45px;
+  height: 45px;
 
   display: flex;
   justify-content: center;
