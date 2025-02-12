@@ -1,21 +1,72 @@
+.text-and-inv-section {
+  display: flex;
+}
+
+.text-and-inv-section > * {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.text-adventure-container {
+}
+
+.aspect-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .text-adventure {
   background-color: #262626;
   color: whitesmoke;
-  padding: 20px;
-  margin: 40px;
   overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-color: rgb(121, 83, 115) rgb(56, 56, 56);
-  height: 500px;
+  height: 300px;
   width: 400px;
+  font-size: 0.8em;
+  margin: 5px;
+}
+
+.centered-header {
+  text-align: center;
+}
+
+.items-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.item-box {
+  background-color: whitesmoke;
+  border: 5px solid rgb(167, 167, 167);
+  border-radius: 5px;
+
+  border-radius: 5px;
+  margin-bottom: 20px;
+  width: 60px;
+  height: 60px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.item-box-text {
+  margin: 0px;
+  font-weight: bold;
+  font-size: 1.75em;
+  color: rgb(167, 167, 167);
 }
 
 .data-box {
   background-color: whitesmoke;
   border-radius: 5px;
   text-align: center;
-  padding: 5px 20px;
-  margin-bottom: 30px;
+  padding: 0px 20px;
+  font-weight: bold;
+  font-size: 1em;
 }
 
 .card-section {
@@ -24,6 +75,7 @@
 
 .card {
   background-color: whitesmoke;
+  border: 10px solid rgb(126, 127, 99);
   border-radius: 5px;
   margin: 20px;
   padding: 20px;
@@ -34,6 +86,7 @@
 
 .card:hover {
   scale: 1.2;
+  cursor: pointer;
 }
 
 .my-turn {
