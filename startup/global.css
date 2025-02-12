@@ -21,7 +21,7 @@ body {
 footer {
   display: flex;
   padding: 0px 20px;
-  justify-content: right;
+  justify-content: flex-end;
 }
 
 .footer-item {

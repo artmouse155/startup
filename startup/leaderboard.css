@@ -9,6 +9,8 @@ main {
 table {
   background-color: rgba(255, 0, 0, 0);
   width: 500px;
+  border-radius: 10px;
+  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.089);
 }
 
 th {
