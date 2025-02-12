@@ -3,12 +3,14 @@ main {
 }
 
 .all-play-sections {
+  flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
 .text-and-inv-and-header {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -29,14 +31,15 @@ main {
 }
 
 .aspect-boxes-container {
-  flex: 2;
   display: flex;
+  flex: 1;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .aspect-box {
   width: 120px;
+  justify-self: right;
 }
 
 .aspect-box-text {
@@ -62,8 +65,17 @@ main {
   text-align: center;
 }
 
-.items-container {
+.right-align-container {
+  display: flex;
   flex: 2;
+}
+
+.left-align-container {
+  justify-items: left;
+  flex: 2;
+}
+
+.items-container {
   display: flex;
   flex-direction: column;
 }
@@ -189,15 +201,18 @@ main {
 
 .card-section {
   display: flex;
+  align-self: center;
   justify-content: space-between;
+  width: 1000px;
 }
 
 .card {
-  background-color: whitesmoke;
-  border: 10px solid rgb(126, 127, 99);
+  background-color: rgb(189, 189, 189);
+  box-sizing: border-box;
+  border: 10px solid rgb(121, 62, 62);
   border-radius: 5px;
   margin: 20px;
-  padding: 20px;
+  padding: 0px;
   height: 180px;
   width: 120px;
   text-align: center;
