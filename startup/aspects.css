@@ -3,7 +3,7 @@
 }
 
 .magic {
-  color: #793468;
+  color: #c540ff;
 }
 
 .strength {
@@ -11,13 +11,13 @@
 }
 
 .intelligence {
-  color: #3e7934;
+  color: #4cae3b;
 }
 
 .charisma {
-  color: #a58616;
+  color: #ff9800;
 }
 
 .unknown {
-  color: #ff7300;
+  color: rgb(255, 115, 0);
 }

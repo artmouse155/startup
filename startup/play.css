@@ -15,6 +15,7 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .text-and-inv-section {
@@ -29,7 +30,7 @@ main {
 
 .text-adventure-container {
   flex: 1;
-  align-self: center;
+  align-self: flex-start;
 }
 
 .aspect-boxes-container {
@@ -44,6 +45,13 @@ main {
 }
 
 .aspect-box-text {
+  margin: 0px 0px;
+}
+
+.aspect-box-score {
+  align-self: center;
+  background-color: rgb(214, 214, 214);
+  border-radius: 5px;
   margin: 5px 0px;
 }
 
@@ -65,6 +73,7 @@ main {
 
 .centered-header {
   text-align: center;
+  margin: 15px;
 }
 
 .right-align-container {
@@ -91,7 +100,7 @@ main {
   border-radius: 5px;
 
   border-radius: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   width: 45px;
   height: 45px;
 
@@ -207,6 +216,24 @@ main {
   font-size: 2em;
 }
 
+.whose-turn-and-all-card-sections {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.whose-turn {
+  justify-self: flex-start;
+}
+
+.all-card-sections {
+  flex: 1;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+}
+
 .card-section {
   display: flex;
   align-self: center;
@@ -222,14 +249,29 @@ main {
   border: 10px solid #c2cedb;
   border-radius: 5px;
   padding: 0px;
-  height: 180px;
-  width: 120px;
+  height: 150px;
+  width: 100px;
   text-align: center;
   justify-content: flex-end;
 }
 
-.card-body-text {
+.drag-here-card {
+  align-self: center;
+  border: 5px dashed rgb(167, 167, 167);
+  background-color: #ffffff00;
+  display: flex;
+  justify-content: center;
+}
+
+.drag-here-card-text {
   font-size: 0.8em;
+  margin: 10px;
+  font-style: italic;
+  color: rgb(167, 167, 167);
+}
+
+.card-body-text {
+  font-size: 0.6em;
   flex-grow: 1;
 }
 
@@ -237,12 +279,12 @@ main {
   background-color: #ffffff;
   box-sizing: border-box;
   border-radius: 5px;
-  font-size: 0.8em;
+  font-size: 0.6em;
   margin: 5px 0px;
   padding: 5px 0px;
 }
 
-.card:hover {
+.draggable:hover {
   scale: 1.2;
   cursor: move;
 }
