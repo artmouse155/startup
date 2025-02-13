@@ -1,6 +1,7 @@
 main {
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .all-play-sections {
@@ -214,6 +215,8 @@ main {
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
   background-color: #c2cedb;
   box-sizing: border-box;
   border: 10px solid #c2cedb;
@@ -222,6 +225,21 @@ main {
   height: 180px;
   width: 120px;
   text-align: center;
+  justify-content: flex-end;
+}
+
+.card-body-text {
+  font-size: 0.8em;
+  flex-grow: 1;
+}
+
+.card-outcome-text {
+  background-color: #ffffff;
+  box-sizing: border-box;
+  border-radius: 5px;
+  font-size: 0.8em;
+  margin: 5px 0px;
+  padding: 5px 0px;
 }
 
 .card:hover {
