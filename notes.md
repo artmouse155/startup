@@ -694,4 +694,48 @@ Run a file: `node index.js`
 Node Package Manager (NPM) is a program that
 
 - can access a wide library of packages on the internet
--
+- manages libraries for your JS projects
+
+To create an empty npm folder run:
+
+```bash
+npm init -yes
+```
+
+The `-yes` is optional, but allows you to set all the default settings
+
+#### Routing
+
+Routing elements are controlled by `BrowserRouter`
+
+```jsx
+    <BrowserRouter>
+      <!-- The previous component elements go here -->
+    </BrowserRouter>
+```
+
+Going between links to different pages:
+
+```jsx
+<a className="nav-link" href="play.html">Play</a>
+
+// to
+
+<NavLink className='nav-link' to='play'>Play</NavLink>
+```
+
+Routed component:
+
+```jsx
+ <main>App components go here</main>
+
+ // to
+
+<Routes>
+  <Route path='/' element={<Login />} exact />
+  <Route path='/play' element={<Play />} />
+  <Route path='/scores' element={<Scores />} />
+  <Route path='/about' element={<About />} />
+  <Route path='*' element={<NotFound />} />
+</Routes>
+```
