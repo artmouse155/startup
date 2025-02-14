@@ -636,3 +636,62 @@ Comments:
 Block comment
 */
 ```
+
+### Javascript in HTML
+
+We can plug Javascript into HTML by
+
+1. importing the script using `<script></script>` and
+2. using the `onclick` attribute for an element.
+
+We can include the following javascript in `index.js:`
+
+```js
+function sayHello() {
+  alert("Hello");
+}
+```
+
+...and then include it and run it.
+
+```html
+<!-- external script -->
+<head>
+  <script src="index.js"></script>
+</head>
+<body>
+  <button onclick="sayHello()">Say Hello</button>
+  <button onclick="sayGoodbye()">Say Goodbye</button>
+
+  <!-- internal script block -->
+  <script>
+    function sayGoodbye() {
+      alert("Goodbye");
+    }
+  </script>
+
+  <!-- inline attribute handler -->
+  <script>
+    let i = 1;
+  </script>
+  <button onclick="alert(`i = ${i++}`)">counter</button>
+</body>
+```
+
+### Node.js
+
+Node.js is typically just called Node. It is an application that lets you run javascript outside of the browser!
+Both Node.js and Google use the V8 engine.
+
+We can excute Node.js by running the `node` command in the terminal.
+Check version: `node -v`
+Run one line: `node -e "console.log(1+1)"`
+Run interpretive mode: `node`
+Run a file: `node index.js`
+
+#### Loading Node packages
+
+Node Package Manager (NPM) is a program that
+
+- can access a wide library of packages on the internet
+-
