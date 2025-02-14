@@ -1,54 +1,53 @@
 import React from "react";
+import "./play.css";
 
 export function Play() {
   return (
     <main>
-      <div class="all-play-sections">
-        <div class="text-and-inv-and-header">
-          <h3 class="centered-header" style="display: unset">
-            Elrond's Big Adventure
-          </h3>
-          <div class="text-and-inv-section">
-            <div class="right-align-container">
-              <div class="aspect-boxes-container">
-                <div class="aspect-box data-box" id="magic">
-                  <p class="aspect-box-text magic" id="magic">
+      <div className="all-play-sections">
+        <div className="text-and-inv-and-header">
+          <h3 className="centered-header">Elrond's Big Adventure</h3>
+          <div className="text-and-inv-section">
+            <div className="right-align-container">
+              <div className="aspect-boxes-container">
+                <div className="aspect-box data-box" id="magic">
+                  <p className="aspect-box-text magic" id="magic">
                     ✨ Magic
                   </p>
-                  <p class="aspect-box-text aspect-box-score" id="amt">
+                  <p className="aspect-box-text aspect-box-score" id="amt">
                     0
                   </p>
                 </div>
-                <div class="aspect-box data-box" id="strength">
-                  <p class="aspect-box-text strength" id="strength">
+                <div className="aspect-box data-box" id="strength">
+                  <p className="aspect-box-text strength" id="strength">
                     🦾 Strength
                   </p>
-                  <p class="aspect-box-text aspect-box-score" id="amt">
+                  <p className="aspect-box-text aspect-box-score" id="amt">
                     0
                   </p>
                 </div>
-                <div class="aspect-box data-box" id="intelligence">
-                  <p class="aspect-box-text intelligence" id="intelligence">
+                <div className="aspect-box data-box" id="intelligence">
+                  <p className="aspect-box-text intelligence" id="intelligence">
                     📖 Intelligence
                   </p>
-                  <p class="aspect-box-text aspect-box-score" id="amt">
+                  <p className="aspect-box-text aspect-box-score" id="amt">
                     5
                   </p>
                 </div>
-                <div class="aspect-box data-box" id="charisma">
-                  <p class="aspect-box-text charisma" id="charisma">
+                <div className="aspect-box data-box" id="charisma">
+                  <p className="aspect-box-text charisma" id="charisma">
                     💄 Charisma
                   </p>
-                  <p class="aspect-box-text aspect-box-score" id="amt">
+                  <p className="aspect-box-text aspect-box-score" id="amt">
                     300
                   </p>
                 </div>
               </div>
             </div>
 
-            <div class="text-adventure-container">
-              <div class="text-adventure">
-                <div class="text-adventure-text">
+            <div className="text-adventure-container">
+              <div className="text-adventure">
+                <div className="text-adventure-text">
                   Eldrond had barely finished stepping both feet inside the
                   dungeon when
                   <b>WHAM!</b> the gate slammed down behind him.
@@ -131,64 +130,66 @@ export function Play() {
                 </div>
               </div>
             </div>
-            <div class="left-align-container">
-              <div class="items-container">
-                <h3 class="centered-header">Inventory</h3>
-                <div class="item-box">
-                  <p class="item-box-text">1</p>
+            <div className="left-align-container">
+              <div className="items-container">
+                <h3 className="centered-header">Inventory</h3>
+                <div className="item-box">
+                  <p className="item-box-text">1</p>
                 </div>
-                <div class="item-box">
-                  <p class="item-box-text">2</p>
+                <div className="item-box">
+                  <p className="item-box-text">2</p>
                 </div>
-                <div class="item-box">
-                  <p class="item-box-text">3</p>
+                <div className="item-box">
+                  <p className="item-box-text">3</p>
                 </div>
               </div>
             </div>
           </div>
-          <div class="whose-turn-and-all-card-sections">
-            <div class="whose-turn">
+          <div className="whose-turn-and-all-card-sections">
+            <div className="whose-turn">
               <h3>Your Turn</h3>
             </div>
 
-            <div class="all-card-sections">
-              <div class="card drag-here-card">
-                <p class="drag-here-card-text">Drag card here to play</p>
+            <div className="all-card-sections">
+              <div className="card drag-here-card">
+                <p className="drag-here-card-text">Drag card here to play</p>
               </div>
 
-              <div class="card-section">
-                <h2 class="my-turn">My Turn</h2>
-                <div class="card draggable">
-                  <p class="card-body-text">
+              <div className="card-section">
+                <h2 className="my-turn">My Turn</h2>
+                <div className="card draggable">
+                  <p className="card-body-text">
                     Read a magic inscription on the wall
                   </p>
-                  <p class="card-outcome-text magic">
+                  <p className="card-outcome-text magic">
                     <b>+ 5 ✨Magic</b>
                   </p>
                 </div>
-                <div class="card draggable">
-                  <p class="card-body-text">
-                    Add <i class="magic">Magic Telescope</i> to inventory
+                <div className="card draggable">
+                  <p className="card-body-text">
+                    Add <i className="magic">Magic Telescope</i> to inventory
                   </p>
                 </div>
-                <div class="card draggable">
-                  <p class="card-body-text">Use topmost item in inventory</p>
+                <div className="card draggable">
+                  <p className="card-body-text">
+                    Use topmost item in inventory
+                  </p>
                 </div>
-                <div class="card draggable">
-                  <p class="card-body-text">Enter cobweb-infested room</p>
-                  <p class="card-outcome-text strength">
+                <div className="card draggable">
+                  <p className="card-body-text">Enter cobweb-infested room</p>
+                  <p className="card-outcome-text strength">
                     <b>+ 3 🦾Strength</b>
                   </p>
-                  <p class="card-outcome-text unknown">
+                  <p className="card-outcome-text unknown">
                     <b>+ 2 ???</b>
                   </p>
                 </div>
-                <div class="card draggable">
-                  <p class="card-body-text">
+                <div className="card draggable">
+                  <p className="card-body-text">
                     Read a magic inscription on the wall
                     <br />
                   </p>
-                  <p class="card-outcome-text magic">
+                  <p className="card-outcome-text magic">
                     <b>+ 5 ✨Magic</b>
                   </p>
                 </div>
@@ -197,79 +198,79 @@ export function Play() {
           </div>
         </div>
 
-        <div class="players-boxes-container">
-          <div class="player-box" id="Player1">
-            <div class="players-box-name-and-cards">
-              <h4 class="player-box-name">📖 Alice 📖</h4>
-              <div class="card-count">
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="played"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
+        <div className="players-boxes-container">
+          <div className="player-box" id="Player1">
+            <div className="players-box-name-and-cards">
+              <h4 className="player-box-name">📖 Alice 📖</h4>
+              <div className="card-count">
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="played"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
               </div>
             </div>
-            <div class="place">
-              <div class="place-text-container">
-                <p class="big-place-text-number">2</p>
-                <p class="place-text">nd</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="player-box" id="Player2">
-            <div class="players-box-name-and-cards">
-              <h4 class="player-box-name">💄 Bob 💄</h4>
-              <div class="card-count">
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="played"></div>
-              </div>
-            </div>
-            <div class="place">
-              <div class="place-text-container">
-                <p class="big-place-text-number">1</p>
-                <p class="place-text">st</p>
+            <div className="place">
+              <div className="place-text-container">
+                <p className="big-place-text-number">2</p>
+                <p className="place-text">nd</p>
               </div>
             </div>
           </div>
 
-          <div class="player-box" id="Player3">
-            <div class="players-box-name-and-cards">
-              <h4 class="player-box-name">✨ Seth ✨</h4>
-              <div class="card-count">
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="played"></div>
-                <div class="dummy-card" id="unplayed"></div>
+          <div className="player-box" id="Player2">
+            <div className="players-box-name-and-cards">
+              <h4 className="player-box-name">💄 Bob 💄</h4>
+              <div className="card-count">
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="played"></div>
               </div>
             </div>
-            <div class="place">
-              <div class="place-text-container">
-                <p class="big-place-text-number">4</p>
-                <p class="place-text">th</p>
+            <div className="place">
+              <div className="place-text-container">
+                <p className="big-place-text-number">1</p>
+                <p className="place-text">st</p>
               </div>
             </div>
           </div>
 
-          <div class="player-box current-playing-turn" id="Player4">
-            <div class="players-box-name-and-cards">
-              <h4 class="player-box-name">🦾 Cosmo 🦾</h4>
-              <div class="card-count">
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
-                <div class="dummy-card" id="unplayed"></div>
+          <div className="player-box" id="Player3">
+            <div className="players-box-name-and-cards">
+              <h4 className="player-box-name">✨ Seth ✨</h4>
+              <div className="card-count">
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="played"></div>
+                <div className="dummy-card" id="unplayed"></div>
               </div>
             </div>
-            <div class="place">
-              <div class="place-text-container">
-                <p class="big-place-text-number">4</p>
-                <p class="place-text">th</p>
+            <div className="place">
+              <div className="place-text-container">
+                <p className="big-place-text-number">4</p>
+                <p className="place-text">th</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="player-box current-playing-turn" id="Player4">
+            <div className="players-box-name-and-cards">
+              <h4 className="player-box-name">🦾 Cosmo 🦾</h4>
+              <div className="card-count">
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+                <div className="dummy-card" id="unplayed"></div>
+              </div>
+            </div>
+            <div className="place">
+              <div className="place-text-container">
+                <p className="big-place-text-number">4</p>
+                <p className="place-text">th</p>
               </div>
             </div>
           </div>

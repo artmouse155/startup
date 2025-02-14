@@ -1,10 +1,11 @@
 import React from "react";
+import "./leaderboard.css";
 
 export function Leaderboard() {
   return (
     <main>
       <h3>High Scores</h3>
-      <table cellspacing="0" cellpadding="0">
+      <table cellSpacing="0" cellPadding="0">
         <thead>
           <tr>
             <th>#</th>

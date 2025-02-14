@@ -1,20 +1,21 @@
 import React from "react";
+import "./login.css";
 
 export function Login() {
   return (
     <main>
-      <div class="login-screen">
-        <h3 class="login-header">Welcome! ⚔️</h3>
+      <div className="login-screen">
+        <h3 className="login-header">Welcome! ⚔️</h3>
         <p>
           Ready for adventure?
           <br />
           Sign up or log in.
         </p>
-        <div class="login-body">
-          <form method="get" action="play.html" class="login-form">
+        <div className="login-body">
+          <form method="get" action="play.html" className="login-form">
             <label for="user_email">Email</label>
             <input
-              class="input-box"
+              className="input-box"
               type="email"
               id="user_email"
               placeholder=""
@@ -22,17 +23,23 @@ export function Login() {
             <br />
             <label for="user_password">Password</label>
             <input
-              class="input-box"
+              className="input-box"
               type="password"
               id="user_password"
               placeholder=""
             />
             <br />
-            <div class="button-div">
-              <button type="submit" class="login-screen-button login-button">
+            <div className="button-div">
+              <button
+                type="submit"
+                className="login-screen-button login-button"
+              >
                 Login
               </button>
-              <button type="submit" class="login-screen-button signup-button">
+              <button
+                type="submit"
+                className="login-screen-button signup-button"
+              >
                 Sign Up
               </button>
             </div>

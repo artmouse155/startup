@@ -21,22 +21,22 @@ export default function App() {
           <nav>
             <menu>
               <li className="header-menu">
-                <a href="index.html" className="header-menu-link header-text">
+                <NavLink to="" className="header-menu-link header-text">
                   Home
-                </a>
+                </NavLink>
               </li>
               <li className="header-menu">
-                <a href="play.html" className="header-menu-link header-text">
+                <NavLink to="play" className="header-menu-link header-text">
                   Play
-                </a>
+                </NavLink>
               </li>
               <li className="header-menu">
-                <a
-                  href="leaderboard.html"
+                <NavLink
+                  to="leaderboard"
                   className="header-menu-link header-text"
                 >
                   Leaderboard
-                </a>
+                </NavLink>
               </li>
             </menu>
           </nav>
