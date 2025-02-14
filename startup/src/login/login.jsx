@@ -12,8 +12,8 @@ export function Login() {
           Sign up or log in.
         </p>
         <div className="login-body">
-          <form method="get" action="play.html" className="login-form">
-            <label for="user_email">Email</label>
+          <form method="get" action="play" className="login-form">
+            <label htmlFor="user_email">Email</label>
             <input
               className="input-box"
               type="email"
@@ -21,7 +21,7 @@ export function Login() {
               placeholder=""
             />
             <br />
-            <label for="user_password">Password</label>
+            <label htmlFor="user_password">Password</label>
             <input
               className="input-box"
               type="password"

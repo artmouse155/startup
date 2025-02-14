@@ -17,10 +17,6 @@ main {
   text-align: center;
 }
 
-.header-right {
-  display: none;
-}
-
 .login-header {
   text-align: center;
   font-size: 2.5em;
