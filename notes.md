@@ -602,3 +602,37 @@ eh
 ![alt text](image-3.png)
 
 ## Flexbox
+
+![alt text](image-4.png)
+
+# React Part 1 Notes
+
+## Javascript
+
+Javascript is a pretty awesome language!
+
+- most used in the world
+- weakly typed language
+- runs on any browser
+
+We can print to output with `console.log()`
+
+javascript example:
+
+```js
+function join(a, b) {
+  return a + b;
+}
+
+console.log(join("Hello", "World!"));
+```
+
+Comments:
+
+```js
+// Line comment
+
+/*
+Block comment
+*/
+```
