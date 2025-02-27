@@ -1,6 +1,6 @@
 import React from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
+import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 //import { ItemTypes } from "./Constants";
 import "./play.css";
 import "./aspects.css";
@@ -8,28 +8,47 @@ import { Aspects } from "./aspects.jsx";
 
 const ItemType = { CARD_TYPE: "card" };
 
-// function makeCardsDraggable() {
-//   const draggable_list = document.querySelectorAll(".draggable");
-//   let options = {
-//     grid: 10,
-//     onDrag: function () {
-//       console.log("woohoo!");
-//     },
-//   };
-//   for (let i = 0; i < draggable_list.length; i++) {
-//     new Draggable(draggable_list[i], options);
-//   }
-//   console.log("woohoo!");
-// }
-// TODO: Make the type something else
+function getStyles(left, top, isDragging) {
+  const transform = `translate3d(${left}px, ${top}px, 0)`;
+  return {
+    position: "absolute",
+    transform,
+    WebkitTransform: transform,
+    // IE fallback: hide the real node using CSS when dragging
+    // because IE will ignore our custom "empty image" drag preview.
+    opacity: isDragging ? 0 : 1,
+    height: isDragging ? 0 : "",
+  };
+}
+
+function CardDragLayer({
+  desc = "No Description",
+  effects = [{ amt: 500, type: Aspects.UNKNOWN }],
+}) {
+  const { isDragging } = useDragLayer((monitor) => ({
+    item: monitor.getItem(),
+    itemType: monitor.getItemType(),
+    initialOffset: monitor.getInitialSourceClientOffset(),
+    currentOffset: monitor.getSourceClientOffset(),
+    isDragging: monitor.isDragging(),
+  }));
+  let component = <Card desc={desc} effects={effects} />;
+  return isDragging ? component : <div></div>;
+}
+
 function Card({
   desc = "No Description",
   effects = [{ amt: 500, type: Aspects.UNKNOWN }],
 }) {
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemType.CARD_TYPE,
     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   }));
+
+  //TODO: Uncomment when I use previewlayer
+  // React.useEffect(() => {
+  //   preview(getEmptyImage(), { captureDraggingState: true });
+  // }, [isDragging]);
 
   const effect_html = [];
   for (let i = 0; i < effects.length; i++) {
@@ -43,35 +62,19 @@ function Card({
       </p>
     );
   }
-  //return <DraggableBox />;
 
-  return (
+  let cardPreview = (
+    <div className="transparent-card draggable" ref={preview}></div>
+  );
+
+  let card = (
     <div className="card draggable" ref={drag}>
       <p className="card-body-text">{desc}</p>
       {effect_html}
     </div>
   );
+  return isDragging ? cardPreview : card;
 }
-
-// const DraggableBox = () => {
-//   const [{ isDragging }, drag] = useDrag(() => ({
-//     type: ItemType.BOX,
-//     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
-//   }));
-
-//   return (
-//     <div
-//       ref={drag}
-//       style={{
-//         padding: 20,
-//         background: "lightblue",
-//         opacity: isDragging ? 0.5 : 1,
-//       }}
-//     >
-//       Drag me
-//     </div>
-//   );
-// };
 
 // const DroppableArea = () => {
 //   const [{ isOver }, drop] = useDrop(() => ({
@@ -96,6 +99,7 @@ function Card({
 function returnCards() {
   return (
     <DndProvider backend={HTML5Backend}>
+      <CardDragLayer />
       <Card
         desc="Read a magic inscription on the wall"
         effects={[{ amt: 5, type: Aspects.MAGIC }]}
@@ -118,6 +122,8 @@ function returnCards() {
 }
 
 export function Play() {
+  React.useCallback(() => console.log("Yeet"));
+
   // React.useEffect(() => {
   //   makeCardsDraggable();
   // });
@@ -279,10 +285,6 @@ export function Play() {
               <h3>Your Turn</h3>
             </div>
             <div className="all-card-sections">
-              <div className="card drag-here-card">
-                <p className="drag-here-card-text">Drag card here to play</p>
-              </div>
-
               <div className="card-section">
                 <h2 className="my-turn">My Turn</h2>
                 {returnCards()}
