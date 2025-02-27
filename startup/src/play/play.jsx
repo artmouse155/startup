@@ -24,6 +24,11 @@ function Card({
   desc = "No Description",
   effects = [{ amt: 500, type: Aspects.UNKNOWN }],
 }) {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemType.BOX,
+    collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
+  }));
+
   const effect_html = [];
   for (let i = 0; i < effects.length; i++) {
     let effect = effects[i];
@@ -36,21 +41,58 @@ function Card({
       </p>
     );
   }
+  //return <DraggableBox />;
+
   return (
-    <div className="card draggable">
+    <div className="card draggable" ref={drag}>
       <p className="card-body-text">{desc}</p>
       {effect_html}
     </div>
   );
 }
 
-function DraggableComponent(props) {
-  const [collected, drag, dragPreview] = useDrag(() => ({
-    type: "card",
-    item: { cardId: 42 },
+// FROM CHATGPT
+const ItemType = { BOX: "box" };
+
+const DraggableBox = () => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemType.BOX,
+    collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   }));
-  return collected.isDragging ? <div ref={dragPreview}></div> : <Card />;
-}
+
+  return (
+    <div
+      ref={drag}
+      style={{
+        padding: 20,
+        background: "lightblue",
+        opacity: isDragging ? 0.5 : 1,
+      }}
+    >
+      Drag me
+    </div>
+  );
+};
+
+const DroppableArea = () => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: ItemType.BOX,
+    collect: (monitor) => ({ isOver: !!monitor.isOver() }),
+  }));
+
+  return (
+    <div
+      ref={drop}
+      style={{
+        marginTop: 20,
+        padding: 50,
+        background: isOver ? "lightgreen" : "lightgray",
+      }}
+    >
+      Drop here
+    </div>
+  );
+};
 
 function returnCards() {
   return (
@@ -245,6 +287,9 @@ export function Play() {
               <div className="card-section">
                 <h2 className="my-turn">My Turn</h2>
                 {returnCards()}
+                <DndProvider backend={HTML5Backend}>
+                  <DraggableBox />
+                </DndProvider>
               </div>
             </div>
           </div>
