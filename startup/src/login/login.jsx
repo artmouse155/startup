@@ -3,7 +3,7 @@ import "./login.css";
 
 export function Login() {
   return (
-    <main>
+    <div className="login-main">
       <div className="login-screen">
         <h3 className="login-header">Welcome!</h3>
         <p>
@@ -46,6 +46,6 @@ export function Login() {
           </form>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

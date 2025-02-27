@@ -912,6 +912,102 @@ class Employee extends Person {
 
 ## Destructuring
 
+We can destructure to "pull" data out of arrays or objects.
+Example:
+
+```js
+const arr = [1, 2, 3, 4, 5, 6];
+
+const [a, b] = arr;
+
+console.log(a, b); // prints 1 2
+const [c, d, ...others] = arr; // rest syntax
+
+console.log(c, d, others); // prints 1 2 [3,4,5,6]
+```
+
+When we destructure with objects, we **specify** which properties we want to pull out.
+
+- We can rename properties, or even provide defaults if ones aren't found!
+
+```js
+const book = { title: "Book o' Bob", author: "Joe", reviews: [5, 5, 4] };
+
+const { title, author } = book; // Pulls out title and author vars.
+console.log(title, author); // prints Book o' Bob Joe
+
+const { title: t, author: a } = book; // Does same as above, but new var names!
+console.log(t, a); // prints Book o' Bob Joe
+
+// We can even provide default values. Not found items are undefined.
+const { reviews: r, color: c, publish_year: p = "1996" } = book; // Does same as above, but new var names!
+console.log(r, c, p); // prints [5, 5, 4] undefined 1996
+```
+
+We use destructuring in React to "pull out" parameters that we need, which are passed into our component as an object using `React.use_state()`.
+
+```jsx
+function Clicker({ initialCount }) {
+  const [count, updateCount] = React.useState(initialCount);
+  return <div onClick={() => updateCount(count + 1)}>Click count: {count}</div>;
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Clicker initialCount={3} />);
+```
+
+## Timeout and interval
+
+We can delay something happening with the `setTimeout` function.
+It takes in a funciton and a time to wait (in miliseconds):
+
+```js
+setTimeout(() => console.log("3 seconds later!"), 3000); // Code continues to execute after, so following statement is actually first
+console.log("This will run first, though.");
+```
+
+`setInterval` is similar, but will **repeatedly** call the function with the given interval.
+
+- We can `clearInterval` to stop this interval nonsense.
+
+```js
+const interval = setInterval(() => console.log("I run every second!"), 1000);
+setTimeout(() => clearInterval(interval), 5000); // After 5 seconds, we stop running the interval. Thus, the interval only runs 5 times.
+```
+
+## Hooks
+
+Hooks give functionality to React style components. Here are a few.
+
+### `useEffect`
+
+The `useEffect` hook allows you to pass a function that runs when a component completes rendering.
+
+```jsx
+function UseEffectHookDemo() {
+  React.useEffect(() => {
+    console.log("rendered");
+  });
+
+  return <div>useEffectExample</div>;
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<UseEffectHookDemo />);
+```
+
+You can pass in an additional parameter of an array of dependencies.
+
+### `useState`
+
+`useState` always returns an array with two values:
+
+- the current state, which matches `initialState` (What you pass into `useState`)
+- the `set` function which will update the state.
+  - This triggers a re-render, which makes `useState` useful!
+  - WARNING! This will trigger an updated state for the next-re-render. So, you have to be careful with reading the variable after the set function because it very well might not be updated yet!
+  - If the value is identical, react won't re-render component and children.
+
 # Express
 
 ## More HTML

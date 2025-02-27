@@ -1,7 +1,95 @@
 import React from "react";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+//import { ItemTypes } from "./Constants";
 import "./play.css";
+import "./aspects.css";
+import { Aspects } from "./aspects.jsx";
+
+// function makeCardsDraggable() {
+//   const draggable_list = document.querySelectorAll(".draggable");
+//   let options = {
+//     grid: 10,
+//     onDrag: function () {
+//       console.log("woohoo!");
+//     },
+//   };
+//   for (let i = 0; i < draggable_list.length; i++) {
+//     new Draggable(draggable_list[i], options);
+//   }
+//   console.log("woohoo!");
+// }
+// TODO: Make the type something else
+function Card({
+  desc = "No Description",
+  effects = [{ amt: 500, type: Aspects.UNKNOWN }],
+}) {
+  const effect_html = [];
+  for (let i = 0; i < effects.length; i++) {
+    let effect = effects[i];
+    let classNameTemp = `card-outcome-text ${effect.type.name}`;
+    effect_html.push(
+      <p className={classNameTemp} key={i}>
+        <b>
+          + {effect.amt} {effect.type.text}
+        </b>
+      </p>
+    );
+  }
+  return (
+    <div className="card draggable">
+      <p className="card-body-text">{desc}</p>
+      {effect_html}
+    </div>
+  );
+}
+
+function DraggableComponent(props) {
+  const [collected, drag, dragPreview] = useDrag(() => ({
+    type: "card",
+    item: { cardId: 42 },
+  }));
+  return collected.isDragging ? <div ref={dragPreview}></div> : <Card />;
+}
+
+function returnCards() {
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <Card
+        desc="Read a magic inscription on the wall"
+        effects={[{ amt: 5, type: Aspects.MAGIC }]}
+      />
+      <Card desc="Add Magic Telescope to inventory" effects={[]} />
+      <Card desc="Use topmost item in inventory" effects={[]} />
+      <Card
+        desc="Enter cobweb-infested room"
+        effects={[
+          { amt: 3, type: Aspects.STRENGTH },
+          { amt: 2, type: Aspects.UNKNOWN },
+        ]}
+      />
+      <Card
+        desc="Read a magic inscription on the wall"
+        effects={[{ amt: 5, type: Aspects.MAGIC }]}
+      />
+    </DndProvider>
+  );
+}
 
 export function Play() {
+  // React.useEffect(() => {
+  //   makeCardsDraggable();
+  // });
+  // const [{ isDragging }, dragRef] = useDrag(
+  //   () => ({
+  //     type: "card",
+  //     collect: (monitor) => ({
+  //       isDragging: !!monitor.isDragging(),
+  //     }),
+  //   }),
+  //   []
+  // );
+
   return (
     <main>
       <div className="all-play-sections">
@@ -149,7 +237,6 @@ export function Play() {
             <div className="whose-turn">
               <h3>Your Turn</h3>
             </div>
-
             <div className="all-card-sections">
               <div className="card drag-here-card">
                 <p className="drag-here-card-text">Drag card here to play</p>
@@ -157,42 +244,7 @@ export function Play() {
 
               <div className="card-section">
                 <h2 className="my-turn">My Turn</h2>
-                <div className="card draggable">
-                  <p className="card-body-text">
-                    Read a magic inscription on the wall
-                  </p>
-                  <p className="card-outcome-text magic">
-                    <b>+ 5 ✨Magic</b>
-                  </p>
-                </div>
-                <div className="card draggable">
-                  <p className="card-body-text">
-                    Add <i className="magic">Magic Telescope</i> to inventory
-                  </p>
-                </div>
-                <div className="card draggable">
-                  <p className="card-body-text">
-                    Use topmost item in inventory
-                  </p>
-                </div>
-                <div className="card draggable">
-                  <p className="card-body-text">Enter cobweb-infested room</p>
-                  <p className="card-outcome-text strength">
-                    <b>+ 3 🦾Strength</b>
-                  </p>
-                  <p className="card-outcome-text unknown">
-                    <b>+ 2 ???</b>
-                  </p>
-                </div>
-                <div className="card draggable">
-                  <p className="card-body-text">
-                    Read a magic inscription on the wall
-                    <br />
-                  </p>
-                  <p className="card-outcome-text magic">
-                    <b>+ 5 ✨Magic</b>
-                  </p>
-                </div>
+                {returnCards()}
               </div>
             </div>
           </div>

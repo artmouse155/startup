@@ -284,6 +284,7 @@ main {
 
 .draggable:hover {
   scale: 1.2;
+  z-index: 1;
   cursor: grab;
 }
 

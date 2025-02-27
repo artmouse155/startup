@@ -1,0 +1,23 @@
+.bold {
+  font-weight: bold;
+}
+
+.magic {
+  color: #c540ff;
+}
+
+.strength {
+  color: #d92929;
+}
+
+.intelligence {
+  color: #4cae3b;
+}
+
+.charisma {
+  color: #ff9800;
+}
+
+.unknown {
+  color: #ff7300;
+}

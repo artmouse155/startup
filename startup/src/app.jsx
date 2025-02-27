@@ -1,11 +1,10 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./app.css";
-import "./aspects.css";
 import "./header.css";
 
 import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
-import { Login } from "./login/login";
+import { Login } from "./login/login.jsx";
 import { Play } from "./play/play";
 import { Leaderboard } from "./leaderboard/leaderboard";
 

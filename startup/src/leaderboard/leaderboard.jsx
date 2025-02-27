@@ -3,7 +3,7 @@ import "./leaderboard.css";
 
 export function Leaderboard() {
   return (
-    <main>
+    <div className="leaderboard-main">
       <h3>High Scores</h3>
       <table cellSpacing="0" cellPadding="0">
         <thead>
@@ -31,6 +31,6 @@ export function Leaderboard() {
           </tr>
         </tbody>
       </table>
-    </main>
+    </div>
   );
 }
