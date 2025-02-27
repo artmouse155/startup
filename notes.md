@@ -741,3 +741,108 @@ Routed component:
 ```
 
 11:55 PM: Simon and Startup both have been deployed!
+
+# React Part 2 Notes
+
+## Basic Console
+
+We can write a message to write to console using `console.log.`
+
+```js
+console.log(`Hello World`);
+```
+
+And the style can even be changed!
+
+```js
+console.log("%c Yeet", "color: blue"); //Prints "Yeet" in blue
+```
+
+We can use **time** and **timeEnd** to look at time.
+
+```js
+console.time("demo");
+for (let i = 0; i < 1000000; i++)\
+{
+  // Do something
+}
+console.timeEnd('demo'); // Prints 'demo: 12.74 ms'
+```
+
+We can also use `console.count(a)`, which prints how many times `count` with that specific parameter was called.s
+
+## Functions
+
+- Functions can be defined inside of other functions.
+- Functions can also be assigned to variables.
+- Functions can also have a default value.
+
+Here's an example of a regular function and an inline function.
+
+```js
+// Standard:
+function add(a, b) {
+  return a + b;
+}
+
+const add_func = function (a, b) {
+  // Note we can make it const
+  return a + b;
+};
+```
+
+## Arrow functions
+
+Functions are **first class functions**
+Arrows (`=>`) are another way we can define functions.
+
+- curly braces are optional!
+- `return` statements are optional
+
+Examples:
+
+```js
+() => 3; // Function that returns 3
+
+() => {
+  3; // Returns 3
+};
+
+() => {
+  return 3; // Also returns 3!
+};
+```
+
+Arrow functions inherit the `this` pointer, creating something called `closure.`
+
+```js
+function make_closure(init_val) {
+  let closure_val = init_val;
+  return () => {
+    return `closure${++closure_val}`;
+  };
+}
+
+const closure = make_closure(0);
+
+console.log(closure()); // Return 1 (incremented before returning)
+
+console.log(closure()); // Return 2
+```
+
+## Express
+
+# More HTML
+
+POST is update, PUT is create.
+We can leverage HTTP and the idea of nouns with the verbs in the HTTP request to help make sense for the user.
+
+## Express functions
+
+```js
+const app = express();
+
+app.get("/store/:id/:time", (req, res) => {
+  res.send(`${(store, req.params.id, req.params.time)}`);
+});
+```

@@ -5,9 +5,9 @@ export function Login() {
   return (
     <main>
       <div className="login-screen">
-        <h3 className="login-header">Welcome! ⚔️</h3>
+        <h3 className="login-header">Welcome!</h3>
         <p>
-          Ready for adventure?
+          Ready for adventure? ⚔️
           <br />
           Sign up or log in.
         </p>
