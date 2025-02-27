@@ -6,6 +6,8 @@ import "./play.css";
 import "./aspects.css";
 import { Aspects } from "./aspects.jsx";
 
+const ItemType = { CARD_TYPE: "card" };
+
 // function makeCardsDraggable() {
 //   const draggable_list = document.querySelectorAll(".draggable");
 //   let options = {
@@ -25,7 +27,7 @@ function Card({
   effects = [{ amt: 500, type: Aspects.UNKNOWN }],
 }) {
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemType.BOX,
+    type: ItemType.CARD_TYPE,
     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   }));
 
@@ -51,48 +53,45 @@ function Card({
   );
 }
 
-// FROM CHATGPT
-const ItemType = { BOX: "box" };
+// const DraggableBox = () => {
+//   const [{ isDragging }, drag] = useDrag(() => ({
+//     type: ItemType.BOX,
+//     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
+//   }));
 
-const DraggableBox = () => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemType.BOX,
-    collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
-  }));
+//   return (
+//     <div
+//       ref={drag}
+//       style={{
+//         padding: 20,
+//         background: "lightblue",
+//         opacity: isDragging ? 0.5 : 1,
+//       }}
+//     >
+//       Drag me
+//     </div>
+//   );
+// };
 
-  return (
-    <div
-      ref={drag}
-      style={{
-        padding: 20,
-        background: "lightblue",
-        opacity: isDragging ? 0.5 : 1,
-      }}
-    >
-      Drag me
-    </div>
-  );
-};
+// const DroppableArea = () => {
+//   const [{ isOver }, drop] = useDrop(() => ({
+//     accept: ItemType.BOX,
+//     collect: (monitor) => ({ isOver: !!monitor.isOver() }),
+//   }));
 
-const DroppableArea = () => {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: ItemType.BOX,
-    collect: (monitor) => ({ isOver: !!monitor.isOver() }),
-  }));
-
-  return (
-    <div
-      ref={drop}
-      style={{
-        marginTop: 20,
-        padding: 50,
-        background: isOver ? "lightgreen" : "lightgray",
-      }}
-    >
-      Drop here
-    </div>
-  );
-};
+//   return (
+//     <div
+//       ref={drop}
+//       style={{
+//         marginTop: 20,
+//         padding: 50,
+//         background: isOver ? "lightgreen" : "lightgray",
+//       }}
+//     >
+//       Drop here
+//     </div>
+//   );
+// };
 
 function returnCards() {
   return (
@@ -287,9 +286,6 @@ export function Play() {
               <div className="card-section">
                 <h2 className="my-turn">My Turn</h2>
                 {returnCards()}
-                <DndProvider backend={HTML5Backend}>
-                  <DraggableBox />
-                </DndProvider>
               </div>
             </div>
           </div>
