@@ -830,9 +830,91 @@ console.log(closure()); // Return 1 (incremented before returning)
 console.log(closure()); // Return 2
 ```
 
-## Express
+Allows for the use of "shared" variables across function calls!
 
-# More HTML
+## Objects and Classes
+
+Javascript objects are made up of name-value pairs.
+
+- property name is a `String` or `Symbol`, but value is any type.
+  - Only `Strings` can go inside the square brackets(`[]`), and only non-strings can be the acess modifiers.
+    - This lets you mix and match, but only if the property is named in a way that lets you do so.
+      Examples:
+
+```js
+obj = new Object({ name: "bob", age: 3 });
+obj.name; // returns the name "bob"
+obj["age"]; // returns 3
+```
+
+NOTE: Javascript `Objects` are `objects`, but they are different.
+The `object-literal` syntax allows you to create a variable of `object` type. this is done with standard curly braces.
+
+### Objects
+
+#### Useful functions for the Object object
+
+- **entries** : Returns an array of key value pairs
+- **keys** : Returns an array of keys
+- **values** : Returns an array of values
+
+NOTE: These will convert any tokens into `Strings`.
+
+#### The `this` pointer
+
+In the context of an object, `this` refers to the object itself.
+
+#### Constructors
+
+Any function returning an `object` can be called a `constructor`. These can be invoked with the `new` operator.
+
+- Also, one of the attributes can just be a method, allowing objects to have methods!
+
+### Classes
+
+Classes can define objects! We use the `class` keyword to create a **reusable component**.
+Example:
+
+```js
+class MyClass {
+  name = "bob";
+  constructor(_name = name) {
+    this.name = name;
+  }
+
+  log() {
+    console.log("yeet!");
+  }
+}
+```
+
+- Don't forget the `this` keyword!
+- Make properties or functions private by prefixing with #.
+
+#### Inheritance
+
+Classes can extend other classes to inherit. The parent constructor can be called using the `super` function.
+
+- Child functions with the same name override the parent's function
+
+```js
+class Employee extends Person {
+  constructor(name, position) {
+    this.position = position;
+    super(name);
+  }
+
+  print() {
+    console.log(super.print() + ". I am a " + this.position);
+  }
+}
+```
+
+## Destructuring
+
+# Express
+
+## More HTML
 
 POST is update, PUT is create.
 We can leverage HTTP and the idea of nouns with the verbs in the HTTP request to help make sense for the user.
@@ -846,3 +928,5 @@ app.get("/store/:id/:time", (req, res) => {
   res.send(`${(store, req.params.id, req.params.time)}`);
 });
 ```
+
+We can use the `app.use(express.json())` middleware to parse `json` strings into javascript or html objects!
