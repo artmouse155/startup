@@ -9,6 +9,9 @@ import { Play } from "./play/play";
 import { Leaderboard } from "./leaderboard/leaderboard";
 
 export default function App() {
+  const [authState, setAuthState] = React.useState(false);
+  const [userName, setUserName] = React.useState("");
+
   return (
     <BrowserRouter>
       <div className="body">
@@ -25,9 +28,13 @@ export default function App() {
                 </NavLink>
               </li>
               <li className="header-menu">
-                <NavLink to="play" className="header-menu-link header-text">
-                  Play
-                </NavLink>
+                {authState ? (
+                  <NavLink to="play" className="header-menu-link header-text">
+                    Play
+                  </NavLink>
+                ) : (
+                  <p className="disabled header-text">Sign in to Play</p>
+                )}
               </li>
               <li className="header-menu">
                 <NavLink
@@ -39,27 +46,43 @@ export default function App() {
               </li>
             </menu>
           </nav>
-
-          <div className="header-right">
-            <div className="trophy-section header-text">
-              <b>🏆 37</b>
+          {authState ? (
+            <div className="header-right">
+              <div className="trophy-section header-text">
+                <b>🏆 37</b>
+              </div>
+              <form method="get" action={() => setAuthState(false)}>
+                <NavLink type="submit" className="log-out-button">
+                  Log Out
+                </NavLink>
+              </form>
+              <p className="header-text">Cosmo</p>
+              <img
+                src="account_circle.png"
+                width="30px"
+                className="account_circle"
+              />
             </div>
-            <form method="get" action="">
-              <NavLink type="submit" className="log-out-button">
-                Log Out
-              </NavLink>
-            </form>
-            <p className="header-text">Cosmo</p>
-            <img
-              src="account_circle.png"
-              width="30px"
-              className="account_circle"
-            />
-          </div>
+          ) : (
+            <div></div>
+          )}
         </header>
 
         <Routes>
-          <Route path="/" element={<Login />} exact />
+          <Route
+            path="/"
+            element={
+              <Login
+                userName={userName}
+                authState={authState}
+                onAuthChange={(userName, authState) => {
+                  setAuthState(authState);
+                  setUserName(userName);
+                }}
+              />
+            }
+            exact
+          />
           <Route path="/play" element={<Play />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="*" element={<NotFound />} />

@@ -1,8 +1,8 @@
 import React from "react";
 import "./login.css";
 
-export function Login() {
-  return (
+export function Login({ userName, authState, onAuthChange }) {
+  return !authState ? (
     <div className="login-main">
       <div className="login-screen">
         <h3 className="login-header">Welcome!</h3>
@@ -12,7 +12,14 @@ export function Login() {
           Sign up or log in.
         </p>
         <div className="login-body">
-          <form method="get" action="play" className="login-form">
+          <form
+            method="get"
+            action={() => {
+              onAuthChange(true, "Cosmo");
+              navigate("/play");
+            }}
+            className="login-form"
+          >
             <label htmlFor="user_email">Email</label>
             <input
               className="input-box"
@@ -47,5 +54,7 @@ export function Login() {
         </div>
       </div>
     </div>
+  ) : (
+    <div></div>
   );
 }

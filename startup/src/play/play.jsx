@@ -39,16 +39,20 @@ let gameData = {
   },
 };
 
-// Code from
+// Code from https://react-dnd.github.io/react-dnd/about
 function getItemStyles(initialOffset, currentOffset) {
   if (!initialOffset || !currentOffset) {
     return {
       display: "none",
     };
   }
-  let { x, y } = currentOffset;
+  let {
+    x = currentOffset.x - initialOffset.x,
+    y = currentOffset.y - initialOffset.y,
+  } = {};
   const transform = `translate(${x}px, ${y}px)`;
   return {
+    position: "absolute !important",
     transform,
     WebkitTransform: transform,
   };

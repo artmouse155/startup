@@ -43,6 +43,11 @@ li.header-menu {
   margin: 0px;
 }
 
+.disabled {
+  color: rgb(0, 0, 0);
+  font-style: italic;
+}
+
 .header-menu-link {
   padding: 15px 20px;
 }
