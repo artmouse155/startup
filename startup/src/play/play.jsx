@@ -7,6 +7,37 @@ import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
 export function Play() {
+  const [myCards, setMyCards] = React.useState([
+    {
+      id: "magic-inscription",
+      desc: "Read a magic inscription on the wall",
+      effects: [{ amt: 5, type: Aspects.MAGIC }],
+    },
+    {
+      id: "magic-telescope",
+      desc: "Add Magic Telescope to inventory",
+    },
+    {
+      id: "use-topmost-item",
+      desc: "Use topmost item in inventory",
+    },
+    {
+      id: "cobweb-room",
+      desc: "Enter cobweb-infested room",
+      effects: [
+        { amt: 3, type: Aspects.STRENGTH },
+        { amt: 2, type: Aspects.UNKNOWN },
+      ],
+    },
+    {
+      id: "wild-bear",
+      desc: "Encounter a wild bear",
+      effects: [{ amt: 5, type: Aspects.UNKNOWN }],
+    },
+  ]);
+  React.useEffect(() => {
+    console.log(myCards);
+  });
   const ItemType = { CARD_TYPE: "card" };
 
   let gameData = {
@@ -39,6 +70,9 @@ export function Play() {
       },
     },
     inventory: ["🍼", "2", "3"],
+    self: {
+      player: "p4",
+    },
   };
 
   // Code from https://react-dnd.github.io/react-dnd/about
@@ -104,12 +138,13 @@ export function Play() {
   }
 
   function Card({
+    id = "null",
     desc = "No Description",
     effects = [{ amt: 500, type: Aspects.UNKNOWN }],
   }) {
     const [{ isDragging }, drag, preview] = useDrag(() => ({
       type: ItemType.CARD_TYPE,
-      item: { desc, effects },
+      item: { id, desc, effects },
       collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
     }));
 
@@ -148,27 +183,30 @@ export function Play() {
   }
 
   function returnCards() {
-    return (
-      <DndProvider backend={HTML5Backend}>
-        <Card
-          desc="Read a magic inscription on the wall"
-          effects={[{ amt: 5, type: Aspects.MAGIC }]}
-        />
-        <Card desc="Add Magic Telescope to inventory" effects={[]} />
-        <Card desc="Use topmost item in inventory" effects={[]} />
-        <Card
-          desc="Enter cobweb-infested room"
-          effects={[
-            { amt: 3, type: Aspects.STRENGTH },
-            { amt: 2, type: Aspects.UNKNOWN },
-          ]}
-        />
-        <Card
-          desc="Read a magic inscription on the wall"
-          effects={[{ amt: 5, type: Aspects.MAGIC }]}
-        />
-      </DndProvider>
-    );
+    let cardArray = [];
+    for (let index = 0; index < myCards.length; index++) {
+      const { id, desc, effects = [] } = myCards[index];
+      cardArray.push(
+        <Card id={id} desc={desc} effects={effects} key={index} />
+      );
+    }
+    return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
+  }
+
+  function useCard(card) {
+    for (let index = 0; index < myCards.length; index++) {
+      let element = myCards[index];
+      console.log("Comparing ", element.id, card.id);
+      if (element.id == card.id) {
+        let arr = myCards.slice();
+        console.log("arr ", arr);
+        arr.splice(index, 1);
+        console.log("arr ", arr);
+        setMyCards(arr);
+        return true;
+      }
+    }
+    return false;
   }
 
   function Leaderboard() {
@@ -262,7 +300,7 @@ export function Play() {
               </div>
             </div>
             <DndProvider backend={HTML5Backend}>
-              <TextBox dragItemType={ItemType.CARD_TYPE} />
+              <TextBox dragItemType={ItemType.CARD_TYPE} useCard={useCard} />
             </DndProvider>
             <div className="left-align-container">
               <div className="items-container">

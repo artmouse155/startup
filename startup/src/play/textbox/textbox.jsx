@@ -5,9 +5,10 @@ import { Aspects } from "../aspects.jsx";
 import { apiCall } from "../api_stub/api_stub.jsx";
 import storyJSON from "./story.json";
 import { marked } from "marked";
+//import { renderer } from "./md_extension.jsx";
 import "./textbox.css";
 
-export function TextBox({ dragItemType }) {
+export function TextBox({ dragItemType, useCard }) {
   const [story, setStory] = React.useState([]);
   const [playerName, setPlayerName] = React.useState("Billy Bob");
   const [playerGender, setPlayerGender] = React.useState("male");
@@ -135,18 +136,27 @@ export function TextBox({ dragItemType }) {
       s = s.replace(`${m}`, r);
     }
 
+    //marked.use(renderer);
+
+    // Run marked
     document.getElementById("parsedMD").innerHTML = marked.parse(s);
   };
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: dragItemType,
+    drop(item, monitor) {
+      console.log(item);
+      const elem = document.getElementById("textScroll");
+      elem.scrollTop = elem.scrollHeight;
+      useCard(item);
+      return undefined;
+    },
     collect: (monitor) => ({ isOver: !!monitor.isOver() }),
   }));
 
   const { isDragging } = useDragLayer((monitor) => ({
     isDragging: monitor.isDragging(),
   }));
-  //let isDragging = true;
 
   React.useEffect(FakeServer, []);
 
@@ -156,6 +166,7 @@ export function TextBox({ dragItemType }) {
         className={`text-adventure ${isOver ? "is-over" : "not-over"} ${
           isOver ? "is-over-grow" : ""
         }`}
+        id="textScroll"
       >
         <div className="text-adventure-text" id="parsedMD"></div>
       </div>

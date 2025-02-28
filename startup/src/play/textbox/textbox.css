@@ -27,6 +27,10 @@
   scrollbar-color: rgb(121, 83, 115) #00000000;
 }
 
+.item {
+  font-weight: bold;
+}
+
 .is-over-grow {
   scale: 1.1;
 }
