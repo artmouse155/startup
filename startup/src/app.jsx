@@ -16,7 +16,7 @@ import { Leaderboard } from "./leaderboard/leaderboard";
 
 export default function App() {
   const [authState, setAuthState] = React.useState(false);
-  const [userName, setUserName] = React.useState("");
+  const [userName, setUserName] = React.useState("Cosmo");
 
   return (
     <BrowserRouter>
@@ -69,7 +69,7 @@ export default function App() {
                   Log Out
                 </NavLink>
               </form>
-              <p className="header-text">Cosmo</p>
+              <p className="header-text">{userName}</p>
               <img
                 src="account_circle.png"
                 width="30px"
