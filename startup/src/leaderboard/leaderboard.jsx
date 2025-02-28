@@ -1,7 +1,23 @@
 import React from "react";
 import "./leaderboard.css";
+import scoresJSON from "./scores.json";
 
 export function Leaderboard() {
+  function TableBody() {
+    let s = scoresJSON.scores.sort((a, b) => b.score - a.score);
+    let rows = [];
+    for (let i = 0; i < s.length; i++) {
+      rows.push(
+        <tr>
+          <td>{i + 1}</td>
+          <td>{s[i].player}</td>
+          <td>{s[i].score}</td>
+        </tr>
+      );
+    }
+    return <tbody>{rows}</tbody>;
+  }
+
   return (
     <div className="leaderboard-main">
       <h3>High Scores</h3>
@@ -13,23 +29,7 @@ export function Leaderboard() {
             <th>🏆 Trophies</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Joe Scruggs</td>
-            <td>741</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Sam I am</td>
-            <td>33</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Tom Stephens</td>
-            <td>29</td>
-          </tr>
-        </tbody>
+        <TableBody />
       </table>
     </div>
   );

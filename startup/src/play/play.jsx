@@ -8,6 +8,37 @@ import { Aspects } from "./aspects.jsx";
 
 const ItemType = { CARD_TYPE: "card" };
 
+let gameData = {
+  aspects: {
+    MAGIC: 0,
+    STRENGTH: 0,
+    INTELLIGENCE: 5,
+    CHARISMA: 5,
+  },
+  players: {
+    p1: {
+      name: "Alice",
+      aspect: "INTELLIGENCE",
+      cards: [1, 0, 1, 1, 1],
+    },
+    p2: {
+      name: "Bob",
+      aspect: "CHARISMA",
+      cards: [1, 1, 1, 1, 0],
+    },
+    p3: {
+      name: "Seth",
+      aspect: "MAGIC",
+      cards: [1, 1, 1, 0, 1],
+    },
+    p4: {
+      name: "Cosmo",
+      aspect: "STRENGTH",
+      cards: [1, 2, 1, 1, 1],
+    },
+  },
+};
+
 function getItemStyles(initialOffset, currentOffset, isSnapToGrid) {
   if (!initialOffset || !currentOffset) {
     return {
@@ -151,6 +182,59 @@ function returnCards() {
   );
 }
 
+function Leaderboard() {
+  function LeaderboardCard({ data }) {
+    console.log(data);
+    //data = { cards: [1, 1, 1, 1, 0] };
+    const emoji = Aspects[data.aspect].emoji;
+    return (
+      <div className="player-box" id="Player1">
+        <div className="players-box-name-and-cards">
+          <h4 className="player-box-name">
+            {`${emoji} ${data.name} ${emoji}`}
+          </h4>
+          <div className="card-count">
+            <div
+              className="dummy-card"
+              id={data.cards[0] ? "unplayed" : "played"}
+            ></div>
+            <div
+              className="dummy-card"
+              id={data.cards[1] ? "unplayed" : "played"}
+            ></div>
+            <div
+              className="dummy-card"
+              id={data.cards[2] ? "unplayed" : "played"}
+            ></div>
+            <div
+              className="dummy-card"
+              id={data.cards[3] ? "unplayed" : "played"}
+            ></div>
+            <div
+              className="dummy-card"
+              id={data.cards[4] ? "unplayed" : "played"}
+            ></div>
+          </div>
+        </div>
+        <div className="place">
+          <div className="place-text-container">
+            <p className="big-place-text-number">2</p>
+            <p className="place-text">nd</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="players-boxes-container">
+      <LeaderboardCard data={gameData.players.p1} />
+      <LeaderboardCard data={gameData.players.p2} />
+      <LeaderboardCard data={gameData.players.p3} />
+      <LeaderboardCard data={gameData.players.p4} />
+    </div>
+  );
+}
+
 export function Play() {
   React.useCallback(() => console.log("Yeet"));
 
@@ -227,84 +311,7 @@ export function Play() {
             </div>
           </div>
         </div>
-
-        <div className="players-boxes-container">
-          <div className="player-box" id="Player1">
-            <div className="players-box-name-and-cards">
-              <h4 className="player-box-name">📖 Alice 📖</h4>
-              <div className="card-count">
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="played"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-              </div>
-            </div>
-            <div className="place">
-              <div className="place-text-container">
-                <p className="big-place-text-number">2</p>
-                <p className="place-text">nd</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="player-box" id="Player2">
-            <div className="players-box-name-and-cards">
-              <h4 className="player-box-name">💄 Bob 💄</h4>
-              <div className="card-count">
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="played"></div>
-              </div>
-            </div>
-            <div className="place">
-              <div className="place-text-container">
-                <p className="big-place-text-number">1</p>
-                <p className="place-text">st</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="player-box" id="Player3">
-            <div className="players-box-name-and-cards">
-              <h4 className="player-box-name">✨ Seth ✨</h4>
-              <div className="card-count">
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="played"></div>
-                <div className="dummy-card" id="unplayed"></div>
-              </div>
-            </div>
-            <div className="place">
-              <div className="place-text-container">
-                <p className="big-place-text-number">4</p>
-                <p className="place-text">th</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="player-box current-playing-turn" id="Player4">
-            <div className="players-box-name-and-cards">
-              <h4 className="player-box-name">🦾 Cosmo 🦾</h4>
-              <div className="card-count">
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-                <div className="dummy-card" id="unplayed"></div>
-              </div>
-            </div>
-            <div className="place">
-              <div className="place-text-container">
-                <p className="big-place-text-number">4</p>
-                <p className="place-text">th</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Leaderboard />
       </div>
     </main>
   );

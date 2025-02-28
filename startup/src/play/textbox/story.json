@@ -56,6 +56,7 @@
           "item": "Mysterious Potion"
         }
       ]
-    }
+    },
+    { "type": "turn", "playerTurnName": "Cosmo" }
   ]
 }

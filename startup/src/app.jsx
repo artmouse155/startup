@@ -13,9 +13,9 @@ export default function App() {
     <BrowserRouter>
       <div className="body">
         <header>
-          <a className="header-title" href="index.html">
+          <NavLink className="header-title" to="">
             <img src="header_icon.png" width="30px" />
-          </a>
+          </NavLink>
 
           <nav>
             <menu>
@@ -44,10 +44,10 @@ export default function App() {
             <div className="trophy-section header-text">
               <b>🏆 37</b>
             </div>
-            <form method="get" action="index.html">
-              <button type="submit" className="log-out-button">
+            <form method="get" action="">
+              <NavLink type="submit" className="log-out-button">
                 Log Out
-              </button>
+              </NavLink>
             </form>
             <p className="header-text">Cosmo</p>
             <img
