@@ -1,5 +1,5 @@
 import React from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { DndProvider, useDragLayer, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Aspects } from "../aspects.jsx";
 import { apiCall } from "../api_stub/api_stub.jsx";
@@ -7,7 +7,7 @@ import storyJSON from "./story.json";
 import { marked } from "marked";
 import "./textbox.css";
 
-export function TextBox({ dragItemType, isDragging }) {
+export function TextBox({ dragItemType }) {
   const [story, setStory] = React.useState([]);
   const [playerName, setPlayerName] = React.useState("Billy Bob");
   const [playerGender, setPlayerGender] = React.useState("male");
@@ -143,6 +143,11 @@ export function TextBox({ dragItemType, isDragging }) {
     collect: (monitor) => ({ isOver: !!monitor.isOver() }),
   }));
 
+  const { isDragging } = useDragLayer((monitor) => ({
+    isDragging: monitor.isDragging(),
+  }));
+  //let isDragging = true;
+
   React.useEffect(FakeServer, []);
 
   return (
@@ -159,7 +164,7 @@ export function TextBox({ dragItemType, isDragging }) {
           <h1>Drag Card Here</h1>
         </div>
       ) : (
-        <div></div>
+        <div style={{ display: "none" }}></div>
       )}
     </div>
   );

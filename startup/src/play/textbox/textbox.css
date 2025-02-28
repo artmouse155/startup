@@ -1,6 +1,7 @@
 .text-adventure-container {
   flex: 1;
   align-self: flex-start;
+  height: 200px;
 }
 
 .text-adventure {
@@ -27,7 +28,7 @@
 }
 
 .is-over-grow {
-  scale: 1.05;
+  scale: 1.1;
 }
 
 .drag-drop-overlay {

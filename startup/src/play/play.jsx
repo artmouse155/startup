@@ -7,8 +7,6 @@ import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
 export function Play() {
-  const [isDraggingGlobal, setDraggingGlobal] = React.useState(false);
-
   const ItemType = { CARD_TYPE: "card" };
 
   let gameData = {
