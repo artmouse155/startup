@@ -1,4 +1,4 @@
-export const Aspects = {
+export const Aspects = Object.freeze({
   MAGIC: {
     name: "magic",
     color: "#c540ff",
@@ -29,4 +29,4 @@ export const Aspects = {
     text: "???",
     emoji: "❓",
   },
-};
+});

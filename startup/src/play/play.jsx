@@ -1,39 +1,68 @@
 import React from "react";
 import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
-//import { ItemTypes } from "./Constants";
 import "./play.css";
 import "./aspects.css";
+import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
 const ItemType = { CARD_TYPE: "card" };
 
-function getStyles(left, top, isDragging) {
-  const transform = `translate3d(${left}px, ${top}px, 0)`;
+function getItemStyles(initialOffset, currentOffset, isSnapToGrid) {
+  if (!initialOffset || !currentOffset) {
+    return {
+      display: "none",
+    };
+  }
+  let { x, y } = currentOffset;
+  if (isSnapToGrid) {
+    x -= initialOffset.x;
+    y -= initialOffset.y;
+    [x, y] = snapToGrid(x, y);
+    x += initialOffset.x;
+    y += initialOffset.y;
+  }
+  const transform = `translate(${x}px, ${y}px)`;
   return {
-    position: "absolute",
     transform,
     WebkitTransform: transform,
-    // IE fallback: hide the real node using CSS when dragging
-    // because IE will ignore our custom "empty image" drag preview.
-    opacity: isDragging ? 0 : 1,
-    height: isDragging ? 0 : "",
   };
 }
 
-function CardDragLayer({
-  desc = "No Description",
-  effects = [{ amt: 500, type: Aspects.UNKNOWN }],
-}) {
-  const { isDragging } = useDragLayer((monitor) => ({
-    item: monitor.getItem(),
+function CardDragLayer() {
+  const { item, isDragging } = useDragLayer((monitor) => ({
+    item: monitor.getItem() || {
+      desc: "CardDragLayer",
+      effects: [{ amt: 500, type: Aspects.UNKNOWN }],
+    },
     itemType: monitor.getItemType(),
     initialOffset: monitor.getInitialSourceClientOffset(),
     currentOffset: monitor.getSourceClientOffset(),
     isDragging: monitor.isDragging(),
   }));
-  let component = <Card desc={desc} effects={effects} />;
-  return isDragging ? component : <div></div>;
+
+  console.log("Interacted with ", item);
+  const { desc, effects } = item;
+  const effect_html = [];
+  for (let i = 0; i < effects.length; i++) {
+    let effect = effects[i];
+    let classNameTemp = `card-outcome-text ${effect.type.name}`;
+    effect_html.push(
+      <p className={classNameTemp} key={i}>
+        <b>
+          + {effect.amt} {effect.type.text}
+        </b>
+      </p>
+    );
+  }
+
+  let card = (
+    <div className="card">
+      <p className="card-body-text">{desc}</p>
+      {effect_html}
+    </div>
+  );
+  return isDragging ? card : <div></div>;
 }
 
 function Card({
@@ -42,13 +71,14 @@ function Card({
 }) {
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemType.CARD_TYPE,
+    item: { desc, effects },
     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   }));
 
   //TODO: Uncomment when I use previewlayer
-  // React.useEffect(() => {
-  //   preview(getEmptyImage(), { captureDraggingState: true });
-  // }, [isDragging]);
+  React.useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, [isDragging]);
 
   const effect_html = [];
   for (let i = 0; i < effects.length; i++) {
@@ -76,25 +106,25 @@ function Card({
   return isDragging ? cardPreview : card;
 }
 
-// const DroppableArea = () => {
-//   const [{ isOver }, drop] = useDrop(() => ({
-//     accept: ItemType.BOX,
-//     collect: (monitor) => ({ isOver: !!monitor.isOver() }),
-//   }));
+const DroppableArea = () => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: ItemType.BOX,
+    collect: (monitor) => ({ isOver: !!monitor.isOver() }),
+  }));
 
-//   return (
-//     <div
-//       ref={drop}
-//       style={{
-//         marginTop: 20,
-//         padding: 50,
-//         background: isOver ? "lightgreen" : "lightgray",
-//       }}
-//     >
-//       Drop here
-//     </div>
-//   );
-// };
+  return (
+    <div
+      ref={drop}
+      style={{
+        marginTop: 20,
+        padding: 50,
+        background: isOver ? "lightgreen" : "lightgray",
+      }}
+    >
+      Drop here
+    </div>
+  );
+};
 
 function returnCards() {
   return (
@@ -123,19 +153,6 @@ function returnCards() {
 
 export function Play() {
   React.useCallback(() => console.log("Yeet"));
-
-  // React.useEffect(() => {
-  //   makeCardsDraggable();
-  // });
-  // const [{ isDragging }, dragRef] = useDrag(
-  //   () => ({
-  //     type: "card",
-  //     collect: (monitor) => ({
-  //       isDragging: !!monitor.isDragging(),
-  //     }),
-  //   }),
-  //   []
-  // );
 
   return (
     <main>
@@ -181,89 +198,7 @@ export function Play() {
             </div>
 
             <div className="text-adventure-container">
-              <div className="text-adventure">
-                <div className="text-adventure-text">
-                  Eldrond had barely finished stepping both feet inside the
-                  dungeon when
-                  <b>WHAM!</b> the gate slammed down behind him.
-                  <br />"<span>This doesn't look like Kansas anymore!</span>"
-                  exclaimed Eldrond.
-                  <br />
-                  <br />
-                  Eldrond looked around and found himself in a small musty room
-                  that was
-                  <span>filled with bugs</span>. He looked ahead and saw an
-                  archway, and inscripted above the arch were the following
-                  words: <br />
-                  <br />
-                  <i>
-                    <span>
-                      “It's easy to stand in the crowd but it takes courage to
-                      stand alone.” - Ghandi
-                    </span>
-                  </i>
-                  <br />
-                  <br />
-                  Feeling inspired, Eldron began his trek into the unknown.
-                  <br />
-                  <br />
-                  <b>Alice's Turn</b>
-                  <br />
-                  <br />
-                  As Elrond walked, his foot suddenly hit something small and
-                  hard. He looked down and... it was a book titled "
-                  <span>A Summary of Every Book Ever Written</span>".
-                  <br />
-                  <br />"<span>Gadzooks!</span>" exclaimed Elrond. He sat on the
-                  floor and began to inspect its pages and before he knew it, he
-                  had read the whole thing!
-                  <br />
-                  <br />
-                  <b>+5 📖 Intelligence</b>
-                  <br />
-                  <br />
-                  <br />
-                  <b>Bob's Turn</b>
-                  <br />
-                  <br />
-                  Down a dark staircase, Elrond noticed a mysterious object
-                  glimmering in a hole in the rock on his left. Curious, He
-                  reached his hand in and pulled out...
-                  <br />
-                  <br />
-                  A luxirous top hat!
-                  <br />
-                  <br />
-                  Elrond tried the item on, noticed it was very fashionable, and
-                  satisfied, placed the clothing item back where he found it.
-                  Maybe his adventure was short-lived, but he felt that it
-                  somehow left a lasting mark on his appearance.
-                  <br />
-                  <br />
-                  <b>+300 💄 Intelligence</b>
-                  <br />
-                  <br />
-                  <br />
-                  <b>Seth's Turn</b>
-                  <br />
-                  <br />
-                  After several hours of walking (and a few minutes of skipping)
-                  Elrond came across a well that looked so old, it was as if it
-                  would crumble to dust if he touched it. He noticed the bucket
-                  was close to the surface of the well and so he took a look
-                  inside. He could see what was inside! It was...
-                  <br />
-                  <br />
-                  A mysterious potion of unknown consequence!
-                  <br />
-                  <br />
-                  Just barely able to reach it, Elrond grabbed the item and
-                  stuffed it into his inventory. <br />
-                  <br />
-                  <b>Mysterious Potion Obtained</b>
-                  <br />
-                </div>
-              </div>
+              <TextBox />
             </div>
             <div className="left-align-container">
               <div className="items-container">

@@ -1,0 +1,61 @@
+{
+  "sections": [
+    {
+      "type": "intro",
+      "text": [
+        "$n$ had barely finished stepping both feet inside the dungeon when *WHAM!* the gate slammed down behind $them$.",
+        "\"$wow-long-quote$\" $exclamation$ $n$.",
+        "$n$ looked around and found $them$self in $room-type$ that was $room-condition$. $They$ looked ahead and saw an archway, and inscripted above the arch were the following words:",
+        "$inspirational-quote$",
+        "Feeling $feeling$, $n$ began $their$ trek into the unknown."
+      ]
+    },
+    {
+      "type": "turn",
+      "playerTurnName": "Alice",
+      "text": [
+        "As $n$ walked, $their$ foot suddenly hit something small and hard. $They$ looked down and... it was a book titled *$book-title$.*",
+        "\"$wow-quote$\" $exclamation$ $n$. $They$ sat on the floor and began to inspect its pages and before $they$ knew it, $they$ had read the whole thing!"
+      ],
+      "result": [
+        {
+          "type": "aspect-points",
+          "amt": 5,
+          "aspect": "INTELLIGENCE"
+        }
+      ]
+    },
+    {
+      "type": "turn",
+      "playerTurnName": "Bob",
+      "text": [
+        "Down a dark staircase, $n$ noticed a mysterious object glimmering in a hole in the rock on $their$ left. Curious, $they$ reached $their$ hand in and pulled out...",
+        "$clothing-item$",
+        "$n$ tried the item on, noticed it was very fashionable, and satisfied, placed the clothing item back where $they$ found it. Maybe $their$ adventure was short-lived, but $they$ felt that it somehow left a lasting mark on $their$ appearance..."
+      ],
+      "result": [
+        {
+          "type": "aspect-points",
+          "amt": 300,
+          "aspect": "CHARISMA"
+        }
+      ]
+    },
+    {
+      "type": "turn",
+      "playerTurnName": "Seth",
+      "text": [
+        "After several hours of walking (and a few minutes of skipping) $n$ came across a well that looked so old, it was as if it would crumble to dust if $they$ touched it.",
+        "$They$ noticed the bucket was close to the surface of the well and so $they$ took a look inside. $They$ could see what was inside! It was...",
+        "**A mysterious potion of unknown consequence!**",
+        "Just barely able to reach it, $n$ grabbed the item and stuffed it into $their$ inventory."
+      ],
+      "result": [
+        {
+          "type": "item-obtained",
+          "item": "Mysterious Potion"
+        }
+      ]
+    }
+  ]
+}
