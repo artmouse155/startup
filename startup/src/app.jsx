@@ -3,7 +3,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./app.css";
 import "./header.css";
 
-import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  NavLink,
+  Route,
+  Routes,
+} from "react-router-dom";
 import { Login } from "./login/login.jsx";
 import { Play } from "./play/play";
 import { Leaderboard } from "./leaderboard/leaderboard";
@@ -51,8 +57,15 @@ export default function App() {
               <div className="trophy-section header-text">
                 <b>🏆 37</b>
               </div>
-              <form method="get" action={() => setAuthState(false)}>
-                <NavLink type="submit" className="log-out-button">
+              <form method="get">
+                <NavLink
+                  type="submit"
+                  className="log-out-button"
+                  onClick={() => {
+                    setAuthState(false);
+                    Navigate("./login");
+                  }}
+                >
                   Log Out
                 </NavLink>
               </form>

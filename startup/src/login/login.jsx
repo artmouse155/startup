@@ -16,7 +16,7 @@ export function Login({ userName, authState, onAuthChange }) {
             method="get"
             action={() => {
               onAuthChange(true, "Cosmo");
-              navigate("/play");
+              Navigate("./play");
             }}
             className="login-form"
           >
