@@ -45,7 +45,7 @@ const inspirationalQuotes = [
     speaker: "Ghandi",
   },
   {
-    text: "*slap slap slap slap clap clap clap* 20 dollars!",
+    text: "*👏👏👏👏👏👏* Congratulations! You win 20 dollars!",
     speaker: "Luke",
   },
 ];
@@ -67,6 +67,12 @@ const bookTitles = [
   "So You're Stuck in a Text Adventure",
   "Platonic Liquids and Other Things Your Math Teachers Don't Tell You About",
   "The Book of Time",
+];
+
+const clothingItems = [
+  "A luxurious top hat",
+  "A radiant clown wig",
+  "A spunky pair of orange shades",
 ];
 
 function getRandomInt(max) {
@@ -92,11 +98,13 @@ export function apiCall(call) {
       return getRandom(roomConditions);
     case "$inspirational-quote$":
       const quote = getRandom(inspirationalQuotes);
-      return `"${quote.text}" - ${quote.speaker}`; //This is a stub
+      return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
     case "$feeling$":
       return getRandom(feelings);
     case "$book-title$":
       return getRandom(bookTitles);
+    case "$clothing-item$":
+      return getRandom(clothingItems);
     default:
       return `<🛑undefined API call: "${call}"🛑>`;
   }

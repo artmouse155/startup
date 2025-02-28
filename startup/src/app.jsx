@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./app.css";
 import "./header.css";
@@ -9,6 +10,7 @@ import {
   NavLink,
   Route,
   Routes,
+  useNavigate,
 } from "react-router-dom";
 import { Login } from "./login/login.jsx";
 import { Play } from "./play/play";
@@ -17,6 +19,7 @@ import { Leaderboard } from "./leaderboard/leaderboard";
 export default function App() {
   const [authState, setAuthState] = React.useState(false);
   const [userName, setUserName] = React.useState("Cosmo");
+  //const navigate = useNavigate();
 
   return (
     <BrowserRouter>
@@ -63,8 +66,8 @@ export default function App() {
                   className="log-out-button"
                   onClick={() => {
                     setAuthState(false);
-                    Navigate("./login");
                   }}
+                  to="/"
                 >
                   Log Out
                 </NavLink>

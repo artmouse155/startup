@@ -16,7 +16,7 @@ export function Login({ userName, authState, onAuthChange }) {
             method="get"
             action={() => {
               onAuthChange(true, "Cosmo");
-              Navigate("/play");
+              window.location.href = "/play";
             }}
             className="login-form"
           >
@@ -40,20 +40,12 @@ export function Login({ userName, authState, onAuthChange }) {
               <button
                 type="submit"
                 className="login-screen-button login-button"
-                onClick={() => {
-                  onAuthChange(true, "Cosmo");
-                  Navigate("/play");
-                }}
               >
                 Login
               </button>
               <button
                 type="submit"
                 className="login-screen-button signup-button"
-                onClick={() => {
-                  onAuthChange(true, "Cosmo");
-                  Navigate("/play");
-                }}
               >
                 Sign Up
               </button>

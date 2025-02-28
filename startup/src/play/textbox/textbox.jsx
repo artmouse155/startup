@@ -1,10 +1,13 @@
 import React from "react";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { Aspects } from "../aspects.jsx";
 import { apiCall } from "../api_stub/api_stub.jsx";
 import storyJSON from "./story.json";
 import { marked } from "marked";
+import "./textbox.css";
 
-export function TextBox() {
+export function TextBox({ dragItemType, isDragging }) {
   const [story, setStory] = React.useState([]);
   const [playerName, setPlayerName] = React.useState("Billy Bob");
   const [playerGender, setPlayerGender] = React.useState("male");
@@ -135,11 +138,29 @@ export function TextBox() {
     document.getElementById("parsedMD").innerHTML = marked.parse(s);
   };
 
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: dragItemType,
+    collect: (monitor) => ({ isOver: !!monitor.isOver() }),
+  }));
+
   React.useEffect(FakeServer, []);
 
   return (
-    <div className="text-adventure">
-      <div className="text-adventure-text" id="parsedMD"></div>
+    <div className={`text-adventure-container`} ref={drop}>
+      <div
+        className={`text-adventure ${isOver ? "is-over" : "not-over"} ${
+          isOver ? "is-over-grow" : ""
+        }`}
+      >
+        <div className="text-adventure-text" id="parsedMD"></div>
+      </div>
+      {isDragging ? (
+        <div className={`drag-drop-overlay ${isOver ? "is-over-grow" : ""}`}>
+          <h1>Drag Card Here</h1>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ main {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  user-select: none;
 }
 
 .text-and-inv-and-header {
@@ -26,11 +27,6 @@ main {
 .text-and-inv-section > * {
   margin-left: 20px;
   margin-right: 20px;
-}
-
-.text-adventure-container {
-  flex: 1;
-  align-self: flex-start;
 }
 
 .aspect-boxes-container {
@@ -56,19 +52,6 @@ main {
   background-color: rgb(214, 214, 214);
   border-radius: 5px;
   margin: 5px 0px;
-}
-
-.text-adventure {
-  border-radius: 10px;
-  background-color: #333333;
-  color: whitesmoke;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  scrollbar-color: rgb(121, 83, 115) rgba(56, 56, 56, 0);
-  height: 200px;
-  width: 500px;
-  font-size: 0.8em;
-  padding: 20px;
 }
 
 .centered-header {
@@ -114,6 +97,7 @@ main {
   font-weight: bold;
   font-size: 1.75em;
   color: rgb(167, 167, 167);
+  user-select: none;
 }
 
 .data-box {
@@ -256,6 +240,20 @@ main {
   justify-content: flex-end;
 }
 
+.card-drag-layer {
+  position: absolute;
+  flex-direction: column;
+  background-color: #c2cedb;
+  box-sizing: border-box;
+  border: 10px solid #c2cedb;
+  border-radius: 5px;
+  padding: 0px;
+  height: 150px;
+  width: 100px;
+  text-align: center;
+  justify-content: flex-end;
+}
+
 .transparent-card {
   display: flex;
   flex-direction: column;
@@ -265,7 +263,7 @@ main {
 
 .drag-here-card {
   align-self: center;
-  border: 5px dashed rgb(167, 167, 167);
+  border: 5px dashed #a7a7a7;
   background-color: #ffffff00;
   display: flex;
   justify-content: center;

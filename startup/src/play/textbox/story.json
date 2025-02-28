@@ -30,7 +30,7 @@
       "playerTurnName": "Bob",
       "text": [
         "Down a dark staircase, $n$ noticed a mysterious object glimmering in a hole in the rock on $their$ left. Curious, $they$ reached $their$ hand in and pulled out...",
-        "$clothing-item$",
+        "$clothing-item$!",
         "$n$ tried the item on, noticed it was very fashionable, and satisfied, placed the clothing item back where $they$ found it. Maybe $their$ adventure was short-lived, but $they$ felt that it somehow left a lasting mark on $their$ appearance..."
       ],
       "result": [

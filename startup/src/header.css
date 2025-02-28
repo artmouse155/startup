@@ -44,6 +44,7 @@ li.header-menu {
 }
 
 .disabled {
+  display: none;
   color: rgb(0, 0, 0);
   font-style: italic;
 }
