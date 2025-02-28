@@ -39,20 +39,14 @@ let gameData = {
   },
 };
 
-function getItemStyles(initialOffset, currentOffset, isSnapToGrid) {
+// Code from
+function getItemStyles(initialOffset, currentOffset) {
   if (!initialOffset || !currentOffset) {
     return {
       display: "none",
     };
   }
   let { x, y } = currentOffset;
-  if (isSnapToGrid) {
-    x -= initialOffset.x;
-    y -= initialOffset.y;
-    [x, y] = snapToGrid(x, y);
-    x += initialOffset.x;
-    y += initialOffset.y;
-  }
   const transform = `translate(${x}px, ${y}px)`;
   return {
     transform,
@@ -61,16 +55,18 @@ function getItemStyles(initialOffset, currentOffset, isSnapToGrid) {
 }
 
 function CardDragLayer() {
-  const { item, isDragging } = useDragLayer((monitor) => ({
-    item: monitor.getItem() || {
-      desc: "CardDragLayer",
-      effects: [{ amt: 500, type: Aspects.UNKNOWN }],
-    },
-    itemType: monitor.getItemType(),
-    initialOffset: monitor.getInitialSourceClientOffset(),
-    currentOffset: monitor.getSourceClientOffset(),
-    isDragging: monitor.isDragging(),
-  }));
+  const { item, initialOffset, currentOffset, isDragging } = useDragLayer(
+    (monitor) => ({
+      item: monitor.getItem() || {
+        desc: "CardDragLayer",
+        effects: [{ amt: 500, type: Aspects.UNKNOWN }],
+      },
+      itemType: monitor.getItemType(),
+      initialOffset: monitor.getInitialSourceClientOffset(),
+      currentOffset: monitor.getSourceClientOffset(),
+      isDragging: monitor.isDragging(),
+    })
+  );
 
   console.log("Interacted with ", item);
   const { desc, effects } = item;
@@ -88,7 +84,7 @@ function CardDragLayer() {
   }
 
   let card = (
-    <div className="card">
+    <div className="card" style={getItemStyles(initialOffset, currentOffset)}>
       <p className="card-body-text">{desc}</p>
       {effect_html}
     </div>
@@ -184,7 +180,6 @@ function returnCards() {
 
 function Leaderboard() {
   function LeaderboardCard({ data }) {
-    console.log(data);
     //data = { cards: [1, 1, 1, 1, 0] };
     const emoji = Aspects[data.aspect].emoji;
     return (
@@ -218,8 +213,8 @@ function Leaderboard() {
         </div>
         <div className="place">
           <div className="place-text-container">
-            <p className="big-place-text-number">2</p>
-            <p className="place-text">nd</p>
+            <p className="big-place-text-number">1</p>
+            <p className="place-text">st</p>
           </div>
         </div>
       </div>
@@ -246,36 +241,30 @@ export function Play() {
           <div className="text-and-inv-section">
             <div className="right-align-container">
               <div className="aspect-boxes-container">
-                <div className="aspect-box data-box" id="magic">
-                  <p className="aspect-box-text magic" id="magic">
-                    ✨ Magic
-                  </p>
+                <div className="aspect-box data-box" id="MAGIC">
+                  <p className="aspect-box-text magic">✨ Magic</p>
                   <p className="aspect-box-text aspect-box-score" id="amt">
                     0
                   </p>
                 </div>
-                <div className="aspect-box data-box" id="strength">
-                  <p className="aspect-box-text strength" id="strength">
-                    🦾 Strength
-                  </p>
+                <div className="aspect-box data-box" id="STRENGTH">
+                  <p className="aspect-box-text strength">🦾 Strength</p>
                   <p className="aspect-box-text aspect-box-score" id="amt">
                     0
                   </p>
                 </div>
-                <div className="aspect-box data-box" id="intelligence">
-                  <p className="aspect-box-text intelligence" id="intelligence">
+                <div className="aspect-box data-box" id="INTELLIGENCE">
+                  <p className="aspect-box-text intelligence">
                     📖 Intelligence
                   </p>
                   <p className="aspect-box-text aspect-box-score" id="amt">
-                    5
+                    0
                   </p>
                 </div>
-                <div className="aspect-box data-box" id="charisma">
-                  <p className="aspect-box-text charisma" id="charisma">
-                    💄 Charisma
-                  </p>
+                <div className="aspect-box data-box" id="CHARISMA">
+                  <p className="aspect-box-text charisma">💄 Charisma</p>
                   <p className="aspect-box-text aspect-box-score" id="amt">
-                    300
+                    0
                   </p>
                 </div>
               </div>

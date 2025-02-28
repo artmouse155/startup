@@ -85,6 +85,8 @@ export function TextBox() {
         switch (resultType) {
           case "aspect-points":
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
+            const e = document.getElementById(aspect).querySelector("#amt");
+            e.textContent = amt;
             break;
           case "item-obtained":
             s += `<i style="color: ${itemColor}">${item} Obtained</i>\n\n`;
