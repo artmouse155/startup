@@ -6,22 +6,28 @@ import "./aspects.css";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
+const debug = true;
+
 export function Play() {
   const [myCards, setMyCards] = React.useState([
     {
+      num_id: 0,
       id: "magic-inscription",
       desc: "Read a magic inscription on the wall",
       effects: [{ amt: 5, type: Aspects.MAGIC }],
     },
     {
+      num_id: 1,
       id: "magic-telescope",
       desc: "Add Magic Telescope to inventory",
     },
     {
+      num_id: 2,
       id: "use-topmost-item",
       desc: "Use topmost item in inventory",
     },
     {
+      num_id: 3,
       id: "cobweb-room",
       desc: "Enter cobweb-infested room",
       effects: [
@@ -30,50 +36,55 @@ export function Play() {
       ],
     },
     {
+      num_id: 4,
       id: "wild-bear",
       desc: "Encounter a wild bear",
       effects: [{ amt: 5, type: Aspects.UNKNOWN }],
     },
   ]);
-  React.useEffect(() => {
-    console.log(myCards);
-  });
-  const ItemType = { CARD_TYPE: "card" };
 
-  let gameData = {
+  const ItemType = { CARD_TYPE: "card" };
+  const [gameData, setGameData] = React.useState({
     aspects: {
       MAGIC: 10,
       STRENGTH: 0,
       INTELLIGENCE: 5,
       CHARISMA: 5,
     },
-    players: {
-      p1: {
+    players: [
+      {
         name: "Alice",
         aspect: "INTELLIGENCE",
         cards: [1, 0, 1, 1, 1],
       },
-      p2: {
+      {
         name: "Bob",
         aspect: "CHARISMA",
         cards: [1, 1, 1, 1, 0],
       },
-      p3: {
+      {
         name: "Seth",
         aspect: "MAGIC",
         cards: [1, 1, 1, 0, 1],
       },
-      p4: {
+      {
         name: "Cosmo",
         aspect: "STRENGTH",
-        cards: [1, 2, 1, 1, 1],
+        cards: [1, 1, 1, 1, 1],
       },
-    },
+    ],
     inventory: ["🍼", "2", "3"],
-    self: {
-      player: "p4",
-    },
-  };
+  });
+  const [myPlayerId, setMyPlayerID] = React.useState(-1);
+  const [isSetupComplete, setIsSetupComplete] = React.useState(false);
+
+  React.useEffect(() => (isSetupComplete ? () => {} : gameSetup));
+
+  function gameSetup() {
+    setMyPlayerID(3);
+    setIsSetupComplete(true);
+    console.log("Setup complete!");
+  }
 
   // Code from https://react-dnd.github.io/react-dnd/about
   function getItemStyles(initialOffset, currentOffset) {
@@ -138,13 +149,14 @@ export function Play() {
   }
 
   function Card({
+    num_id = "-1",
     id = "null",
     desc = "No Description",
     effects = [{ amt: 500, type: Aspects.UNKNOWN }],
   }) {
     const [{ isDragging }, drag, preview] = useDrag(() => ({
       type: ItemType.CARD_TYPE,
-      item: { id, desc, effects },
+      item: { num_id, id, desc, effects },
       collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
     }));
 
@@ -184,35 +196,42 @@ export function Play() {
 
   function returnCards() {
     let cardArray = [];
-    for (let index = 0; index < myCards.length; index++) {
-      const { id, desc, effects = [] } = myCards[index];
-      cardArray.push(
-        <Card id={id} desc={desc} effects={effects} key={index} />
-      );
+    if (myPlayerId != -1) {
+      for (let index = 0; index < myCards.length; index++) {
+        console.log(gameData.players[myPlayerId]);
+        if (gameData.players[myPlayerId].cards[index] == 1) {
+          const { num_id, id, desc, effects = [] } = myCards[index];
+          cardArray.push(
+            <Card
+              num_id={num_id}
+              id={id}
+              desc={desc}
+              effects={effects}
+              key={index}
+            />
+          );
+        }
+      }
     }
     return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
   }
 
   function useCard(card) {
-    for (let index = 0; index < myCards.length; index++) {
-      let element = myCards[index];
-      console.log("Comparing ", element.id, card.id);
-      if (element.id == card.id) {
-        let arr = myCards.slice();
-        console.log("arr ", arr);
-        arr.splice(index, 1);
-        console.log("arr ", arr);
-        setMyCards(arr);
-        return true;
-      }
+    let card_num_id = card.num_id;
+    if (card_num_id < gameData.players[myPlayerId].cards.length) {
+      let gameDataCopy = { ...gameData };
+      gameDataCopy.players[myPlayerId].cards[card_num_id] = 0;
+      setGameData((gameData) => ({ ...gameDataCopy }));
+      return true;
     }
     return false;
   }
 
   function Leaderboard() {
     function LeaderboardCard({ data }) {
-      //data = { cards: [1, 1, 1, 1, 0] };
+      console.log("Leaderboard Data: ", data);
       const emoji = Aspects[data.aspect].emoji;
+
       return (
         <div className="player-box" id="Player1">
           <div className="players-box-name-and-cards">
@@ -253,13 +272,15 @@ export function Play() {
     }
     return (
       <div className="players-boxes-container">
-        <LeaderboardCard data={gameData.players.p1} />
-        <LeaderboardCard data={gameData.players.p2} />
-        <LeaderboardCard data={gameData.players.p3} />
-        <LeaderboardCard data={gameData.players.p4} />
+        <LeaderboardCard data={gameData.players[0]} />
+        <LeaderboardCard data={gameData.players[1]} />
+        <LeaderboardCard data={gameData.players[2]} />
+        <LeaderboardCard data={gameData.players[3]} />
       </div>
     );
   }
+
+  const forceUpdate = () => this.forceUpdate();
 
   return (
     <main>
@@ -331,6 +352,14 @@ export function Play() {
         </div>
         <Leaderboard />
       </div>
+      {debug ? (
+        <div>
+          <button onClick={() => console.log(myCards)}>Print cards</button>
+          <button onClick={() => forceUpdate()}>Force update</button>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </main>
   );
 }
