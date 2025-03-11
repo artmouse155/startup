@@ -7,6 +7,17 @@
         "amt": 5,
         "type": "MAGIC"
       }
+    ],
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "After several hours of walking (and a few minutes of skipping) $n$ came across a well that looked so old, it was as if it would crumble to dust if $they$ touched it.",
+          "$They$ noticed the bucket was close to the surface of the well and so $they$ took a look inside. $They$ could see what was inside! It was...",
+          "<span class=\"item\">A mysterious potion of unknown consequence!</span>",
+          "Just barely able to reach it, $n$ grabbed the item and stuffed it into $their$ inventory."
+        ]
+      }
     ]
   },
   {

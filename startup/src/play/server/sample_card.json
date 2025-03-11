@@ -1,0 +1,71 @@
+{
+  "id": "sample-card",
+  "desc": "This card does it all! It gives you a big shoe, too!",
+  "effects": [
+    {
+      "amt": 5,
+      "type": "MAGIC"
+    },
+    {
+      "amt": 10,
+      "type": "UNKNOWN"
+    }
+  ],
+  "outcomes": [
+    {
+      "conditions": [{ "randomChance": ".1" }],
+      "text": [
+        "This is the first text option. It has a .1 chance of happening."
+      ],
+      "result": [
+        {
+          "type": "aspect-points",
+          "amt": 5,
+          "aspect": "MAGIC"
+        },
+        {
+          "type": "aspect-points",
+          "amt": 10,
+          "aspect": "CHARISMA"
+        }
+      ]
+    },
+    {
+      "conditions": [
+        { "hasItem": "magic-telescope" },
+        { "randomChance": ".5" }
+      ],
+      "text": [
+        "This text will only appear if you have the magic telescope AND you roll and you get lucky with a 50% chance."
+      ],
+      "result": [
+        {
+          "type": "aspect-points",
+          "amt": 5,
+          "aspect": "MAGIC"
+        },
+        {
+          "type": "aspect-points",
+          "amt": 10,
+          "aspect": "STRENGTH"
+        }
+      ]
+    },
+    {
+      "conditions": [],
+      "text": ["This is the base case. My name is $n$!"],
+      "result": [
+        {
+          "type": "aspect-points",
+          "amt": 5,
+          "aspect": "MAGIC"
+        },
+        {
+          "type": "aspect-points",
+          "amt": 10,
+          "aspect": "INTELLIGENCE"
+        }
+      ]
+    }
+  ]
+}

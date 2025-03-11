@@ -3,7 +3,7 @@ import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
-import { getCards } from "./server/server.jsx";
+import { getCards, getItemIcon } from "./server/server.jsx";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
@@ -49,7 +49,7 @@ export function Play() {
         cards: [1, 1, 1, 1, 1],
       },
     ],
-    inventory: ["🍼", "2", "3"],
+    inventory: ["magic-potion", "", ""],
     current_turn_id: 0,
   });
   const [myPlayerId, setMyPlayerID] = React.useState(-1);
@@ -234,7 +234,12 @@ export function Play() {
 
   function fakeNextTurn() {
     console.log("Next Turn");
+    // Make game data copy
     let gameDataCopy = { ...gameData };
+
+    // Use a random card
+
+    // Give next player a turn to go
     gameDataCopy.current_turn_id = (gameData.current_turn_id + 1) % 4;
     setGameData(gameDataCopy);
   }
@@ -346,13 +351,25 @@ export function Play() {
                 <div className="items-container">
                   <h3 className="centered-header">Inventory</h3>
                   <div className="item-box">
-                    <p className="item-box-text">{gameData.inventory[0]}</p>
+                    <p className="item-box-text">
+                      {gameData.inventory[0] == ""
+                        ? "1"
+                        : getItemIcon(gameData.inventory[0])}
+                    </p>
                   </div>
                   <div className="item-box">
-                    <p className="item-box-text">{gameData.inventory[1]}</p>
+                    <p className="item-box-text">
+                      {gameData.inventory[1] == ""
+                        ? "2"
+                        : getItemIcon(gameData.inventory[1])}
+                    </p>
                   </div>
                   <div className="item-box">
-                    <p className="item-box-text">{gameData.inventory[2]}</p>
+                    <p className="item-box-text">
+                      {gameData.inventory[2] == ""
+                        ? "3"
+                        : getItemIcon(gameData.inventory[2])}
+                    </p>
                   </div>
                 </div>
               </div>
