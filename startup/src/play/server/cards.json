@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "id": "magic-inscription",
+    "desc": "Read a magic inscription on the wall",
+    "effects": [
+      {
+        "amt": 5,
+        "type": "MAGIC"
+      }
+    ]
+  },
+  {
+    "id": "magic-telescope",
+    "desc": "Add Magic Telescope to inventory"
+  },
+  {
+    "id": "use-topmost-item",
+    "desc": "Use topmost item in inventory"
+  },
+  {
+    "id": "cobweb-room",
+    "desc": "Enter cobweb-infested room",
+    "effects": [
+      {
+        "amt": 3,
+        "type": "STRENGTH"
+      },
+      {
+        "amt": 2,
+        "type": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "id": "wild-bear",
+    "desc": "Encounter a wild bear",
+    "effects": [
+      {
+        "amt": 5,
+        "type": "UNKNOWN"
+      }
+    ]
+  }
+]

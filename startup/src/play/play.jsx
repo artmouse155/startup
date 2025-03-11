@@ -3,6 +3,7 @@ import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
+import { getCards } from "./server/server.jsx";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
@@ -16,39 +17,7 @@ export function Play() {
   };
   const [gameState, setGameState] = React.useState(GAME_STATES.LOBBY);
 
-  const [myCards, setMyCards] = React.useState([
-    {
-      num_id: 0,
-      id: "magic-inscription",
-      desc: "Read a magic inscription on the wall",
-      effects: [{ amt: 5, type: Aspects.MAGIC }],
-    },
-    {
-      num_id: 1,
-      id: "magic-telescope",
-      desc: "Add Magic Telescope to inventory",
-    },
-    {
-      num_id: 2,
-      id: "use-topmost-item",
-      desc: "Use topmost item in inventory",
-    },
-    {
-      num_id: 3,
-      id: "cobweb-room",
-      desc: "Enter cobweb-infested room",
-      effects: [
-        { amt: 3, type: Aspects.STRENGTH },
-        { amt: 2, type: Aspects.UNKNOWN },
-      ],
-    },
-    {
-      num_id: 4,
-      id: "wild-bear",
-      desc: "Encounter a wild bear",
-      effects: [{ amt: 5, type: Aspects.UNKNOWN }],
-    },
-  ]);
+  const [myCards, setMyCards] = React.useState();
 
   const ItemType = { CARD_TYPE: "card" };
   const [gameData, setGameData] = React.useState({
@@ -89,7 +58,7 @@ export function Play() {
     return myPlayerId;
   }
   const [heroData, setHeroData] = React.useState({
-    heroName: "🛑NULL🛑",
+    heroName: "Null Name",
     heroGender: "unknown",
   });
   const [isSetupComplete, setIsSetupComplete] = React.useState(false);
@@ -99,6 +68,7 @@ export function Play() {
   function gameSetup() {
     console.log("Setting up!");
     setMyPlayerID(3);
+    setMyCards(getCards());
     setHeroData({
       heroName: "Elrond",
       heroGender: "male",
@@ -153,11 +123,13 @@ export function Play() {
     const effect_html = [];
     for (let i = 0; i < effects.length; i++) {
       let effect = effects[i];
-      let classNameTemp = `card-outcome-text ${effect.type.name}`;
+      let effectData = Aspects[effect.type];
+      console.log(effectData);
+      let classNameTemp = `card-outcome-text ${effectData.name}`;
       effect_html.push(
         <p className={classNameTemp} key={i}>
           <b>
-            + {effect.amt} {effect.type.text}
+            + {effect.amt} {effectData.text}
           </b>
         </p>
       );
@@ -195,11 +167,13 @@ export function Play() {
     const effect_html = [];
     for (let i = 0; i < effects.length; i++) {
       let effect = effects[i];
-      let classNameTemp = `card-outcome-text ${effect.type.name}`;
+      let effectData = Aspects[effect.type];
+      console.log(effectData);
+      let classNameTemp = `card-outcome-text ${effectData.name}`;
       effect_html.push(
         <p className={classNameTemp} key={i}>
           <b>
-            + {effect.amt} {effect.type.text}
+            + {effect.amt} {effectData.text}
           </b>
         </p>
       );

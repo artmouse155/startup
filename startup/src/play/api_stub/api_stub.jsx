@@ -81,7 +81,7 @@ function getRandomInt(max) {
 }
 
 function getRandom(array) {
-  return array[getRandomInt(array.length - 1)];
+  return array[getRandomInt(array.length)];
 }
 
 export function apiCall(call) {

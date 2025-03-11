@@ -244,6 +244,7 @@ main {
 
 .card-drag-layer {
   position: absolute;
+  display: flex;
   flex-direction: column;
   background-color: #c2cedb;
   box-sizing: border-box;
