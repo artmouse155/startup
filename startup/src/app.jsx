@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./app.css";
 import "./header.css";
+import "./shadow.css"; // From https://www.cssscript.com/elegant-box-shadows
 
 import {
   BrowserRouter,

@@ -9,6 +9,13 @@ import { Aspects } from "./aspects.jsx";
 const debug = true;
 
 export function Play() {
+  const GAME_STATES = {
+    LOBBY: 0,
+    PLAY: 1,
+    END: 2,
+  };
+  const [gameState, setGameState] = React.useState(GAME_STATES.LOBBY);
+
   const [myCards, setMyCards] = React.useState([
     {
       num_id: 0,
@@ -96,8 +103,13 @@ export function Play() {
       heroName: "Elrond",
       heroGender: "male",
     });
+    setGameState(GAME_STATES.PLAY);
     setIsSetupComplete(true);
     console.log("Setup complete!");
+  }
+
+  function getAdventureTitle() {
+    return `${heroData.heroName}'s Quest`;
   }
 
   // Code from https://react-dnd.github.io/react-dnd/about
@@ -118,6 +130,7 @@ export function Play() {
       transform,
       WebkitTransform: transform,
       mouse: "grab",
+      //filter: "drop-shadow(#00000055 .5rem .5rem 5px)",
     };
   }
 
@@ -152,7 +165,7 @@ export function Play() {
 
     let card = (
       <div
-        className="card-drag-layer"
+        className="card-drag-layer shadow-5"
         style={getItemStyles(initialOffset, currentOffset)}
       >
         <p className="card-body-text">{desc}</p>
@@ -288,7 +301,7 @@ export function Play() {
       }
 
       return (
-        <div className="player-box" id="Player1">
+        <div className="player-box shadow-4" id="Player1">
           <div className="players-box-name-and-cards">
             <h4 className="player-box-name">
               {`${emoji} ${data.name} ${emoji}`}
@@ -314,98 +327,107 @@ export function Play() {
     );
   }
 
-  return (
-    <main>
-      <div className="all-play-sections">
-        <div className="text-and-inv-and-header">
-          <h3 className="centered-header" id="adventure-title">
-            Placeholder Title
-          </h3>
-          <div className="text-and-inv-section">
-            <div className="right-align-container">
-              <div className="aspect-boxes-container">
-                <div className="aspect-box data-box" id="MAGIC">
-                  <p className="aspect-box-text magic">✨ Magic</p>
-                  <p className="aspect-box-text aspect-box-score" id="amt">
-                    {gameData.aspects.MAGIC}
-                  </p>
+  if (gameState == GAME_STATES.LOBBY) {
+  } else if (gameState == GAME_STATES.PLAY) {
+    return (
+      <main>
+        <div className="all-play-sections">
+          <div className="text-and-inv-and-header">
+            <h3 className="centered-header" id="adventure-title">
+              {getAdventureTitle()}
+            </h3>
+            <div className="text-and-inv-section">
+              <div className="right-align-container">
+                <div className="aspect-boxes-container">
+                  <div className="aspect-box data-box" id="MAGIC">
+                    <p className="aspect-box-text magic">✨ Magic</p>
+                    <p className="aspect-box-text aspect-box-score" id="amt">
+                      {gameData.aspects.MAGIC}
+                    </p>
+                  </div>
+                  <div className="aspect-box data-box" id="STRENGTH">
+                    <p className="aspect-box-text strength">🦾 Strength</p>
+                    <p className="aspect-box-text aspect-box-score" id="amt">
+                      {gameData.aspects.STRENGTH}
+                    </p>
+                  </div>
+                  <div className="aspect-box data-box" id="INTELLIGENCE">
+                    <p className="aspect-box-text intelligence">
+                      📖 Intelligence
+                    </p>
+                    <p className="aspect-box-text aspect-box-score" id="amt">
+                      {gameData.aspects.INTELLIGENCE}
+                    </p>
+                  </div>
+                  <div className="aspect-box data-box" id="CHARISMA">
+                    <p className="aspect-box-text charisma">💄 Charisma</p>
+                    <p className="aspect-box-text aspect-box-score" id="amt">
+                      {gameData.aspects.CHARISMA}
+                    </p>
+                  </div>
                 </div>
-                <div className="aspect-box data-box" id="STRENGTH">
-                  <p className="aspect-box-text strength">🦾 Strength</p>
-                  <p className="aspect-box-text aspect-box-score" id="amt">
-                    {gameData.aspects.STRENGTH}
-                  </p>
-                </div>
-                <div className="aspect-box data-box" id="INTELLIGENCE">
-                  <p className="aspect-box-text intelligence">
-                    📖 Intelligence
-                  </p>
-                  <p className="aspect-box-text aspect-box-score" id="amt">
-                    {gameData.aspects.INTELLIGENCE}
-                  </p>
-                </div>
-                <div className="aspect-box data-box" id="CHARISMA">
-                  <p className="aspect-box-text charisma">💄 Charisma</p>
-                  <p className="aspect-box-text aspect-box-score" id="amt">
-                    {gameData.aspects.CHARISMA}
-                  </p>
+              </div>
+              {getTextbox(myPlayerId)}
+              <div className="left-align-container">
+                <div className="items-container">
+                  <h3 className="centered-header">Inventory</h3>
+                  <div className="item-box">
+                    <p className="item-box-text">{gameData.inventory[0]}</p>
+                  </div>
+                  <div className="item-box">
+                    <p className="item-box-text">{gameData.inventory[1]}</p>
+                  </div>
+                  <div className="item-box">
+                    <p className="item-box-text">{gameData.inventory[2]}</p>
+                  </div>
                 </div>
               </div>
             </div>
-            {getTextbox(myPlayerId)}
-            <div className="left-align-container">
-              <div className="items-container">
-                <h3 className="centered-header">Inventory</h3>
-                <div className="item-box">
-                  <p className="item-box-text">{gameData.inventory[0]}</p>
-                </div>
-                <div className="item-box">
-                  <p className="item-box-text">{gameData.inventory[1]}</p>
-                </div>
-                <div className="item-box">
-                  <p className="item-box-text">{gameData.inventory[2]}</p>
+            <div className="whose-turn-and-all-card-sections">
+              <div className="whose-turn">
+                <h3>
+                  {gameData.current_turn_id == -1
+                    ? "Loading..."
+                    : gameData.current_turn_id == myPlayerId
+                    ? "Your Turn"
+                    : `${
+                        gameData.players[gameData.current_turn_id].name
+                      }'s Turn`}
+                </h3>
+              </div>
+              <div className="all-card-sections">
+                <div className="card-section">
+                  {returnCards()}
+                  <h2 className="my-turn">My Turn</h2>
                 </div>
               </div>
             </div>
           </div>
-          <div className="whose-turn-and-all-card-sections">
-            <div className="whose-turn">
-              <h3>
-                {gameData.current_turn_id == -1
-                  ? "Loading..."
-                  : gameData.current_turn_id == myPlayerId
-                  ? "Your Turn"
-                  : `${gameData.players[gameData.current_turn_id].name}'s Turn`}
-              </h3>
-            </div>
-            <div className="all-card-sections">
-              <div className="card-section">
-                {returnCards()}
-                <h2 className="my-turn">My Turn</h2>
-              </div>
-            </div>
+          <Leaderboard />
+        </div>
+        {debug ? (
+          <div>
+            <button onClick={() => console.log(myCards)}>Print cards</button>
+            <button onClick={() => console.log(myPlayerId)}>
+              Print My Player ID
+            </button>
+            <button
+              onClick={fakeNextTurn}
+              disabled={myPlayerId == gameData.current_turn_id}
+            >
+              Simulate Next Turn
+            </button>
+            <button onClick={() => console.log(gameData.current_turn_id)}>
+              Print Turn Id
+            </button>
+            <button onClick={() => console.log(heroData)}>
+              Print Hero Data
+            </button>
           </div>
-        </div>
-        <Leaderboard />
-      </div>
-      {debug ? (
-        <div>
-          <button onClick={() => console.log(myCards)}>Print cards</button>
-          <button onClick={() => console.log(myPlayerId)}>
-            Print My Player ID
-          </button>
-          <button
-            onClick={fakeNextTurn}
-            disabled={myPlayerId == gameData.current_turn_id}
-          >
-            Simulate Next Turn
-          </button>
-          <button onClick={() => console.log(gameData.current_turn_id)}>
-            Print Turn Id
-          </button>
-          <button onClick={() => console.log(heroData)}>Print Hero Data</button>
-        </div>
-      ) : null}
-    </main>
-  );
+        ) : null}
+      </main>
+    );
+  } else if (gameState == GAME_STATES.END) {
+    return <p>Game is over!</p>;
+  }
 }
