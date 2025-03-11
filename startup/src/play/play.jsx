@@ -82,8 +82,8 @@ export function Play() {
     return myPlayerId;
   }
   const [heroData, setHeroData] = React.useState({
-    heroName: "Elrond",
-    heroGender: "male",
+    heroName: "🛑NULL🛑",
+    heroGender: "unknown",
   });
   const [isSetupComplete, setIsSetupComplete] = React.useState(false);
 
@@ -92,6 +92,10 @@ export function Play() {
   function gameSetup() {
     console.log("Setting up!");
     setMyPlayerID(3);
+    setHeroData({
+      heroName: "Elrond",
+      heroGender: "male",
+    });
     setIsSetupComplete(true);
     console.log("Setup complete!");
   }
@@ -207,8 +211,8 @@ export function Play() {
   function returnCards() {
     let cardArray = [];
     if (myPlayerId != -1) {
+      console.log("Rendered player cards!");
       for (let index = 0; index < myCards.length; index++) {
-        console.log(gameData.players[myPlayerId]);
         if (gameData.players[myPlayerId].cards[index] == 1) {
           const { num_id, id, desc, effects = [] } = myCards[index];
           cardArray.push(
@@ -255,6 +259,7 @@ export function Play() {
         <DndProvider backend={HTML5Backend}>
           <TextBox
             dragItemType={ItemType.CARD_TYPE}
+            heroData={heroData}
             playerID={_playerID}
             useCard={useCard}
           />
@@ -398,6 +403,7 @@ export function Play() {
           <button onClick={() => console.log(gameData.current_turn_id)}>
             Print Turn Id
           </button>
+          <button onClick={() => console.log(heroData)}>Print Hero Data</button>
         </div>
       ) : null}
     </main>

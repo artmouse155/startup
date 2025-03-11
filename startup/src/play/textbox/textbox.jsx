@@ -8,11 +8,10 @@ import { marked } from "marked";
 //import { renderer } from "./md_extension.jsx";
 import "./textbox.css";
 
-export function TextBox({ dragItemType, playerID, useCard }) {
-  console.log("Happy birthday! Player ID is ", playerID);
+export function TextBox({ dragItemType, heroData, playerID, useCard }) {
   const [story, setStory] = React.useState([]);
-  const [playerName, setPlayerName] = React.useState("Billy Bob");
-  const [playerGender, setPlayerGender] = React.useState("male");
+  const heroName = heroData.heroName;
+  const heroGender = heroData.heroGender;
 
   const itemColor = "#c90000";
 
@@ -104,31 +103,31 @@ export function TextBox({ dragItemType, playerID, useCard }) {
       let r = "DEFAULT REPLACE";
       switch (m) {
         case "$n$":
-          r = playerName;
+          r = heroName;
           break;
         case "$They$":
-          r = pronouns.They[playerGender];
+          r = pronouns.They[heroGender];
           break;
         case "$Their$":
-          r = pronouns.Their[playerGender];
+          r = pronouns.Their[heroGender];
           break;
         case "$Theirs$":
-          r = pronouns.Theirs[playerGender];
+          r = pronouns.Theirs[heroGender];
           break;
         case "$Them$":
-          r = pronouns.Them[playerGender];
+          r = pronouns.Them[heroGender];
           break;
         case "$they$":
-          r = pronouns.they[playerGender];
+          r = pronouns.they[heroGender];
           break;
         case "$their$":
-          r = pronouns.their[playerGender];
+          r = pronouns.their[heroGender];
           break;
         case "$theirs$":
-          r = pronouns.theirs[playerGender];
+          r = pronouns.theirs[heroGender];
           break;
         case "$them$":
-          r = pronouns.them[playerGender];
+          r = pronouns.them[heroGender];
           break;
         default:
           r = apiCall(m);
