@@ -3,8 +3,11 @@ import items from "./items.json";
 
 const NUM_CARDS = 5;
 const NUM_PLAYERS = 4;
+const NUM_ITEM_SLOTS = 3;
 
 export let gameData = {};
+
+let turnEndFunc = (_playerData) => {};
 
 function getRandomInt(max) {
   // From Mozilla docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
@@ -28,8 +31,13 @@ function createGame() {
   // Generate 5 random cards for each player
 }
 
+export function setTurnEndFunc(func) {
+  turnEndFunc = func;
+}
+
 export function simulateNextTurn() {}
 
+// Will compute card result and return the text of the result.
 export function getCardResult(card_id) {
   // get result object from card based on checking conditions
   const card = cards.find((card) => card.id == card_id);
@@ -59,6 +67,34 @@ export function getCardResult(card_id) {
     }
 
     if (conditionsMet) {
+      // Evaluate the result of outcome
+      const results = outcome.result;
+      for (let j = 0; j < results.length; j++) {
+        const result = results[j];
+
+        if (result.type == "aspect-points") {
+          gameData.aspectPoints[result.aspect] += parseInt(result.amt);
+        }
+
+        if (result.type == "item-obtained") {
+          // Add item to inventory. The inventory is a list of strings that represent the item names.
+          // If there isn't an item in the slot, the value of the slot is "".
+          // You always have NUM_ITEM_SLOTS slots in your inventory.
+          // If you try to add an item to a full inventory, the oldest item disappears.
+          if (gameData.inventory.length >= NUM_ITEM_SLOTS) {
+            gameData.inventory.shift(); // Remove the oldest item
+            gameData.inventory.push(result.item);
+            outcome.text.push(`_Not enough room. Oldest item removed._`);
+          } else {
+            for (let k = 0; k < gameData.inventory.length; k++) {
+              if (gameData.inventory[k] === "") {
+                gameData.inventory[k] = result.item;
+                break;
+              }
+            }
+          }
+        }
+      }
       return {
         ...outcome,
         type: "turn",
@@ -66,6 +102,8 @@ export function getCardResult(card_id) {
       };
     }
   }
+  console.log("No outcome found for card", card_id);
+  return null;
 }
 
 export function getItemIcon(itemName) {
