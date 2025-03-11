@@ -74,13 +74,23 @@ export function Play() {
       },
     ],
     inventory: ["🍼", "2", "3"],
+    current_turn_id: 0,
   });
   const [myPlayerId, setMyPlayerID] = React.useState(-1);
+  function getPlayerID() {
+    console.log("Accessed player ID!");
+    return myPlayerId;
+  }
+  const [heroData, setHeroData] = React.useState({
+    heroName: "Elrond",
+    heroGender: "male",
+  });
   const [isSetupComplete, setIsSetupComplete] = React.useState(false);
 
-  React.useEffect(() => (isSetupComplete ? () => {} : gameSetup));
+  React.useEffect(() => (isSetupComplete ? () => {} : gameSetup()));
 
   function gameSetup() {
+    console.log("Setting up!");
     setMyPlayerID(3);
     setIsSetupComplete(true);
     console.log("Setup complete!");
@@ -216,21 +226,61 @@ export function Play() {
     return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
   }
 
-  function useCard(card) {
+  function useCard(_playerID, card) {
     let card_num_id = card.num_id;
-    if (card_num_id < gameData.players[myPlayerId].cards.length) {
+    console.log("Player ID: ", _playerID);
+    if (card_num_id < gameData.players[_playerID].cards.length) {
+      console.log("Making Game Data copy.");
+      console.log("current_turn_id:", gameData.current_turn_id);
       let gameDataCopy = { ...gameData };
-      gameDataCopy.players[myPlayerId].cards[card_num_id] = 0;
-      setGameData((gameData) => ({ ...gameDataCopy }));
+      console.log("copied current_turn_id:", gameDataCopy.current_turn_id);
+      gameDataCopy.players[_playerID].cards[card_num_id] = 0;
+      setGameData({ ...gameDataCopy });
       return true;
     }
     return false;
   }
 
+  function fakeNextTurn() {
+    console.log("Next Turn");
+    let gameDataCopy = { ...gameData };
+    gameDataCopy.current_turn_id = (gameData.current_turn_id + 1) % 4;
+    setGameData(gameDataCopy);
+  }
+
+  function getTextbox(_playerID) {
+    if (isSetupComplete) {
+      console.log("Rendering textbox! Player ID is", _playerID);
+      return (
+        <DndProvider backend={HTML5Backend}>
+          <TextBox
+            dragItemType={ItemType.CARD_TYPE}
+            playerID={_playerID}
+            useCard={useCard}
+          />
+        </DndProvider>
+      );
+    } else {
+      return null;
+    }
+  }
+
   function Leaderboard() {
+    console.log("Rendering Leaderboard!");
     function LeaderboardCard({ data }) {
-      console.log("Leaderboard Data: ", data);
       const emoji = Aspects[data.aspect].emoji;
+
+      let cardArray = [];
+
+      for (let index = 0; index < data.cards.length; index++) {
+        cardArray.push(
+          <div
+            key={index}
+            className="dummy-card"
+            id={data.cards[index] ? "unplayed" : "played"}
+          ></div>
+        );
+      }
 
       return (
         <div className="player-box" id="Player1">
@@ -238,28 +288,7 @@ export function Play() {
             <h4 className="player-box-name">
               {`${emoji} ${data.name} ${emoji}`}
             </h4>
-            <div className="card-count">
-              <div
-                className="dummy-card"
-                id={data.cards[0] ? "unplayed" : "played"}
-              ></div>
-              <div
-                className="dummy-card"
-                id={data.cards[1] ? "unplayed" : "played"}
-              ></div>
-              <div
-                className="dummy-card"
-                id={data.cards[2] ? "unplayed" : "played"}
-              ></div>
-              <div
-                className="dummy-card"
-                id={data.cards[3] ? "unplayed" : "played"}
-              ></div>
-              <div
-                className="dummy-card"
-                id={data.cards[4] ? "unplayed" : "played"}
-              ></div>
-            </div>
+            <div className="card-count">{cardArray}</div>
           </div>
           <div className="place">
             <div className="place-text-container">
@@ -279,8 +308,6 @@ export function Play() {
       </div>
     );
   }
-
-  const forceUpdate = () => this.forceUpdate();
 
   return (
     <main>
@@ -320,9 +347,7 @@ export function Play() {
                 </div>
               </div>
             </div>
-            <DndProvider backend={HTML5Backend}>
-              <TextBox dragItemType={ItemType.CARD_TYPE} useCard={useCard} />
-            </DndProvider>
+            {getTextbox(myPlayerId)}
             <div className="left-align-container">
               <div className="items-container">
                 <h3 className="centered-header">Inventory</h3>
@@ -340,7 +365,13 @@ export function Play() {
           </div>
           <div className="whose-turn-and-all-card-sections">
             <div className="whose-turn">
-              <h3>Your Turn</h3>
+              <h3>
+                {gameData.current_turn_id == -1
+                  ? "Loading..."
+                  : gameData.current_turn_id == myPlayerId
+                  ? "Your Turn"
+                  : `${gameData.players[gameData.current_turn_id].name}'s Turn`}
+              </h3>
             </div>
             <div className="all-card-sections">
               <div className="card-section">
@@ -355,11 +386,20 @@ export function Play() {
       {debug ? (
         <div>
           <button onClick={() => console.log(myCards)}>Print cards</button>
-          <button onClick={() => forceUpdate()}>Force update</button>
+          <button onClick={() => console.log(myPlayerId)}>
+            Print My Player ID
+          </button>
+          <button
+            onClick={fakeNextTurn}
+            disabled={myPlayerId == gameData.current_turn_id}
+          >
+            Simulate Next Turn
+          </button>
+          <button onClick={() => console.log(gameData.current_turn_id)}>
+            Print Turn Id
+          </button>
         </div>
-      ) : (
-        <div></div>
-      )}
+      ) : null}
     </main>
   );
 }

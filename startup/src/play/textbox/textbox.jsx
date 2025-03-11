@@ -8,7 +8,8 @@ import { marked } from "marked";
 //import { renderer } from "./md_extension.jsx";
 import "./textbox.css";
 
-export function TextBox({ dragItemType, useCard }) {
+export function TextBox({ dragItemType, playerID, useCard }) {
+  console.log("Happy birthday! Player ID is ", playerID);
   const [story, setStory] = React.useState([]);
   const [playerName, setPlayerName] = React.useState("Billy Bob");
   const [playerGender, setPlayerGender] = React.useState("male");
@@ -148,7 +149,7 @@ export function TextBox({ dragItemType, useCard }) {
       console.log(item);
       const elem = document.getElementById("textScroll");
       elem.scrollTop = elem.scrollHeight;
-      useCard(item);
+      useCard(playerID, item);
       return undefined;
     },
     collect: (monitor) => ({ isOver: !!monitor.isOver() }),
