@@ -3,7 +3,7 @@ import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
-import { getCards, getItemIcon } from "./server/server.jsx";
+import { getCards, getItemIcon, NUM_PLAYERS } from "./server/server.jsx";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
@@ -262,12 +262,43 @@ export function Play() {
     }
   }
 
-  function Leaderboard() {
-    console.log("Rendering Leaderboard!");
+  function Leaderboard(aspects) {
+    // PlayerID, Standing
+    let standings = Array(NUM_PLAYERS);
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      standings[i] = 0;
+      for (let j = 0; j < NUM_PLAYERS; j++) {
+        if (
+          aspects[gameData.players[i].aspect] <
+          aspects[gameData.players[j].aspect]
+        ) {
+          standings[i]++;
+        }
+      }
+    }
+
+    console.log(
+      "Rendering Leaderboard! Standings:",
+      standings,
+      "gameData: ",
+      gameData
+    );
     function LeaderboardCard({ data }) {
       const emoji = Aspects[data.aspect].emoji;
 
       let cardArray = [];
+      let placeText = "th";
+      switch (data.standing) {
+        case 0:
+          placeText = "st";
+          break;
+        case 1:
+          placeText = "nd";
+          break;
+        default:
+          placeText = "th";
+          break;
+      }
 
       for (let index = 0; index < data.cards.length; index++) {
         cardArray.push(
@@ -289,8 +320,8 @@ export function Play() {
           </div>
           <div className="place">
             <div className="place-text-container">
-              <p className="big-place-text-number">1</p>
-              <p className="place-text">st</p>
+              <p className="big-place-text-number">{data.standing + 1}</p>
+              <p className="place-text">{placeText}</p>
             </div>
           </div>
         </div>
@@ -298,10 +329,18 @@ export function Play() {
     }
     return (
       <div className="players-boxes-container">
-        <LeaderboardCard data={gameData.players[0]} />
-        <LeaderboardCard data={gameData.players[1]} />
-        <LeaderboardCard data={gameData.players[2]} />
-        <LeaderboardCard data={gameData.players[3]} />
+        <LeaderboardCard
+          data={{ standing: standings[0], ...gameData.players[0] }}
+        />
+        <LeaderboardCard
+          data={{ standing: standings[1], ...gameData.players[1] }}
+        />
+        <LeaderboardCard
+          data={{ standing: standings[2], ...gameData.players[2] }}
+        />
+        <LeaderboardCard
+          data={{ standing: standings[3], ...gameData.players[3] }}
+        />
       </div>
     );
   }
@@ -394,7 +433,7 @@ export function Play() {
               </div>
             </div>
           </div>
-          <Leaderboard />
+          <Leaderboard aspects={gameData.aspects} />
         </div>
         {debug ? (
           <div>
@@ -413,6 +452,9 @@ export function Play() {
             </button>
             <button onClick={() => console.log(heroData)}>
               Print Hero Data
+            </button>
+            <button onClick={() => console.log(gameData)}>
+              Print Game Data
             </button>
           </div>
         ) : null}
