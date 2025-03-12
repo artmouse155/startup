@@ -153,10 +153,7 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
     drop(item, monitor) {
       console.log(item);
 
-      let storyCopy = [...story];
-      storyCopy.push(useCard(playerID, item));
-      setStory(storyCopy);
-
+      useCard(playerID, item);
       return undefined;
     },
     collect: (monitor) => ({ isOver: !!monitor.isOver() }),

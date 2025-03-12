@@ -101,16 +101,18 @@ export function setTextboxPushFunc(func) {
 export function simulateNextTurn() {}
 
 // Will compute card result and return the text of the result.
-export function evalCard(card_id) {
+export function evalCard(card_num_id) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
-  const card = cards.find((card) => card.id == card_id);
-
-  // console.log("Card found", card);
+  const card = playerCards[gameData.current_turn_id][card_num_id];
+  if (!card) {
+    console.log("No card found for card", card_num_id);
+    return null;
+  }
 
   const outcomes = card.outcomes;
   if (!outcomes) {
-    console.log("No outcomes found for card", card_id);
+    console.log("No outcomes found for card", card);
     return null;
   }
   for (let i = 0; i < outcomes.length; i++) {
@@ -176,7 +178,7 @@ export function evalCard(card_id) {
       return true;
     }
   }
-  console.log("No outcome found for card", card_id);
+  console.log("No outcome found for card", card);
   return null;
 }
 

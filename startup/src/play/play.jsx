@@ -241,8 +241,8 @@ export function Play() {
       console.log("copied current_turn_id:", gameDataCopy.current_turn_id);
       gameDataCopy.players[_playerID].cards[card_num_id] = 0;
       setGameData({ ...gameDataCopy });
-
-      return { storyElem: evalCard(card.id), nextPlayerName: "Joe" };
+      evalCard(card.num_id);
+      return true;
     }
     return false;
   }
