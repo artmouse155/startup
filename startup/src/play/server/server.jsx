@@ -5,7 +5,40 @@ const NUM_CARDS = 5;
 const NUM_PLAYERS = 4;
 const NUM_ITEM_SLOTS = 3;
 
-export let gameData = {};
+let gameData = {
+  aspects: {
+    MAGIC: 10,
+    STRENGTH: 0,
+    INTELLIGENCE: 5,
+    CHARISMA: 5,
+  },
+  players: [
+    {
+      name: "Alice",
+      aspect: "UNKNOWN",
+      cards: [1, 0, 1, 1, 1],
+    },
+    {
+      name: "Bob",
+      aspect: "UNKNOWN",
+      cards: [1, 1, 1, 1, 0],
+    },
+    {
+      name: "Seth",
+      aspect: "UNKNOWN",
+      cards: [1, 1, 1, 0, 1],
+    },
+    {
+      name: "Cosmo",
+      aspect: "UNKNOWN",
+      cards: [1, 1, 1, 1, 1],
+    },
+  ],
+  inventory: ["magic-potion", "", ""],
+  current_turn_id: 0,
+};
+
+let playerCards = [{}, {}, {}, {}];
 
 let turnEndFunc = (_playerData) => {};
 
@@ -14,7 +47,12 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-export function getCards() {
+// Returns specific cards
+export function getPlayerCards(player_id) {
+  return playerCards[player_id];
+}
+
+function generateCards() {
   let cardsExport = [];
   for (let i = 0; i < NUM_CARDS; i++) {
     let { outcomes, ...cardWithoutOutcomes } =
@@ -25,10 +63,30 @@ export function getCards() {
   return cardsExport;
 }
 
-function createGame() {
+export function createGame() {
   // Assign a random order for players
+  // From https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  // Shuffle players
+
   // Assign each player one of the four aspects
+  const aspects = ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"];
+  gameData.players.forEach((player, index) => {
+    player.aspect = aspects[index];
+  });
+
   // Generate 5 random cards for each player
+  for (let i = 0; i < NUM_PLAYERS; i++) {
+    playerCards[i] = generateCards();
+  }
+
+  let _gameData = { ...gameData };
+
+  let _heroData = {
+    heroName: "Elrond",
+    heroGender: "male",
+  };
+
+  return { _gameData, _heroData };
 }
 
 export function setTurnEndFunc(func) {
@@ -111,6 +169,4 @@ export function getItemIcon(itemName) {
   return item ? item.icon : `No icon found for ${itemName}`;
 }
 
-export function obtainItem(itemName) {}
-
-export { NUM_PLAYERS };
+export { NUM_PLAYERS, NUM_CARDS, NUM_ITEM_SLOTS };

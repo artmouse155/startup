@@ -3,7 +3,14 @@ import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
-import { getCards, getItemIcon, NUM_PLAYERS } from "./server/server.jsx";
+import {
+  createGame,
+  getPlayerCards,
+  getItemIcon,
+  NUM_PLAYERS,
+  NUM_CARDS,
+  NUM_ITEM_SLOTS,
+} from "./server/server.jsx";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
@@ -22,34 +29,34 @@ export function Play() {
   const ItemType = { CARD_TYPE: "card" };
   const [gameData, setGameData] = React.useState({
     aspects: {
-      MAGIC: 10,
+      MAGIC: 0,
       STRENGTH: 0,
-      INTELLIGENCE: 5,
-      CHARISMA: 5,
+      INTELLIGENCE: 0,
+      CHARISMA: 0,
     },
     players: [
       {
-        name: "Alice",
+        name: "P1",
         aspect: "INTELLIGENCE",
-        cards: [1, 0, 1, 1, 1],
+        cards: Array(NUM_CARDS).fill(1),
       },
       {
-        name: "Bob",
+        name: "P2",
         aspect: "CHARISMA",
-        cards: [1, 1, 1, 1, 0],
+        cards: Array(NUM_CARDS).fill(1),
       },
       {
-        name: "Seth",
+        name: "P3",
         aspect: "MAGIC",
-        cards: [1, 1, 1, 0, 1],
+        cards: Array(NUM_CARDS).fill(1),
       },
       {
-        name: "Cosmo",
+        name: "P4",
         aspect: "STRENGTH",
-        cards: [1, 1, 1, 1, 1],
+        cards: Array(NUM_CARDS).fill(1),
       },
     ],
-    inventory: ["magic-potion", "", ""],
+    inventory: Array(NUM_ITEM_SLOTS).fill(""),
     current_turn_id: 0,
   });
   const [myPlayerId, setMyPlayerID] = React.useState(-1);
@@ -58,7 +65,7 @@ export function Play() {
     return myPlayerId;
   }
   const [heroData, setHeroData] = React.useState({
-    heroName: "Null Name",
+    heroName: "<Null Name>",
     heroGender: "unknown",
   });
   const [isSetupComplete, setIsSetupComplete] = React.useState(false);
@@ -67,12 +74,13 @@ export function Play() {
 
   function gameSetup() {
     console.log("Setting up!");
-    setMyPlayerID(3);
-    setMyCards(getCards());
-    setHeroData({
-      heroName: "Elrond",
-      heroGender: "male",
-    });
+    const _myPlayerId = 3;
+    setMyPlayerID(_myPlayerId);
+    const { _gameData, _heroData } = createGame();
+
+    setGameData(_gameData);
+    setHeroData(_heroData);
+    setMyCards(getPlayerCards(_myPlayerId));
     setGameState(GAME_STATES.PLAY);
     setIsSetupComplete(true);
     console.log("Setup complete!");
@@ -124,7 +132,6 @@ export function Play() {
     for (let i = 0; i < effects.length; i++) {
       let effect = effects[i];
       let effectData = Aspects[effect.type];
-      console.log(effectData);
       let classNameTemp = `card-outcome-text ${effectData.name}`;
       effect_html.push(
         <p className={classNameTemp} key={i}>
@@ -219,8 +226,9 @@ export function Play() {
 
   function useCard(_playerID, card) {
     let card_num_id = card.num_id;
+
     console.log("Player ID: ", _playerID);
-    if (card_num_id < gameData.players[_playerID].cards.length) {
+    if (card_num_id < NUM_CARDS) {
       console.log("Making Game Data copy.");
       console.log("current_turn_id:", gameData.current_turn_id);
       let gameDataCopy = { ...gameData };
@@ -260,6 +268,27 @@ export function Play() {
     } else {
       return null;
     }
+  }
+
+  function InventoryContainer() {
+    let itemBoxes = [];
+    for (let i = 0; i < NUM_ITEM_SLOTS; i++) {
+      itemBoxes.push(
+        <div className="item-box" key={i}>
+          <p className="item-box-text">
+            {gameData.inventory[i] == ""
+              ? i + 1
+              : getItemIcon(gameData.inventory[i])}
+          </p>
+        </div>
+      );
+    }
+    return (
+      <div className="items-container">
+        <h3 className="centered-header">Inventory</h3>
+        {itemBoxes}
+      </div>
+    );
   }
 
   function Leaderboard(aspects) {
@@ -387,30 +416,7 @@ export function Play() {
               </div>
               {getTextbox(myPlayerId)}
               <div className="left-align-container">
-                <div className="items-container">
-                  <h3 className="centered-header">Inventory</h3>
-                  <div className="item-box">
-                    <p className="item-box-text">
-                      {gameData.inventory[0] == ""
-                        ? "1"
-                        : getItemIcon(gameData.inventory[0])}
-                    </p>
-                  </div>
-                  <div className="item-box">
-                    <p className="item-box-text">
-                      {gameData.inventory[1] == ""
-                        ? "2"
-                        : getItemIcon(gameData.inventory[1])}
-                    </p>
-                  </div>
-                  <div className="item-box">
-                    <p className="item-box-text">
-                      {gameData.inventory[2] == ""
-                        ? "3"
-                        : getItemIcon(gameData.inventory[2])}
-                    </p>
-                  </div>
-                </div>
+                <InventoryContainer />
               </div>
             </div>
             <div className="whose-turn-and-all-card-sections">
