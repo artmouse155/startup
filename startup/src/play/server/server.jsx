@@ -35,8 +35,9 @@ let gameData = {
       cards: [1, 1, 1, 1, 1],
     },
   ],
-  inventory: ["magic-potion", "", ""],
-  current_turn_id: 0,
+  //inventory: ["magic-potion", "", ""],
+  inventory: Array(NUM_ITEM_SLOTS).fill(""),
+  current_turn_id: 3,
   turns: 0,
 };
 

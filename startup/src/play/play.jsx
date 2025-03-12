@@ -18,6 +18,39 @@ import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
 const debug = true;
+const defaultGameData = {
+  aspects: {
+    MAGIC: 0,
+    STRENGTH: 0,
+    INTELLIGENCE: 0,
+    CHARISMA: 0,
+  },
+  players: [
+    {
+      name: "P1",
+      aspect: "INTELLIGENCE",
+      cards: Array(NUM_CARDS).fill(1),
+    },
+    {
+      name: "P2",
+      aspect: "CHARISMA",
+      cards: Array(NUM_CARDS).fill(1),
+    },
+    {
+      name: "P3",
+      aspect: "MAGIC",
+      cards: Array(NUM_CARDS).fill(1),
+    },
+    {
+      name: "P4",
+      aspect: "STRENGTH",
+      cards: Array(NUM_CARDS).fill(1),
+    },
+  ],
+  inventory: Array(NUM_ITEM_SLOTS).fill(""),
+  current_turn_id: 0,
+  turns: 0,
+};
 
 export function Play() {
   const GAME_STATES = {
@@ -27,40 +60,8 @@ export function Play() {
   };
   const ItemType = { CARD_TYPE: "card" };
   const [gameState, setGameState] = React.useState(GAME_STATES.LOBBY);
-  const [myCards, setMyCards] = React.useState();
-  const [gameData, setGameData] = React.useState({
-    aspects: {
-      MAGIC: 0,
-      STRENGTH: 0,
-      INTELLIGENCE: 0,
-      CHARISMA: 0,
-    },
-    players: [
-      {
-        name: "P1",
-        aspect: "INTELLIGENCE",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-      {
-        name: "P2",
-        aspect: "CHARISMA",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-      {
-        name: "P3",
-        aspect: "MAGIC",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-      {
-        name: "P4",
-        aspect: "STRENGTH",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-    ],
-    inventory: Array(NUM_ITEM_SLOTS).fill(""),
-    current_turn_id: 0,
-    turns: 0,
-  });
+  const [myCards, setMyCards] = React.useState([]);
+  const [gameData, setGameData] = React.useState(defaultGameData);
   const [myPlayerId, setMyPlayerID] = React.useState(-1);
 
   setTurnEndFunc((_gameData) => {
