@@ -17,7 +17,7 @@
       "text": [
         "This is the first text option. It has a .1 chance of happening."
       ],
-      "result": [
+      "results": [
         {
           "type": "aspect-points",
           "amt": 5,
@@ -38,7 +38,7 @@
       "text": [
         "This text will only appear if you have the magic telescope AND you roll and you get lucky with a 50% chance."
       ],
-      "result": [
+      "results": [
         {
           "type": "aspect-points",
           "amt": 5,
@@ -54,7 +54,7 @@
     {
       "conditions": [],
       "text": ["This is the base case. My name is $n$!"],
-      "result": [
+      "results": [
         {
           "type": "aspect-points",
           "amt": 5,

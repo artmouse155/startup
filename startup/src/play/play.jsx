@@ -8,7 +8,7 @@ import {
   setTurnEndFunc,
   createGame,
   getPlayerCards,
-  getItemIcon,
+  getItemData,
   evalCard,
   NUM_PLAYERS,
   NUM_CARDS,
@@ -17,7 +17,7 @@ import {
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 
-const debug = true;
+const debug = false;
 const defaultGameData = {
   aspects: {
     MAGIC: 0,
@@ -166,55 +166,58 @@ export function Play() {
     return card;
   }
 
-  function Card({
-    num_id = "-1",
-    id = "null",
-    desc = "No Description",
-    effects = [{ amt: 500, type: Aspects.UNKNOWN }],
-  }) {
-    const [{ isDragging }, drag, preview] = useDrag(() => ({
-      type: ItemType.CARD_TYPE,
-      item: { num_id, id, desc, effects },
-      collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
-    }));
+  function returnCards(isMyTurn) {
+    function Card({
+      num_id = "-1",
+      id = "null",
+      desc = "No Description",
+      effects = [],
+    }) {
+      const [{ isDragging }, drag, preview] = useDrag(() => ({
+        type: ItemType.CARD_TYPE,
+        item: { num_id, id, desc, effects },
+        collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
+      }));
 
-    //TODO: Uncomment when I use previewlayer
-    React.useEffect(() => {
-      preview(getEmptyImage(), { captureDraggingState: true });
-    }, [isDragging]);
+      //TODO: Uncomment when I use previewlayer
+      React.useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true });
+      }, [isDragging]);
 
-    const effect_html = [];
-    for (let i = 0; i < effects.length; i++) {
-      let effect = effects[i];
-      let effectData = Aspects[effect.type];
-      // console.log(effectData);
-      let classNameTemp = `card-outcome-text ${effectData.name}`;
-      effect_html.push(
-        <p className={classNameTemp} key={i}>
-          <b>
-            + {effect.amt} {effectData.text}
-          </b>
-        </p>
+      const effect_html = [];
+      for (let i = 0; i < effects.length; i++) {
+        let effect = effects[i];
+        let effectData = Aspects[effect.type];
+        // console.log(effectData);
+        let classNameTemp = `card-outcome-text ${effectData.name}`;
+        effect_html.push(
+          <p className={classNameTemp} key={i}>
+            <b>
+              + {effect.amt} {effectData.text}
+            </b>
+          </p>
+        );
+      }
+
+      let cardPreview = (
+        <div>
+          <div className="transparent-card draggable" ref={preview}></div>
+          <CardDragLayer />
+        </div>
       );
+
+      let card = (
+        <div
+          className={`card ${isMyTurn ? "draggable" : ""}`}
+          ref={isMyTurn ? drag : null}
+        >
+          <p className="card-body-text">{desc}</p>
+          {effect_html}
+        </div>
+      );
+      return isDragging ? cardPreview : card;
     }
 
-    let cardPreview = (
-      <div>
-        <div className="transparent-card draggable" ref={preview}></div>
-        <CardDragLayer />
-      </div>
-    );
-
-    let card = (
-      <div className="card draggable" ref={drag}>
-        <p className="card-body-text">{desc}</p>
-        {effect_html}
-      </div>
-    );
-    return isDragging ? cardPreview : card;
-  }
-
-  function returnCards() {
     let cardArray = [];
     if (myPlayerId != -1) {
       console.log("Rendered player cards!");
@@ -285,10 +288,11 @@ export function Play() {
   function InventoryContainer({ inventory }) {
     let itemBoxes = [];
     for (let i = 0; i < NUM_ITEM_SLOTS; i++) {
+      const itemData = getItemData(inventory[i]);
       itemBoxes.push(
         <div className="item-box" key={i}>
           <p className="item-box-text">
-            {inventory[i] == "" ? i + 1 : getItemIcon(inventory[i])}
+            {inventory[i] == "" ? i + 1 : itemData.icon}
           </p>
         </div>
       );
@@ -452,7 +456,7 @@ export function Play() {
               </div>
               <div className="all-card-sections">
                 <div className="card-section">
-                  {returnCards()}
+                  {returnCards(gameData.current_turn_id == myPlayerId)}
                   <h2 className="my-turn">My Turn</h2>
                 </div>
               </div>
@@ -464,17 +468,17 @@ export function Play() {
             currentTurn={gameData.current_turn_id}
           />
         </div>
+        <button
+          onClick={nextTurn}
+          disabled={myPlayerId == gameData.current_turn_id}
+        >
+          Simulate Next Turn
+        </button>
         {debug ? (
           <div>
             <button onClick={() => console.log(myCards)}>Print cards</button>
             <button onClick={() => console.log(myPlayerId)}>
               Print My Player ID
-            </button>
-            <button
-              onClick={nextTurn}
-              disabled={myPlayerId == gameData.current_turn_id}
-            >
-              Simulate Next Turn
             </button>
             <button onClick={() => console.log(gameData.current_turn_id)}>
               Print Turn Id

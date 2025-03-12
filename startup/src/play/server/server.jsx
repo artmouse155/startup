@@ -175,13 +175,13 @@ export function evalCard(card_num_id) {
 
     if (conditionsMet) {
       // Evaluate the result of outcome
-      if (outcome.result) {
-        const results = outcome.result;
+      if (outcome.results) {
+        const results = outcome.results;
         for (let j = 0; j < results.length; j++) {
           const result = results[j];
 
           if (result.type == "aspect-points") {
-            gameData.aspectPoints[result.aspect] += parseInt(result.amt);
+            gameData.aspects[result.aspect] += parseInt(result.amt);
           }
 
           if (result.type == "item-obtained") {
@@ -189,13 +189,13 @@ export function evalCard(card_num_id) {
             // If there isn't an item in the slot, the value of the slot is "".
             // You always have NUM_ITEM_SLOTS slots in your inventory.
             // If you try to add an item to a full inventory, the oldest item disappears.
-            if (gameData.inventory.length >= NUM_ITEM_SLOTS) {
+            if (!gameData.inventory.includes("")) {
               gameData.inventory.shift(); // Remove the oldest item
               gameData.inventory.push(result.item);
               outcome.text.push(`_Not enough room. Oldest item removed._`);
             } else {
               for (let k = 0; k < gameData.inventory.length; k++) {
-                if (gameData.inventory[k] === "") {
+                if (gameData.inventory[k] == "") {
                   gameData.inventory[k] = result.item;
                   break;
                 }
@@ -222,9 +222,9 @@ export function evalCard(card_num_id) {
   return null;
 }
 
-export function getItemIcon(itemName) {
-  const item = items.find((item) => item.id == itemName);
-  return item ? item.icon : `No icon found for ${itemName}`;
+export function getItemData(itemId) {
+  const item = items.find((item) => item.id == itemId);
+  return item ? item : `No data found for ${itemId}`;
 }
 
 export { NUM_PLAYERS, NUM_CARDS, NUM_ITEM_SLOTS };

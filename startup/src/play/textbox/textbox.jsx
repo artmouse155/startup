@@ -5,11 +5,13 @@ import { Aspects } from "../aspects.jsx";
 import { apiCall } from "../api_stub/api_stub.jsx";
 import { marked } from "marked";
 //import { renderer } from "./md_extension.jsx";
+import items from "../server/items.json";
 import "./textbox.css";
 import {
   initTextbox,
   setTextboxPushFunc,
   setTextboxSetCurrentTurnFunc,
+  getItemData,
 } from "../server/server.jsx";
 
 export function TextBox({
@@ -98,7 +100,7 @@ export function TextBox({
         playerTurnName,
         title,
         text = [],
-        result: resultArr = [],
+        results: resultArr = [],
       } = _story[i];
       switch (type) {
         case "intro":
@@ -116,7 +118,8 @@ export function TextBox({
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
             break;
           case "item-obtained":
-            s += `<i class= "item">${item} Obtained</i>\n\n`;
+            s += `<i class= "item">${getItemData(item).name} obtained</i>\n\n`;
+            break;
         }
       }
     }
