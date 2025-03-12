@@ -59,12 +59,13 @@ export function Play() {
     ],
     inventory: Array(NUM_ITEM_SLOTS).fill(""),
     current_turn_id: 0,
+    turns: 0,
   });
   const [myPlayerId, setMyPlayerID] = React.useState(-1);
 
   setTurnEndFunc((_gameData) => {
-    console.log("Turn ended hook worked. Updating player data.");
-    setGameData(_gameData);
+    console.log("Turn ended hook started! Updating player data.", _gameData);
+    setGameData({ ..._gameData }); // Create a shallow copy to ensure state update
   });
 
   function getPlayerID() {
@@ -78,6 +79,9 @@ export function Play() {
   const [isSetupComplete, setIsSetupComplete] = React.useState(false);
 
   React.useEffect(() => (isSetupComplete ? () => {} : gameSetup()));
+  React.useEffect(() => {
+    console.log("game Data updated!", gameData);
+  }, [gameData]);
 
   function gameSetup() {
     console.log("Setting up!");
@@ -277,15 +281,13 @@ export function Play() {
     }
   }
 
-  function InventoryContainer() {
+  function InventoryContainer({ inventory }) {
     let itemBoxes = [];
     for (let i = 0; i < NUM_ITEM_SLOTS; i++) {
       itemBoxes.push(
         <div className="item-box" key={i}>
           <p className="item-box-text">
-            {gameData.inventory[i] == ""
-              ? i + 1
-              : getItemIcon(gameData.inventory[i])}
+            {inventory[i] == "" ? i + 1 : getItemIcon(inventory[i])}
           </p>
         </div>
       );
@@ -298,87 +300,83 @@ export function Play() {
     );
   }
 
-  function Leaderboard(aspects) {
-    // PlayerID, Standing
-    let standings = Array(NUM_PLAYERS);
-    for (let i = 0; i < NUM_PLAYERS; i++) {
-      standings[i] = 0;
-      for (let j = 0; j < NUM_PLAYERS; j++) {
-        if (
-          aspects[gameData.players[i].aspect] <
-          aspects[gameData.players[j].aspect]
-        ) {
-          standings[i]++;
+  // I forgot to put props around it.
+  function Leaderboard({ aspects, players }) {
+    if (aspects && players) {
+      // PlayerID, Standing
+      let standings = Array(NUM_PLAYERS);
+      for (let i = 0; i < NUM_PLAYERS; i++) {
+        standings[i] = 0;
+        for (let j = 0; j < NUM_PLAYERS; j++) {
+          if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
+            standings[i]++;
+          }
         }
       }
-    }
 
-    // console.log(
-    //   "Rendering Leaderboard! Standings:",
-    //   standings,
-    //   "gameData: ",
-    //   gameData
-    // );
-    function LeaderboardCard({ data }) {
-      const emoji = Aspects[data.aspect].emoji;
+      console.log(
+        "Rendering Leaderboard! Standings:",
+        standings,
+        "aspects",
+        aspects,
+        "players",
+        players
+      );
+      function LeaderboardCard({ data }) {
+        const emoji = Aspects[data.aspect].emoji;
 
-      let cardArray = [];
-      let placeText = "th";
-      switch (data.standing) {
-        case 0:
-          placeText = "st";
-          break;
-        case 1:
-          placeText = "nd";
-          break;
-        default:
-          placeText = "th";
-          break;
-      }
+        let cardArray = [];
+        let placeText = "th";
+        switch (data.standing) {
+          case 0:
+            placeText = "st";
+            break;
+          case 1:
+            placeText = "nd";
+            break;
+          default:
+            placeText = "th";
+            break;
+        }
 
-      for (let index = 0; index < data.cards.length; index++) {
-        cardArray.push(
-          <div
-            key={index}
-            className="dummy-card"
-            id={data.cards[index] ? "unplayed" : "played"}
-          ></div>
-        );
-      }
+        for (let index = 0; index < data.cards.length; index++) {
+          cardArray.push(
+            <div
+              key={index}
+              className="dummy-card"
+              id={data.cards[index] ? "unplayed" : "played"}
+            ></div>
+          );
+        }
 
-      return (
-        <div className="player-box shadow-4" id="Player1">
-          <div className="players-box-name-and-cards">
-            <h4 className="player-box-name">
-              {`${emoji} ${data.name} ${emoji}`}
-            </h4>
-            <div className="card-count">{cardArray}</div>
-          </div>
-          <div className="place">
-            <div className="place-text-container">
-              <p className="big-place-text-number">{data.standing + 1}</p>
-              <p className="place-text">{placeText}</p>
+        return (
+          <div className="player-box shadow-4" id="Player1">
+            <div className="players-box-name-and-cards">
+              <h4 className="player-box-name">
+                {`${emoji} ${data.name} ${emoji}`}
+              </h4>
+              <div className="card-count">{cardArray}</div>
+            </div>
+            <div className="place">
+              <div className="place-text-container">
+                <p className="big-place-text-number">{data.standing + 1}</p>
+                <p className="place-text">{placeText}</p>
+              </div>
             </div>
           </div>
+        );
+      }
+      return (
+        <div className="players-boxes-container">
+          <LeaderboardCard data={{ standing: standings[0], ...players[0] }} />
+          <LeaderboardCard data={{ standing: standings[1], ...players[1] }} />
+          <LeaderboardCard data={{ standing: standings[2], ...players[2] }} />
+          <LeaderboardCard data={{ standing: standings[3], ...players[3] }} />
         </div>
       );
+    } else {
+      return null;
     }
-    return (
-      <div className="players-boxes-container">
-        <LeaderboardCard
-          data={{ standing: standings[0], ...gameData.players[0] }}
-        />
-        <LeaderboardCard
-          data={{ standing: standings[1], ...gameData.players[1] }}
-        />
-        <LeaderboardCard
-          data={{ standing: standings[2], ...gameData.players[2] }}
-        />
-        <LeaderboardCard
-          data={{ standing: standings[3], ...gameData.players[3] }}
-        />
-      </div>
-    );
   }
 
   if (gameState == GAME_STATES.LOBBY) {
@@ -423,7 +421,7 @@ export function Play() {
               </div>
               {getTextbox()}
               <div className="left-align-container">
-                <InventoryContainer />
+                <InventoryContainer inventory={gameData.inventory} />
               </div>
             </div>
             <div className="whose-turn-and-all-card-sections">
@@ -446,7 +444,7 @@ export function Play() {
               </div>
             </div>
           </div>
-          <Leaderboard aspects={gameData.aspects} />
+          <Leaderboard aspects={gameData.aspects} players={gameData.players} />
         </div>
         {debug ? (
           <div>

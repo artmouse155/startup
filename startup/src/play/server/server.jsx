@@ -37,6 +37,7 @@ let gameData = {
   ],
   inventory: ["magic-potion", "", ""],
   current_turn_id: 0,
+  turns: 0,
 };
 
 let playerCards = [{}, {}, {}, {}];
@@ -114,6 +115,7 @@ export function setTextboxSetCurrentTurnFunc(func) {
 
 export function nextTurn() {
   gameData.current_turn_id = (gameData.current_turn_id + 1) % NUM_PLAYERS;
+  gameData.turns++;
   textboxSetCurrentTurnFunc(gameData.players[gameData.current_turn_id].name);
   turnEndFunc(gameData);
 }
