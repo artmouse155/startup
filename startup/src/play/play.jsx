@@ -233,7 +233,7 @@ export function Play() {
 
   function useCard(card) {
     let card_num_id = card.num_id;
-    if (card_num_id < NUM_CARDS) {
+    if (gameData.players[gameData.current_turn_id].cards[card_num_id] == 1) {
       // console.log("Making Game Data copy.");
       // console.log("current_turn_id:", gameData.current_turn_id);
       // let gameDataCopy = { ...gameData };
@@ -243,6 +243,7 @@ export function Play() {
       evalCard(card_num_id);
       return true;
     }
+    console.log("Card not found in player's hand.");
     return false;
   }
 

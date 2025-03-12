@@ -1,6 +1,6 @@
 import cards from "./cards.json";
 import items from "./items.json";
-import storyJSON from "../textbox/story.json";
+import introJSON from "./intro.json";
 
 const NUM_CARDS = 5;
 const NUM_PLAYERS = 4;
@@ -93,7 +93,7 @@ export function createGame() {
 }
 
 export function initTextbox() {
-  const init_story = storyJSON.sections;
+  const init_story = introJSON.sections;
   const init_name = gameData.players[gameData.current_turn_id].name;
   return { init_story, init_name };
 }

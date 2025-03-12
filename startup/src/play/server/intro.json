@@ -1,0 +1,15 @@
+{
+  "sections": [
+    {
+      "type": "intro",
+      "title": "The Beginning",
+      "text": [
+        "$n$ had barely finished stepping both feet inside the dungeon when *WHAM!* the gate slammed down behind $them$.",
+        "\"$wow-long-quote$\" $exclamation$ $n$.",
+        "$n$ looked around and found $them$self in $room-type$ that was $room-condition$. $They$ looked ahead and saw an archway, and inscripted above the arch were the following words:",
+        "$inspirational-quote$",
+        "Feeling $feeling$, $n$ began $their$ trek into the unknown."
+      ]
+    }
+  ]
+}

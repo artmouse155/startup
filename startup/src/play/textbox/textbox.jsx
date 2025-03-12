@@ -7,6 +7,7 @@ import { marked } from "marked";
 //import { renderer } from "./md_extension.jsx";
 import "./textbox.css";
 import {
+  initTextbox,
   setTextboxPushFunc,
   setTextboxSetCurrentTurnFunc,
 } from "../server/server.jsx";
@@ -29,6 +30,9 @@ export function TextBox({
   const [isSetupComplete, setIsSetupComplete] = React.useState(false);
   React.useEffect(() => {
     if (!isSetupComplete) {
+      const { init_story, init_name } = initTextbox();
+      setStory(init_story);
+      setCurrentPlayerName(init_name);
       setIsSetupComplete(true);
     }
   }, []);
@@ -38,8 +42,6 @@ export function TextBox({
   });
   const heroName = heroData.heroName;
   const heroGender = heroData.heroGender;
-
-  const itemColor = "#c90000";
 
   const pronouns = {
     They: {
@@ -94,12 +96,16 @@ export function TextBox({
       const {
         type,
         playerTurnName,
+        title,
         text = [],
         result: resultArr = [],
       } = _story[i];
       switch (type) {
+        case "intro":
+          s += `<h2 class="title">${title}</h2>\n\n`;
+          break;
         case "turn":
-          s += `##### ${playerTurnName}'s Turn\n\n`;
+          s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;
           break;
       }
       s += `${text.join("\n\n")}\n\n`;
@@ -110,7 +116,7 @@ export function TextBox({
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
             break;
           case "item-obtained":
-            s += `<i style="color: ${itemColor}">${item} Obtained</i>\n\n`;
+            s += `<i class= "item">${item} Obtained</i>\n\n`;
         }
       }
     }
@@ -183,7 +189,6 @@ export function TextBox({
 
   return (
     <div className={`text-adventure-container`} ref={drop}>
-      <button onClick={() => console.log(story)}>Print Story</button>
       <div
         className={`text-adventure ${isOver ? "is-over" : "not-over"} ${
           isOver ? "is-over-grow" : ""

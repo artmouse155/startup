@@ -13,7 +13,6 @@ export function Login({ userName, authState, onAuthChange }) {
         </p>
         <div className="login-body">
           <form
-            method="get"
             action={() => {
               onAuthChange(true, "Cosmo");
             }}
