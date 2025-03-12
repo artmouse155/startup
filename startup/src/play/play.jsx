@@ -302,7 +302,7 @@ export function Play() {
   }
 
   // I forgot to put props around it.
-  function Leaderboard({ aspects, players }) {
+  function Leaderboard({ aspects, players, currentTurn }) {
     if (aspects && players) {
       // PlayerID, Standing
       let standings = Array(NUM_PLAYERS);
@@ -323,7 +323,7 @@ export function Play() {
         "players",
         players
       );
-      function LeaderboardCard({ data }) {
+      function LeaderboardCard({ id, data }) {
         const emoji = Aspects[data.aspect].emoji;
 
         let cardArray = [];
@@ -351,7 +351,7 @@ export function Play() {
         }
 
         return (
-          <div className="player-box shadow-4" id="Player1">
+          <div className="player-box shadow-4" id={id}>
             <div className="players-box-name-and-cards">
               <h4 className="player-box-name">
                 {`${emoji} ${data.name} ${emoji}`}
@@ -367,12 +367,25 @@ export function Play() {
           </div>
         );
       }
+      console.log("current turn", currentTurn);
       return (
         <div className="players-boxes-container">
-          <LeaderboardCard data={{ standing: standings[0], ...players[0] }} />
-          <LeaderboardCard data={{ standing: standings[1], ...players[1] }} />
-          <LeaderboardCard data={{ standing: standings[2], ...players[2] }} />
-          <LeaderboardCard data={{ standing: standings[3], ...players[3] }} />
+          <LeaderboardCard
+            id={currentTurn == 0 ? "current-turn" : ""}
+            data={{ standing: standings[0], ...players[0] }}
+          />
+          <LeaderboardCard
+            id={currentTurn == 1 ? "current-turn" : ""}
+            data={{ standing: standings[1], ...players[1] }}
+          />
+          <LeaderboardCard
+            id={currentTurn == 2 ? "current-turn" : ""}
+            data={{ standing: standings[2], ...players[2] }}
+          />
+          <LeaderboardCard
+            id={currentTurn == 3 ? "current-turn" : ""}
+            data={{ standing: standings[3], ...players[3] }}
+          />
         </div>
       );
     } else {
@@ -445,7 +458,11 @@ export function Play() {
               </div>
             </div>
           </div>
-          <Leaderboard aspects={gameData.aspects} players={gameData.players} />
+          <Leaderboard
+            aspects={gameData.aspects}
+            players={gameData.players}
+            currentTurn={gameData.current_turn_id}
+          />
         </div>
         {debug ? (
           <div>
