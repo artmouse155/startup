@@ -1,5 +1,6 @@
 import cards from "./cards.json";
 import items from "./items.json";
+import storyJSON from "../textbox/story.json";
 
 const NUM_CARDS = 5;
 const NUM_PLAYERS = 4;
@@ -42,6 +43,7 @@ let playerCards = [{}, {}, {}, {}];
 
 let turnEndFunc = (_playerData) => {};
 let textboxPushFunc = (_storyElem) => {};
+let textboxSetCurrentTurnFunc = (_currentTurnId) => {};
 
 function getRandomInt(max) {
   // From Mozilla docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
@@ -90,6 +92,12 @@ export function createGame() {
   return { _gameData, _heroData };
 }
 
+export function initTextbox() {
+  const init_story = storyJSON.sections;
+  const init_name = gameData.players[gameData.current_turn_id].name;
+  return { init_story, init_name };
+}
+
 export function setTurnEndFunc(func) {
   turnEndFunc = func;
 }
@@ -98,13 +106,30 @@ export function setTextboxPushFunc(func) {
   textboxPushFunc = func;
 }
 
-export function simulateNextTurn() {}
+export function setTextboxSetCurrentTurnFunc(func) {
+  textboxSetCurrentTurnFunc = func;
+}
+
+export function nextTurn() {
+  gameData.current_turn_id = (gameData.current_turn_id + 1) % NUM_PLAYERS;
+  textboxSetCurrentTurnFunc(gameData.players[gameData.current_turn_id].name);
+}
 
 // Will compute card result and return the text of the result.
 export function evalCard(card_num_id) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
-  const card = playerCards[gameData.current_turn_id][card_num_id];
+  console.log(
+    `Player ${
+      gameData.players[gameData.current_turn_id].name
+    } is playing card ${card_num_id} from their hand.`
+  );
+  ``;
+
+  // If this card has already been played, something crazy is going on!
+
+  const card_id = playerCards[gameData.current_turn_id][card_num_id].id;
+  const card = cards.find((card) => card.id == card_id);
   if (!card) {
     console.log("No card found for card", card_num_id);
     return null;
@@ -115,6 +140,10 @@ export function evalCard(card_num_id) {
     console.log("No outcomes found for card", card);
     return null;
   }
+
+  // This card is no longer playable.
+  gameData.players[gameData.current_turn_id].cards[card_num_id] = 0;
+
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];
     const conditions = outcome.conditions;
@@ -169,11 +198,16 @@ export function evalCard(card_num_id) {
           }
         }
       }
+      const cardPlayerName = gameData.players[gameData.current_turn_id].name;
+
       textboxPushFunc({
         ...outcome,
         type: "turn",
-        playerTurnName: gameData.players[gameData.current_turn_id].name,
+        playerTurnName: cardPlayerName,
       });
+
+      // Go to next player's turn
+      nextTurn();
       turnEndFunc(gameData);
       return true;
     }

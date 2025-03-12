@@ -4,6 +4,7 @@ import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
 import {
+  nextTurn,
   setTurnEndFunc,
   createGame,
   getPlayerCards,
@@ -230,44 +231,42 @@ export function Play() {
     return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
   }
 
-  function useCard(_playerID, card) {
+  function useCard(card) {
     let card_num_id = card.num_id;
-
-    console.log("Player ID: ", _playerID);
     if (card_num_id < NUM_CARDS) {
-      console.log("Making Game Data copy.");
-      console.log("current_turn_id:", gameData.current_turn_id);
-      let gameDataCopy = { ...gameData };
-      console.log("copied current_turn_id:", gameDataCopy.current_turn_id);
-      gameDataCopy.players[_playerID].cards[card_num_id] = 0;
-      setGameData({ ...gameDataCopy });
-      evalCard(card.num_id);
+      // console.log("Making Game Data copy.");
+      // console.log("current_turn_id:", gameData.current_turn_id);
+      // let gameDataCopy = { ...gameData };
+      // console.log("copied current_turn_id:", gameDataCopy.current_turn_id);
+      // gameDataCopy.players[_playerID].cards[card_num_id] = 0;
+      // setGameData({ ...gameDataCopy });
+      evalCard(card_num_id);
       return true;
     }
     return false;
   }
 
-  function fakeNextTurn() {
-    console.log("Next Turn");
-    // Make game data copy
-    let gameDataCopy = { ...gameData };
+  // function fakeNextTurn() {
+  //   console.log("Next Turn");
+  //   // Make game data copy
+  //   let gameDataCopy = { ...gameData };
 
-    // Use a random card
+  //   // Use a random card
 
-    // Give next player a turn to go
-    gameDataCopy.current_turn_id = (gameData.current_turn_id + 1) % 4;
-    setGameData(gameDataCopy);
-  }
+  //   // Give next player a turn to go
+  //   gameDataCopy.current_turn_id = (gameData.current_turn_id + 1) % 4;
+  //   setGameData(gameDataCopy);
+  // }
 
-  function getTextbox(_playerID) {
+  function getTextbox() {
     if (isSetupComplete) {
-      console.log("Rendering textbox! Player ID is", _playerID);
+      //console.log("Rendering textbox! Player ID is", _playerID);
       return (
         <DndProvider backend={HTML5Backend}>
           <TextBox
             dragItemType={ItemType.CARD_TYPE}
             heroData={heroData}
-            playerID={_playerID}
+            initialPlayerName={gameData.players[gameData.current_turn_id].name}
             useCard={useCard}
           />
         </DndProvider>
@@ -421,7 +420,7 @@ export function Play() {
                   </div>
                 </div>
               </div>
-              {getTextbox(myPlayerId)}
+              {getTextbox()}
               <div className="left-align-container">
                 <InventoryContainer />
               </div>
@@ -455,7 +454,7 @@ export function Play() {
               Print My Player ID
             </button>
             <button
-              onClick={fakeNextTurn}
+              onClick={nextTurn}
               disabled={myPlayerId == gameData.current_turn_id}
             >
               Simulate Next Turn

@@ -3,19 +3,38 @@ import { DndProvider, useDragLayer, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Aspects } from "../aspects.jsx";
 import { apiCall } from "../api_stub/api_stub.jsx";
-import storyJSON from "./story.json";
 import { marked } from "marked";
 //import { renderer } from "./md_extension.jsx";
 import "./textbox.css";
-import { setTextboxPushFunc } from "../server/server.jsx";
+import {
+  setTextboxPushFunc,
+  setTextboxSetCurrentTurnFunc,
+} from "../server/server.jsx";
 
-export function TextBox({ dragItemType, heroData, playerID, useCard }) {
-  const [story, setStory] = React.useState(storyJSON.sections);
+export function TextBox({
+  dragItemType,
+  heroData,
+  initialPlayerName,
+  useCard,
+}) {
+  const [story, setStory] = React.useState([]);
+  const [currentPlayerName, setCurrentPlayerName] =
+    React.useState(initialPlayerName);
   setTextboxPushFunc((storyElem) => {
     console.log("Pushing story element", storyElem);
     let storyCopy = [...story];
     storyCopy.push(storyElem);
     setStory(storyCopy);
+  });
+  const [isSetupComplete, setIsSetupComplete] = React.useState(false);
+  React.useEffect(() => {
+    if (!isSetupComplete) {
+      setIsSetupComplete(true);
+    }
+  }, []);
+
+  setTextboxSetCurrentTurnFunc((playerTurnName) => {
+    setCurrentPlayerName(playerTurnName);
   });
   const heroName = heroData.heroName;
   const heroGender = heroData.heroGender;
@@ -65,22 +84,19 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
     },
   };
 
-  //   const getHTML = () => {
-  //     fetch("story.md")
-  //       .then((response) => response.text())
-  //       .then((text) => setStory({ terms: text }));
-  //   };
   const insertRegex = /\$([^$]*)\$/g;
 
   function parseMD() {
+    let _story = [...story];
+    _story.push({ type: "turn", playerTurnName: currentPlayerName });
     let s = "";
-    for (let i = 0; i < story.length; i++) {
+    for (let i = 0; i < _story.length; i++) {
       const {
         type,
         playerTurnName,
         text = [],
         result: resultArr = [],
-      } = story[i];
+      } = _story[i];
       switch (type) {
         case "turn":
           s += `##### ${playerTurnName}'s Turn\n\n`;
@@ -92,8 +108,6 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
         switch (resultType) {
           case "aspect-points":
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
-            // const e = document.getElementById(aspect).querySelector("#amt");
-            // e.textContent = amt;
             break;
           case "item-obtained":
             s += `<i style="color: ${itemColor}">${item} Obtained</i>\n\n`;
@@ -101,42 +115,44 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
       }
     }
     const matches = s.match(insertRegex);
-    for (let j = 0; j < matches.length; j++) {
-      const m = matches[j];
-      let r = "DEFAULT REPLACE";
-      switch (m) {
-        case "$n$":
-          r = heroName;
-          break;
-        case "$They$":
-          r = pronouns.They[heroGender];
-          break;
-        case "$Their$":
-          r = pronouns.Their[heroGender];
-          break;
-        case "$Theirs$":
-          r = pronouns.Theirs[heroGender];
-          break;
-        case "$Them$":
-          r = pronouns.Them[heroGender];
-          break;
-        case "$they$":
-          r = pronouns.they[heroGender];
-          break;
-        case "$their$":
-          r = pronouns.their[heroGender];
-          break;
-        case "$theirs$":
-          r = pronouns.theirs[heroGender];
-          break;
-        case "$them$":
-          r = pronouns.them[heroGender];
-          break;
-        default:
-          r = apiCall(m);
-          break;
+    if (matches) {
+      for (let j = 0; j < matches.length; j++) {
+        const m = matches[j];
+        let r = "DEFAULT REPLACE";
+        switch (m) {
+          case "$n$":
+            r = heroName;
+            break;
+          case "$They$":
+            r = pronouns.They[heroGender];
+            break;
+          case "$Their$":
+            r = pronouns.Their[heroGender];
+            break;
+          case "$Theirs$":
+            r = pronouns.Theirs[heroGender];
+            break;
+          case "$Them$":
+            r = pronouns.Them[heroGender];
+            break;
+          case "$they$":
+            r = pronouns.they[heroGender];
+            break;
+          case "$their$":
+            r = pronouns.their[heroGender];
+            break;
+          case "$theirs$":
+            r = pronouns.theirs[heroGender];
+            break;
+          case "$them$":
+            r = pronouns.them[heroGender];
+            break;
+          default:
+            r = apiCall(m);
+            break;
+        }
+        s = s.replace(`${m}`, r);
       }
-      s = s.replace(`${m}`, r);
     }
 
     //marked.use(renderer);
@@ -153,7 +169,7 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
     drop(item, monitor) {
       console.log(item);
 
-      useCard(playerID, item);
+      useCard(item);
       return undefined;
     },
     collect: (monitor) => ({ isOver: !!monitor.isOver() }),
