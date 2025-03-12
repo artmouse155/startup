@@ -4,9 +4,11 @@ import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
 import {
+  setTurnEndFunc,
   createGame,
   getPlayerCards,
   getItemIcon,
+  evalCard,
   NUM_PLAYERS,
   NUM_CARDS,
   NUM_ITEM_SLOTS,
@@ -22,11 +24,9 @@ export function Play() {
     PLAY: 1,
     END: 2,
   };
-  const [gameState, setGameState] = React.useState(GAME_STATES.LOBBY);
-
-  const [myCards, setMyCards] = React.useState();
-
   const ItemType = { CARD_TYPE: "card" };
+  const [gameState, setGameState] = React.useState(GAME_STATES.LOBBY);
+  const [myCards, setMyCards] = React.useState();
   const [gameData, setGameData] = React.useState({
     aspects: {
       MAGIC: 0,
@@ -60,6 +60,12 @@ export function Play() {
     current_turn_id: 0,
   });
   const [myPlayerId, setMyPlayerID] = React.useState(-1);
+
+  setTurnEndFunc((_gameData) => {
+    console.log("Turn ended hook worked. Updating player data.");
+    setGameData(_gameData);
+  });
+
   function getPlayerID() {
     console.log("Accessed player ID!");
     return myPlayerId;
@@ -175,7 +181,7 @@ export function Play() {
     for (let i = 0; i < effects.length; i++) {
       let effect = effects[i];
       let effectData = Aspects[effect.type];
-      console.log(effectData);
+      // console.log(effectData);
       let classNameTemp = `card-outcome-text ${effectData.name}`;
       effect_html.push(
         <p className={classNameTemp} key={i}>
@@ -235,7 +241,8 @@ export function Play() {
       console.log("copied current_turn_id:", gameDataCopy.current_turn_id);
       gameDataCopy.players[_playerID].cards[card_num_id] = 0;
       setGameData({ ...gameDataCopy });
-      return true;
+
+      return { storyElem: evalCard(card.id), nextPlayerName: "Joe" };
     }
     return false;
   }
@@ -306,12 +313,12 @@ export function Play() {
       }
     }
 
-    console.log(
-      "Rendering Leaderboard! Standings:",
-      standings,
-      "gameData: ",
-      gameData
-    );
+    // console.log(
+    //   "Rendering Leaderboard! Standings:",
+    //   standings,
+    //   "gameData: ",
+    //   gameData
+    // );
     function LeaderboardCard({ data }) {
       const emoji = Aspects[data.aspect].emoji;
 

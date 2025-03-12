@@ -41,6 +41,7 @@ let gameData = {
 let playerCards = [{}, {}, {}, {}];
 
 let turnEndFunc = (_playerData) => {};
+let textboxPushFunc = (_storyElem) => {};
 
 function getRandomInt(max) {
   // From Mozilla docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
@@ -93,14 +94,25 @@ export function setTurnEndFunc(func) {
   turnEndFunc = func;
 }
 
+export function setTextboxPushFunc(func) {
+  textboxPushFunc = func;
+}
+
 export function simulateNextTurn() {}
 
 // Will compute card result and return the text of the result.
-export function getCardResult(card_id) {
+export function evalCard(card_id) {
   // get result object from card based on checking conditions
+  // console.log("Checking card", card_id);
   const card = cards.find((card) => card.id == card_id);
 
+  // console.log("Card found", card);
+
   const outcomes = card.outcomes;
+  if (!outcomes) {
+    console.log("No outcomes found for card", card_id);
+    return null;
+  }
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];
     const conditions = outcome.conditions;
@@ -126,38 +138,42 @@ export function getCardResult(card_id) {
 
     if (conditionsMet) {
       // Evaluate the result of outcome
-      const results = outcome.result;
-      for (let j = 0; j < results.length; j++) {
-        const result = results[j];
+      if (outcome.result) {
+        const results = outcome.result;
+        for (let j = 0; j < results.length; j++) {
+          const result = results[j];
 
-        if (result.type == "aspect-points") {
-          gameData.aspectPoints[result.aspect] += parseInt(result.amt);
-        }
+          if (result.type == "aspect-points") {
+            gameData.aspectPoints[result.aspect] += parseInt(result.amt);
+          }
 
-        if (result.type == "item-obtained") {
-          // Add item to inventory. The inventory is a list of strings that represent the item names.
-          // If there isn't an item in the slot, the value of the slot is "".
-          // You always have NUM_ITEM_SLOTS slots in your inventory.
-          // If you try to add an item to a full inventory, the oldest item disappears.
-          if (gameData.inventory.length >= NUM_ITEM_SLOTS) {
-            gameData.inventory.shift(); // Remove the oldest item
-            gameData.inventory.push(result.item);
-            outcome.text.push(`_Not enough room. Oldest item removed._`);
-          } else {
-            for (let k = 0; k < gameData.inventory.length; k++) {
-              if (gameData.inventory[k] === "") {
-                gameData.inventory[k] = result.item;
-                break;
+          if (result.type == "item-obtained") {
+            // Add item to inventory. The inventory is a list of strings that represent the item names.
+            // If there isn't an item in the slot, the value of the slot is "".
+            // You always have NUM_ITEM_SLOTS slots in your inventory.
+            // If you try to add an item to a full inventory, the oldest item disappears.
+            if (gameData.inventory.length >= NUM_ITEM_SLOTS) {
+              gameData.inventory.shift(); // Remove the oldest item
+              gameData.inventory.push(result.item);
+              outcome.text.push(`_Not enough room. Oldest item removed._`);
+            } else {
+              for (let k = 0; k < gameData.inventory.length; k++) {
+                if (gameData.inventory[k] === "") {
+                  gameData.inventory[k] = result.item;
+                  break;
+                }
               }
             }
           }
         }
       }
-      return {
+      textboxPushFunc({
         ...outcome,
         type: "turn",
-        playerTurnName: gameData.self.player,
-      };
+        playerTurnName: gameData.players[gameData.current_turn_id].name,
+      });
+      turnEndFunc(gameData);
+      return true;
     }
   }
   console.log("No outcome found for card", card_id);

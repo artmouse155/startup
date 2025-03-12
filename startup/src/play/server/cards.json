@@ -12,21 +12,32 @@
       {
         "conditions": [],
         "text": [
-          "After several hours of walking (and a few minutes of skipping) $n$ came across a well that looked so old, it was as if it would crumble to dust if $they$ touched it.",
-          "$They$ noticed the bucket was close to the surface of the well and so $they$ took a look inside. $They$ could see what was inside! It was...",
-          "<span class=\"item\">A mysterious potion of unknown consequence!</span>",
-          "Just barely able to reach it, $n$ grabbed the item and stuffed it into $their$ inventory."
+          "You read a magic inscription on the wall. Everyone is very proud of you."
         ]
       }
     ]
   },
   {
     "id": "magic-telescope",
-    "desc": "Add Magic Telescope to inventory"
+    "desc": "Add Magic Telescope to inventory",
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["You found a Magic Telescope! It's a telescope that's magic."]
+      }
+    ]
   },
   {
     "id": "use-topmost-item",
-    "desc": "Use topmost item in inventory"
+    "desc": "Use topmost item in inventory",
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "You used the topmost item in your inventory. It was a good choice."
+        ]
+      }
+    ]
   },
   {
     "id": "cobweb-room",
@@ -40,6 +51,12 @@
         "amt": 2,
         "type": "UNKNOWN"
       }
+    ],
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["You entered a cobweb-infested room. It's very dusty in here."]
+      }
     ]
   },
   {
@@ -49,6 +66,12 @@
       {
         "amt": 5,
         "type": "UNKNOWN"
+      }
+    ],
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["AHHH! It's a bear!"]
       }
     ]
   }

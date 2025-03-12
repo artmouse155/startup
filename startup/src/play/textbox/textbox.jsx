@@ -7,9 +7,16 @@ import storyJSON from "./story.json";
 import { marked } from "marked";
 //import { renderer } from "./md_extension.jsx";
 import "./textbox.css";
+import { setTextboxPushFunc } from "../server/server.jsx";
 
 export function TextBox({ dragItemType, heroData, playerID, useCard }) {
-  const [story, setStory] = React.useState([]);
+  const [story, setStory] = React.useState(storyJSON.sections);
+  setTextboxPushFunc((storyElem) => {
+    console.log("Pushing story element", storyElem);
+    let storyCopy = [...story];
+    storyCopy.push(storyElem);
+    setStory(storyCopy);
+  });
   const heroName = heroData.heroName;
   const heroGender = heroData.heroGender;
 
@@ -58,10 +65,6 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
     },
   };
 
-  function FakeServer() {
-    parseMD();
-  }
-
   //   const getHTML = () => {
   //     fetch("story.md")
   //       .then((response) => response.text())
@@ -69,15 +72,15 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
   //   };
   const insertRegex = /\$([^$]*)\$/g;
 
-  const parseMD = () => {
+  function parseMD() {
     let s = "";
-    for (let i = 0; i < storyJSON.sections.length; i++) {
+    for (let i = 0; i < story.length; i++) {
       const {
         type,
         playerTurnName,
         text = [],
         result: resultArr = [],
-      } = storyJSON.sections[i];
+      } = story[i];
       switch (type) {
         case "turn":
           s += `##### ${playerTurnName}'s Turn\n\n`;
@@ -89,8 +92,8 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
         switch (resultType) {
           case "aspect-points":
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
-            const e = document.getElementById(aspect).querySelector("#amt");
-            e.textContent = amt;
+            // const e = document.getElementById(aspect).querySelector("#amt");
+            // e.textContent = amt;
             break;
           case "item-obtained":
             s += `<i style="color: ${itemColor}">${item} Obtained</i>\n\n`;
@@ -140,15 +143,20 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
 
     // Run marked
     document.getElementById("parsedMD").innerHTML = marked.parse(s);
-  };
+
+    const elem = document.getElementById("textScroll");
+    elem.scrollTop = elem.scrollHeight;
+  }
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: dragItemType,
     drop(item, monitor) {
       console.log(item);
-      const elem = document.getElementById("textScroll");
-      elem.scrollTop = elem.scrollHeight;
-      useCard(playerID, item);
+
+      let storyCopy = [...story];
+      storyCopy.push(useCard(playerID, item));
+      setStory(storyCopy);
+
       return undefined;
     },
     collect: (monitor) => ({ isOver: !!monitor.isOver() }),
@@ -158,10 +166,11 @@ export function TextBox({ dragItemType, heroData, playerID, useCard }) {
     isDragging: monitor.isDragging(),
   }));
 
-  React.useEffect(FakeServer, []);
+  React.useEffect(parseMD, [story]);
 
   return (
     <div className={`text-adventure-container`} ref={drop}>
+      <button onClick={() => console.log(story)}>Print Story</button>
       <div
         className={`text-adventure ${isOver ? "is-over" : "not-over"} ${
           isOver ? "is-over-grow" : ""
