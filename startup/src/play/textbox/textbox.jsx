@@ -102,7 +102,7 @@ export function TextBox({
       } = _story[i];
       switch (type) {
         case "intro":
-          s += `<h2 class="title">${title}</h2>\n\n`;
+          s += `<h3 class="title">${title}</h3>\n\n`;
           break;
         case "turn":
           s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;

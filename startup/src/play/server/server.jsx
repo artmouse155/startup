@@ -93,7 +93,9 @@ export function createGame() {
 }
 
 export function initTextbox() {
-  const init_story = introJSON.sections;
+  const init_story = [
+    introJSON.sections[getRandomInt(introJSON.sections.length)],
+  ];
   const init_name = gameData.players[gameData.current_turn_id].name;
   return { init_story, init_name };
 }
@@ -113,6 +115,7 @@ export function setTextboxSetCurrentTurnFunc(func) {
 export function nextTurn() {
   gameData.current_turn_id = (gameData.current_turn_id + 1) % NUM_PLAYERS;
   textboxSetCurrentTurnFunc(gameData.players[gameData.current_turn_id].name);
+  turnEndFunc(gameData);
 }
 
 // Will compute card result and return the text of the result.
@@ -208,7 +211,7 @@ export function evalCard(card_num_id) {
 
       // Go to next player's turn
       nextTurn();
-      turnEndFunc(gameData);
+
       return true;
     }
   }
