@@ -14,23 +14,28 @@ export function Login({ userName, authState, onAuthChange }) {
         <div className="login-body">
           <form
             action={() => {
-              onAuthChange(true, "Cosmo");
+              //const email = emailRef.current.value;
+              // const password = passwordRef.current.value;
+              const email = "temp@gmail.com";
+              onAuthChange(email, true);
             }}
             className="login-form"
           >
-            <label htmlFor="user_email">Email</label>
+            <label htmlFor="username">Email</label>
             <input
               className="input-box"
               type="email"
-              id="user_email"
+              id="username"
+              autoComplete="username"
               placeholder=""
             />
             <br />
-            <label htmlFor="user_password">Password</label>
+            <label htmlFor="current-password">Password</label>
             <input
               className="input-box"
               type="password"
-              id="user_password"
+              id="current-password"
+              autoComplete="current-password"
               placeholder=""
             />
             <br />
@@ -53,6 +58,8 @@ export function Login({ userName, authState, onAuthChange }) {
       </div>
     </div>
   ) : (
-    <p>Login Succesful! Please press the "Play" tab.</p>
+    <p className="login-main">
+      {'Login Succesful!\nPlease press the "Play" tab.'}
+    </p>
   );
 }

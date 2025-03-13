@@ -2,9 +2,13 @@ import React from "react";
 import "./leaderboard.css";
 import scoresJSON from "./scores.json";
 
+const MAX_SCORES = 10;
+
 export function Leaderboard() {
   function TableBody() {
     let s = scoresJSON.scores.sort((a, b) => b.score - a.score);
+    // Limit the number of scores displayed to MAX_SCORES
+    s = s.slice(0, MAX_SCORES);
     let rows = [];
     for (let i = 0; i < s.length; i++) {
       rows.push(

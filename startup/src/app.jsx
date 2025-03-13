@@ -19,7 +19,7 @@ import { Leaderboard } from "./leaderboard/leaderboard";
 
 export default function App() {
   const [authState, setAuthState] = React.useState(false);
-  const [userName, setUserName] = React.useState("Cosmo");
+  const [userName, setUserName] = React.useState();
   let navigate = useNavigate();
 
   return (
@@ -94,6 +94,7 @@ export default function App() {
               onAuthChange={(userName, authState) => {
                 setAuthState(authState);
                 setUserName(userName);
+                console.log("Logging in as " + userName);
                 navigate("/play");
               }}
             />

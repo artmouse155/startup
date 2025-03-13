@@ -2,7 +2,7 @@ import cards from "./cards.json";
 import items from "./items.json";
 import introJSON from "./intro.json";
 
-const NUM_CARDS = 5;
+const NUM_CARDS = 6;
 const NUM_PLAYERS = 4;
 const NUM_ITEM_SLOTS = 3;
 
@@ -17,22 +17,22 @@ let gameData = {
     {
       name: "Alice",
       aspect: "UNKNOWN",
-      cards: [1, 0, 1, 1, 1],
+      cards: Array(NUM_CARDS).fill(1),
     },
     {
       name: "Bob",
       aspect: "UNKNOWN",
-      cards: [1, 1, 1, 1, 0],
+      cards: Array(NUM_CARDS).fill(1),
     },
     {
       name: "Seth",
       aspect: "UNKNOWN",
-      cards: [1, 1, 1, 0, 1],
+      cards: Array(NUM_CARDS).fill(1),
     },
     {
       name: "Cosmo",
       aspect: "UNKNOWN",
-      cards: [1, 1, 1, 1, 1],
+      cards: Array(NUM_CARDS).fill(1),
     },
   ],
   //inventory: ["magic-potion", "", ""],

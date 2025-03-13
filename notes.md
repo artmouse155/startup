@@ -1026,3 +1026,69 @@ app.get("/store/:id/:time", (req, res) => {
 ```
 
 We can use the `app.use(express.json())` middleware to parse `json` strings into javascript or html objects!
+
+# HTTP Service
+
+## Web Servers
+
+What is a web server?
+
+- A web server is a _computing device_ that is hosting a _web service_ that knows how to accept incoming internet connections and speak the HTTP application _protocol._\
+
+- A web server is either a physical or abstract computer that controls a web service, and can let internet connections talk to it using a protocol that everyone knows.
+
+My application is also a web service!
+
+- My application can load up HTML content from a public directory.
+
+Example
+
+```js
+const express = require("express");
+const app = express();
+
+// Serve static files from the 'public' directory
+app.use(express.static("public"));
+
+app.listen(80);
+```
+
+### Web service endpoints
+
+Well, since my application can be a web service, I can add web accessible methods, which are called _endpoints._ They can do things other than giving static HTML files!
+
+If I want to make it so that when I append `/burger` to my URL that it tells me the current time, I can do this:
+
+```js
+app.get("/time", (req, res) => {
+  res.json({ time: new Date().toDateString() });
+});
+```
+
+A _web server_ is a physical device that typically hosts a _web service_.
+
+**Microservices** are web services that serve a single functional purpose.
+
+### URL
+
+After the path of the URL is the parameters, which are a **list of key value pairs**.
+
+- can refer to how to higlight the resource
+- also called the query string
+
+### Ports
+
+When we request data or use protocols, we do so on **ports.**
+
+#### Common ports
+
+- Port 22: Secure shell for remote devices
+- Port 80: HTTP for web requests
+- Port 443: HTTPS for secure web requests
+
+When I access my website, SSH (port 22) goes to my Web Server, while 80 and 443 both go to Caddy.
+
+- 80 redirects to 443
+- Caddy also manages requests to ports
+
+![alt text](image-5.png)

@@ -291,7 +291,7 @@ export function Play() {
       const itemData = getItemData(inventory[i]);
       itemBoxes.push(
         <div className="item-box" key={i}>
-          <p className="item-box-text">
+          <p className="item-box-text" title={itemData.name}>
             {inventory[i] == "" ? i + 1 : itemData.icon}
           </p>
         </div>
@@ -469,8 +469,18 @@ export function Play() {
           />
         </div>
         <button
-          onClick={nextTurn}
-          disabled={myPlayerId == gameData.current_turn_id}
+          onClick={() => {
+            // Evaluate random card of current player, using gameData.current_turn_id, gameData.players[gameData.current_turn_id].cards, and evalCard
+            const currentPlayerCards =
+              gameData.players[gameData.current_turn_id].cards;
+            const randomCardIndex = currentPlayerCards.findIndex(
+              (card) => card == 1
+            );
+            if (randomCardIndex !== -1) {
+              evalCard(randomCardIndex);
+            }
+          }}
+          //disabled={myPlayerId == gameData.current_turn_id}
         >
           Simulate Next Turn
         </button>
