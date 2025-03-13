@@ -1091,4 +1091,131 @@ When I access my website, SSH (port 22) goes to my Web Server, while 80 and 443 
 - 80 redirects to 443
 - Caddy also manages requests to ports
 
+> IMPORTANT!
+> We can only host each service on a different port
+
 ![alt text](image-5.png)
+
+### Fetch API
+
+The fetch API can make web service requests.
+
+Example code:
+
+1. First, we make the request.
+2. We check the response promise for a response
+3. We convert the json to an object
+
+```js
+fetch("https://quote.cs260.click")
+  .then((response) => response.json())
+  .then((jsonResponse) => {
+    console.log(jsonResponse);
+  });
+```
+
+By default, the request is a `GET` request, but we can specify a `POST` request.
+
+```js
+fetch("https://jsonplaceholder.typicode.com/posts", {
+  method: "POST",
+  body: JSON.stringify({
+    title: "test title",
+    body: "test body",
+    userId: 1,
+  }),
+  headers: {
+    "Content-type": "application/json; charset=UTF-8",
+  },
+})
+  .then((response) => response.json())
+  .then((jsonResponse) => {
+    console.log(jsonResponse);
+  });
+```
+
+### Service Design
+
+**There are 4 main verbs in HTTP/HTTPS requests.**
+
+- GET
+  - List the comments
+- POST
+  - Create a new comment
+- PUT
+  - Update a comment
+- DELETE
+  - Delete a comment
+
+A `replication server` makes my code redundant to attacks.
+
+#### Endpoints
+
+Main points of endpoints!
+
+- `Grammatical` : Every resource in http is a noun, and actions are verbs
+  - order resource stored in a store resource
+- `Readable` : Make the endpoint human readable so it is easier to remember what it does!
+  - For example: `/store/provo/order/32029`
+- `Discoverable` : Endpoints should have information about their subendpoints in them.
+  - Example:
+
+```bash
+GET /store/provo  HTTP/2
+```
+
+returns:
+
+```js
+{
+  "id": "provo",
+  "address": "Cougar blvd",
+  "orders": "https://cs260.click/store/provo/orders",
+  "employees": "https://cs260.click/store/provo/employees"
+}
+```
+
+- `Compatible` : New funcionality won't break old endpoints. For instance:
+
+```js
+{
+  "color" : "#ff0010"
+}
+// This becomes...
+{
+  "color" : "#ff0010",
+  "red" : 255,
+  "green" : 0,
+  "blue" : 16
+}
+// This ensures that old functionality is still intact!
+```
+
+You can find out about specification about API's here: https://spec.openapis.org/oas/latest.html or here: https://petstore.swagger.io/
+
+###### Using `POST` and `RPC`
+
+We can use post as a function call in two ways. One is that we call the function directly after `POST`, and then the body of our parameters.
+
+```bash
+POST /updateOrder HTTP/2
+
+{"id": 2197, "date": "20220505"}
+```
+
+We can also do a call to the RPC (Remote Procedure Call) function itself.
+
+```bash
+POST /rpc HTTP/2
+
+{"cmd":"updateOrder", "params":{"id": 2197, "date": "20220505"}}
+```
+
+REST = resource
+A `GraphQL` query tries to define how data should be used.
+
+### Express (AGAIN!)
+
+> "People tell you to not reinvent things, but I think you should … it will teach you things"
+>
+> — TJ Holowaychuk
