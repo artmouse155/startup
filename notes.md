@@ -1306,11 +1306,32 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 app.post("/cookie/:name/:value", (req, res, next) => {
-  res.cookie(req.params.name, req.params.value);
+  res.cookie(req.params.name, req.params.value); // Notice that the cookie parser gave us the res.cookie method!
   res.send({ cookie: `${req.params.name}:${req.params.value}` });
 });
 
 app.get("/cookie", (req, res, next) => {
-  res.send({ cookie: req.cookies });
+  res.send({ cookie: req.cookies }); // Notice that the cookie Parser gave us req.cookies attribute
+});
+```
+
+To run a GET request, I just do `curl <URL>`.
+
+- GET: `curl -X GET (website)`
+- POST: `curl -X POST -d "key1=value1&key2=value2" (website)`
+- PUT: `curl -X PUT -d "key1=value1&key2=value2" (website)`
+- DELETE: `curl -X DELETE (website)`
+
+See details [https://apidog.com/articles/curl-x-command/](here)
+
+#### Error handling middleware
+
+We can handle errors with error handling middleware. Here's the format:
+
+```js
+function errorMiddlewareName(err, req, res, next)
+// Here's an example of putting it in action!
+app.use(function (err, req, res, next) {
+  res.status(500).send({ type: err.name, message: err.message });
 });
 ```
