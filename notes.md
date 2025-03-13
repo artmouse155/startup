@@ -1219,3 +1219,98 @@ A `GraphQL` query tries to define how data should be used.
 > "People tell you to not reinvent things, but I think you should … it will teach you things"
 >
 > — TJ Holowaychuk
+> What is express?
+
+- It is a javascript module that is REALLY GOOD at serving up webpages. It has some great usefulness! It can...
+
+1. Do routing requests for service endpoints
+2. Manipulating HTTP requests with JSON body content
+3. Generating HTTP responses
+4. Using `middleware` to add functionality
+
+- what is middleware?
+
+First we install express with `npm install express`. Then we use it with
+
+```js
+const express = require("express");
+const app = express();
+
+app.listen(8080); // Listen on port 8080
+
+app.get("/store/provo", (req, res, next) => {
+  res.send({ name: "provo" });
+});
+```
+
+- `req` represents the request object from the client to the server
+- `res` represents the response object from the server to the client
+- `next` is a routing function that express expects to be called if the routing function wants another function to generate a response.
+
+Q. But what if I want to see what the user put into the parameter?
+A. Well, all you gotta do is use **parameters!** You do that with colons: `:`. All you gotta do is this:
+
+```js
+app.get("/store/:storeName", (req, res, next) => {
+  // the colon makes storeName a param of the request object.
+  res.send({ name: req.params.storeName });
+});
+```
+
+We can also use _wildcards_ and _pure regular expressions!_
+
+```js
+// Wildcard - matches /store/x and /star/y
+app.put("/st*/:storeName", (req, res) =>
+  res.send({ update: req.params.storeName })
+);
+
+// Pure regular expression
+app.delete(/\/store\/(.+)/, (req, res) => res.send({ delete: req.params[0] }));
+```
+
+#### Middleware
+
+Middleware is super cool! It is a way to handle requests before finally sending the response.
+
+- They follow this format:
+
+```js
+function middlewareName(req, res, next)
+```
+
+##### Making my own middleware
+
+We can add one piece of middleware using `app.use`:
+
+```js
+app.use((req, res, next) => {
+  console.log(req.originalUrl);
+  next();
+});
+```
+
+##### There is also built in middleware!
+
+The built in `public` function will return static files if they exist in the directory.
+
+```js
+app.use(express.static("public"));
+```
+
+We can use a built in cookie parse that makes cookies super duper easy!
+
+```js
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
+
+app.post("/cookie/:name/:value", (req, res, next) => {
+  res.cookie(req.params.name, req.params.value);
+  res.send({ cookie: `${req.params.name}:${req.params.value}` });
+});
+
+app.get("/cookie", (req, res, next) => {
+  res.send({ cookie: req.cookies });
+});
+```
