@@ -7,8 +7,6 @@ export function Lobby({
   setConnectionState,
   connectionData,
   setConnectionData,
-  roomCode,
-  setRoomCode,
   userName,
   trophies,
 }) {
@@ -22,15 +20,20 @@ export function Lobby({
   const [menuState, setMenuState] = React.useState(MENUSTATE.ROOT);
   const [doPlaceholderWebsocket, setDoPlaceholderWebsocket] =
     React.useState(true);
+  const [roomCode, setRoomCode] = React.useState("");
 
   console.log("Connection State: ", connectionState);
 
-  console.log("userName: ", userName);
-  console.log("trophies: ", trophies);
-
-  function handleSetRoomCode(v) {
+  function handleSetRoomCode(e) {
+    let code = e.target.value;
+    // Make code all caps
+    code = code.toUpperCase();
+    // keep only a-z characters
+    code = code.replaceAll(/([^A-Z])+/g, "");
     // It can be a max of 5 characters
-    setRoomCode(v.slice(0, 5));
+    code = code.slice(0, 5);
+
+    setRoomCode(code);
     // Set mouse focus to room code input
   }
 
@@ -44,6 +47,7 @@ export function Lobby({
 
   async function handleJoinGame(roomCode) {
     // Check if the room code is valid
+    console.log("Preparing to join!");
     const response = await fetch("api/game/join", {
       method: "post",
       body: JSON.stringify({ email: userName, roomCode: roomCode }),
@@ -54,12 +58,14 @@ export function Lobby({
     if (response?.status === 200) {
       const body = await response.json();
       setConnectionData(body);
+      console.log("Connection Data: ", body);
       setConnectionState(ConnectionState.Connecting);
       setMenuState(MENUSTATE.JOIN_WAIT);
     } else {
       const body = await response.json();
       alert(`⚠ Error: ${body.msg}`);
     }
+    console.log("Join Game Result");
   }
 
   // returns a spinner component for loading
@@ -124,7 +130,7 @@ export function Lobby({
     );
   }
 
-  function Join({ setMenuState }) {
+  function Join({ setMenuState, roomCode }) {
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Join Game</h1>
@@ -133,12 +139,14 @@ export function Lobby({
             <input
               type="text"
               placeholder="Room Code"
-              onChange={(e) => setRoomCode(e.target.value)}
+              value={roomCode}
+              onChange={(e) => handleSetRoomCode(e)}
             />
           </form>
           <button
             className="lobby-button"
             onClick={() => handleJoinGame(roomCode)}
+            disabled={roomCode.length != 5}
           >
             Join Game
           </button>
@@ -196,7 +204,13 @@ export function Lobby({
       case MENUSTATE.HOST:
         return <Host setMenuState={setMenuState} />;
       case MENUSTATE.JOIN:
-        return <Join setMenuState={setMenuState} />;
+        return (
+          <Join
+            setMenuState={setMenuState}
+            roomCode={roomCode}
+            setRoomCode={setRoomCode}
+          />
+        );
       case MENUSTATE.HOST_WAIT:
         return <HostWait setMenuState={setMenuState} />;
       case MENUSTATE.JOIN_WAIT:
@@ -216,7 +230,9 @@ export function Lobby({
           onChange={() => setDoPlaceholderWebsocket(!doPlaceholderWebsocket)}
         />
         <label htmlFor="do-placeholder">
-          Do Placeholder Web Socket (Show joining game)
+          Do Placeholder Web Socket (Keep this toggled on and click "Host Game"
+          {`>`} "Start Game" to get to the external API call for this
+          deliverable)
         </label>
         <Menu menuState={menuState} />
       </div>

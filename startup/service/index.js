@@ -92,15 +92,35 @@ apiRouter.get("/trophies", (req, res) => {
 var gameRouter = express.Router();
 apiRouter.use(`/game`, gameRouter);
 
+const sampleGameData = {};
+
 gameRouter.post("/host", verifyAuth, (req, res) => {
   // add the game to the active games list
-  activeGames.push({
-    host: req.body.host,
-    roomCode: req.body.roomCode,
-    players: req.body.players,
-    game: req.body.game,
-  });
-  res.send({ msg: "Hosted new game" });
+  // Create new roomCode that isn't in use
+  // Create list of all room codes
+  // Codes are 5 letters long
+  let usedCodes = activeGames.map((game) => game.roomCode);
+  let roomCode = "";
+  while (usedCodes.length > 0 || usedCodes.includes(roomCode)) {
+    // Generate room code
+    roomCode = "";
+    let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let codeLength = 5;
+    for (let i = 0; i < codeLength; i++) {
+      roomCode += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+  }
+
+  let newGame = {
+    host: req.body.email,
+    roomCode: roomCode,
+    players: [req.body.email],
+    gameData: sampleGameData,
+  };
+  activeGames.push(newGame);
+  res.send(newGame);
 });
 
 gameRouter.post("/join", verifyAuth, (req, res) => {
@@ -110,22 +130,21 @@ gameRouter.post("/join", verifyAuth, (req, res) => {
   // If there are already 4 players, respond with a message saying the game is full
   // Otherwise, add the player to the game and respond with a message saying they joined the game
   // If the room code is not in the active games list, respond with a message saying the game does not exist
-  let found = false;
   for (let i = 0; i < activeGames.length; i++) {
     if (activeGames[i].roomCode == req.body.roomCode) {
-      found = true;
       if (activeGames[i].players.length >= 4) {
-        return res.send({ msg: "Game full" });
+        return res.status(403).send({ msg: "Game full" });
       }
       for (let j = 0; j < activeGames[i].players.length; j++) {
         if (activeGames[i].players[j] == req.body.email) {
-          return res.send({ msg: "Already in game" });
+          return res.status(403).send({ msg: "Already in game" });
         }
       }
       activeGames[i].players.push(req.body.email);
+      res.send(activeGames[i]);
     }
   }
-  res.send({ msg: "Game joined" });
+  res.status(403).send({ msg: "Room Code Invalid" });
 });
 
 // Handle errors

@@ -9,21 +9,19 @@ export function Play({ userData, authState }) {
     ConnectionState.Disconnected
   );
   const [connectionData, setConnectionData] = React.useState(null);
-  const [roomCode, setRoomCode] = React.useState("");
 
   console.log("Auth State: ", authState);
   console.log("Connection State: ", connectionState);
   console.log("User Data: ", userData);
   return authState == AuthState.Authenticated ? (
-    connectionState == ConnectionState.Disconnected ? (
+    connectionState == ConnectionState.Disconnected ||
+    connectionState == ConnectionState.Connecting ? (
       <div className="login-main">
         <Lobby
           connectionState={connectionState}
           setConnectionState={setConnectionState}
           connectionData={connectionData}
           setConnectionData={setConnectionData}
-          roomCode={roomCode}
-          setRoomCode={setRoomCode}
           userName={userData.email.split("@")[0]}
           trophies={userData.trophies}
         />
