@@ -1,65 +1,25 @@
 import React from "react";
+import { UnAuth } from "./unauth";
+import { AuthState } from "./authState";
 import "./login.css";
 
-export function Login({ userName, authState, onAuthChange }) {
-  return !authState ? (
-    <div className="login-main">
-      <div className="login-screen">
-        <h3 className="login-header">Welcome!</h3>
-        <p>
-          Ready for adventure? ⚔️
-          <br />
-          Sign up or log in.
+export function Login({ userName, setUserName, authState, onAuthChange }) {
+  switch (authState) {
+    case AuthState.Unknown:
+      return <p className="login-main">{"Unknown Auth State."}</p>;
+    case AuthState.Authenticated:
+      return (
+        <p className="login-main">
+          {'Login Succesful!\nPlease press the "Play" tab.'}
         </p>
-        <div className="login-body">
-          <form
-            action={() => {
-              //const email = emailRef.current.value;
-              // const password = passwordRef.current.value;
-              const email = "temp@gmail.com";
-              onAuthChange(email, true);
-            }}
-            className="login-form"
-          >
-            <label htmlFor="username">Email</label>
-            <input
-              className="input-box"
-              type="email"
-              id="username"
-              autoComplete="username"
-              placeholder=""
-            />
-            <br />
-            <label htmlFor="current-password">Password</label>
-            <input
-              className="input-box"
-              type="password"
-              id="current-password"
-              autoComplete="current-password"
-              placeholder=""
-            />
-            <br />
-            <div className="button-div">
-              <button
-                type="submit"
-                className="login-screen-button login-button"
-              >
-                Login
-              </button>
-              <button
-                type="submit"
-                className="login-screen-button signup-button"
-              >
-                Sign Up
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  ) : (
-    <p className="login-main">
-      {'Login Succesful!\nPlease press the "Play" tab.'}
-    </p>
-  );
+      );
+    case AuthState.Unauthenticated:
+      return (
+        <UnAuth
+          onAuthChange={onAuthChange}
+          userName={userName}
+          setUserName={setUserName}
+        />
+      );
+  }
 }

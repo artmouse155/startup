@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./app.css";
 import "./header.css";
 import "./shadow.css"; // From https://www.cssscript.com/elegant-box-shadows
+import { AuthState } from "./login/authState.js";
 
 import {
   BrowserRouter,
@@ -18,9 +19,27 @@ import { Play } from "./play/play";
 import { Leaderboard } from "./leaderboard/leaderboard";
 
 export default function App() {
-  const [authState, setAuthState] = React.useState(false);
-  const [userName, setUserName] = React.useState();
+  console.log(localStorage);
+  const [userData, setUserData] = React.useState(
+    localStorage.getItem("userData") || ""
+  );
+  const [userName, setUserName] = React.useState(
+    localStorage.getItem("userData") || ""
+  );
+  const [authState, setAuthState] = React.useState(
+    userName ? AuthState.Authenticated : AuthState.Unauthenticated
+  );
+
   let navigate = useNavigate();
+
+  function logOut() {
+    fetch("api/auth/logout", {
+      method: "DELETE",
+    });
+    setAuthState(AuthState.Unauthenticated);
+    localStorage.removeItem("userData");
+    navigate("/");
+  }
 
   return (
     <div className="body">
@@ -37,7 +56,7 @@ export default function App() {
               </NavLink>
             </li>
             <li className="header-menu">
-              {authState ? (
+              {authState == AuthState.Authenticated ? (
                 <NavLink to="play" className="header-menu-link header-text">
                   Play
                 </NavLink>
@@ -55,7 +74,7 @@ export default function App() {
             </li>
           </menu>
         </nav>
-        {authState ? (
+        {authState == AuthState.Authenticated ? (
           <div className="header-right">
             <div className="trophy-section header-text">
               <b>🏆 37</b>
@@ -64,9 +83,7 @@ export default function App() {
               <NavLink
                 type="submit"
                 className="log-out-button"
-                onClick={() => {
-                  setAuthState(false);
-                }}
+                onClick={logOut}
                 to="/"
               >
                 Log Out
@@ -90,12 +107,15 @@ export default function App() {
           element={
             <Login
               userName={userName}
+              setUserName={setUserName}
               authState={authState}
-              onAuthChange={(userName, authState) => {
+              onAuthChange={(userData, authState) => {
                 setAuthState(authState);
-                setUserName(userName);
-                console.log("Logging in as " + userName);
-                navigate("/play");
+                setUserName(userData.userName);
+                console.log("Logging in as " + userData.userName);
+                localStorage.setItem("userName", userData.userName);
+                localStorage.setItem("Trophies", userData.trophies);
+                //navigate("/play");
               }}
             />
           }
