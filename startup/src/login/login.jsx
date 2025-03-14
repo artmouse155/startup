@@ -1,7 +1,14 @@
 import React from "react";
 import "./login.css";
 
-export function Login({ userName, authState, onAuthChange }) {
+export function Login({ userName, authState, onAuthChange, logOut }) {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  function handleLogin() {}
+
+  function handleRegister() {}
+
   return !authState ? (
     <div className="login-main">
       <div className="login-screen">
@@ -28,6 +35,8 @@ export function Login({ userName, authState, onAuthChange }) {
               id="username"
               autoComplete="username"
               placeholder=""
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
             <br />
             <label htmlFor="current-password">Password</label>
@@ -37,18 +46,24 @@ export function Login({ userName, authState, onAuthChange }) {
               id="current-password"
               autoComplete="current-password"
               placeholder=""
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <br />
             <div className="button-div">
               <button
                 type="submit"
                 className="login-screen-button login-button"
+                disabled={!(email && password)}
+                onClick={handleLogin}
               >
                 Login
               </button>
               <button
                 type="submit"
                 className="login-screen-button signup-button"
+                disabled={!(email && password)}
+                onClick={handleRegister}
               >
                 Sign Up
               </button>
@@ -58,8 +73,10 @@ export function Login({ userName, authState, onAuthChange }) {
       </div>
     </div>
   ) : (
-    <p className="login-main">
-      {'Login Succesful!\nPlease press the "Play" tab.'}
-    </p>
+    <div>
+      <p className="login-main">
+        {'Login Succesful!\nPlease press the "Play" tab.'}
+      </p>
+    </div>
   );
 }

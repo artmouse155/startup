@@ -39,16 +39,16 @@ const roomConditions = [
   "covered in mold",
 ];
 
-const inspirationalQuotes = [
-  {
-    text: "It's easy to stand in the crowd but it takes courage to stand alone.",
-    speaker: "Ghandi",
-  },
-  {
-    text: "*👏👏👏👏👏👏* Congratulations! You win 20 dollars!",
-    speaker: "Luke",
-  },
-];
+// const inspirationalQuotes = [
+//   {
+//     text: "It's easy to stand in the crowd but it takes courage to stand alone.",
+//     speaker: "Ghandi",
+//   },
+//   {
+//     text: "*👏👏👏👏👏👏* Congratulations! You win 20 dollars!",
+//     speaker: "Luke",
+//   },
+// ];
 
 const feelings = [
   "inspired",
@@ -97,8 +97,9 @@ export function apiCall(call) {
     case "$room-condition$":
       return getRandom(roomConditions);
     case "$inspirational-quote$":
-      const quote = getRandom(inspirationalQuotes);
-      return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
+    // const quote = getRandom(inspirationalQuotes);
+    // return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
+
     case "$feeling$":
       return getRandom(feelings);
     case "$book-title$":

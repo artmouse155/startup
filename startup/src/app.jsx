@@ -22,6 +22,10 @@ export default function App() {
   const [userName, setUserName] = React.useState();
   let navigate = useNavigate();
 
+  function logOut() {
+    navigate("/");
+  }
+
   return (
     <div className="body">
       <header>
@@ -61,16 +65,9 @@ export default function App() {
               <b>🏆 37</b>
             </div>
             <form method="get">
-              <NavLink
-                type="submit"
-                className="log-out-button"
-                onClick={() => {
-                  setAuthState(false);
-                }}
-                to="/"
-              >
+              <button type="submit" className="log-out-button" onClick={logOut}>
                 Log Out
-              </NavLink>
+              </button>
             </form>
             <p className="header-text">{userName}</p>
             <img
@@ -97,6 +94,7 @@ export default function App() {
                 console.log("Logging in as " + userName);
                 navigate("/play");
               }}
+              logOut={logOut}
             />
           }
           exact
