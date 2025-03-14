@@ -107,9 +107,9 @@ export function Lobby({
     let connectedList = [];
     for (let i = 0; i < connectionData.players.length; i++) {
       connectedList.push(
-        <p key={i}>{`${connectionData.players[i].userName} connected ${
-          i == 0 ? ` (host)` : ``
-        }`}</p>
+        <p key={i}>{`${
+          connectionData.players[i].email.split("@")[0]
+        } connected ${i == 0 ? ` (host)` : ``}`}</p>
       );
     }
 
@@ -142,8 +142,15 @@ export function Lobby({
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Host Game</h1>
+        <h4 className="num-connected">{`${connectionData.players.length}/4 players connected.\nWaiting for host to start game`}</h4>
+        <ConnectedPlayerList />
+        <Spinner />
         <div className="lobby-actions">
-          <button className="lobby-button" onClick={handleHostStartGame}>
+          <button
+            className="lobby-button"
+            onClick={handleHostStartGame}
+            disabled={connectionData.players.length < 4}
+          >
             Start Game
           </button>
           <button
@@ -197,7 +204,6 @@ export function Lobby({
           <button
             className="lobby-cancel-button"
             onClick={() => setMenuState(MENUSTATE.HOST)}
-            disabled={connectionData.players.length < 4}
           >
             Cancel
           </button>
@@ -239,8 +245,8 @@ export function Lobby({
             setRoomCode={setRoomCode}
           />
         );
-      case MENUSTATE.HOST_WAIT:
-        return <HostWait setMenuState={setMenuState} />;
+      //   case MENUSTATE.HOST_WAIT:
+      //     return <HostWait setMenuState={setMenuState} />;
       case MENUSTATE.JOIN_WAIT:
         return <JoinWait setMenuState={setMenuState} />;
       default:

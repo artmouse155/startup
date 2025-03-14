@@ -2,6 +2,7 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 const express = require("express");
 const uuid = require("uuid");
+const { act } = require("react");
 const app = express();
 
 const authCookieName = "token";
@@ -155,7 +156,7 @@ gameRouter.post("/host", verifyAuth, (req, res) => {
   let newGame = {
     host: req.body.email,
     roomCode: roomCode,
-    players: [req.body.email],
+    players: [{ email: req.body.email }],
     started: false,
     //gameData: sampleGameData,
   };
@@ -176,15 +177,38 @@ gameRouter.post("/join", verifyAuth, (req, res) => {
         return res.status(403).send({ msg: "Game full" });
       }
       for (let j = 0; j < activeGames[i].players.length; j++) {
-        if (activeGames[i].players[j] == req.body.email) {
+        if (activeGames[i].players[j].email == req.body.email) {
           return res.status(403).send({ msg: "Already in game" });
         }
       }
-      activeGames[i].players.push(req.body.email);
-      res.send(activeGames[i]);
+      activeGames[i].players.push({ email: req.body.email });
+      res.status(200).send(activeGames[i]);
     }
   }
   res.status(403).send({ msg: "Room Code Invalid" });
+});
+
+gameRouter.delete("/leave", verifyAuth, (req, res) => {
+  // Remove user from current game
+  for (let i = 0; i < activeGames.length; i++) {
+    // Find by room code
+    if (activeGames[i].roomCode == req.body.roomCode) {
+      for (let j = 0; j < activeGames[i].players.length; j++) {
+        if (activeGames[i].players[j].email == req.body.email) {
+          activeGames[i].players.splice(j, 1);
+          if (activeGames[i].players.length == 0) {
+            activeGames.splice(i, 1);
+          } else if (activeGames[i].host == req.body.email) {
+            // TODO Placeholder WebSocket: Tell clients the host has left
+            activeGames.splice(i, 1);
+          }
+
+          return res.status(200).end();
+        }
+      }
+    }
+  }
+  res.status(403).send({ msg: "Game not found" });
 });
 
 // Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
