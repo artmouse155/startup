@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./app.css";
 import "./header.css";
 import "./shadow.css"; // From https://www.cssscript.com/elegant-box-shadows
+import { AuthState } from "./login/authState.js";
 
 import {
   BrowserRouter,
@@ -18,24 +19,26 @@ import { Play } from "./play/play";
 import { Leaderboard } from "./leaderboard/leaderboard";
 
 export default function App() {
-  const [authState, setAuthState] = React.useState(false);
-  const [userName, setUserName] = React.useState();
+  console.log(localStorage);
+  const [userData, setUserData] = React.useState(
+    JSON.parse(localStorage.getItem("userData")) || ""
+  );
+  const [userName, setUserName] = React.useState(
+    userData != "" ? userData.email : ""
+  );
+
+  const [authState, setAuthState] = React.useState(
+    userName ? AuthState.Authenticated : AuthState.Unauthenticated
+  );
+
   let navigate = useNavigate();
 
-  const [userInfo, setUserInfo] = React.useState("");
-
-  React.useEffect(() => {
-    (async () => {
-      const res = await fetch("api/user/me");
-      const data = await res.json();
-      setUserInfo(data);
-    })();
-  }, []);
-
   function logOut() {
-    fetch("api/auth", {
+    fetch("api/auth/logout", {
       method: "DELETE",
     });
+    setAuthState(AuthState.Unauthenticated);
+    localStorage.removeItem("userData");
     navigate("/");
   }
 
@@ -54,7 +57,7 @@ export default function App() {
               </NavLink>
             </li>
             <li className="header-menu">
-              {authState ? (
+              {authState == AuthState.Authenticated ? (
                 <NavLink to="play" className="header-menu-link header-text">
                   Play
                 </NavLink>
@@ -72,17 +75,22 @@ export default function App() {
             </li>
           </menu>
         </nav>
-        {authState ? (
+        {authState == AuthState.Authenticated ? (
           <div className="header-right">
             <div className="trophy-section header-text">
-              <b>🏆 37</b>
+              <b>{`🏆 ${userData.trophies}`}</b>
             </div>
             <form method="get">
-              <button type="submit" className="log-out-button" onClick={logOut}>
+              <NavLink
+                type="submit"
+                className="log-out-button"
+                onClick={logOut}
+                to="/"
+              >
                 Log Out
-              </button>
+              </NavLink>
             </form>
-            <p className="header-text">{userName}</p>
+            <p className="header-text">{userName.split("@")[0]}</p>
             <img
               src="account_circle.png"
               width="30px"
@@ -100,19 +108,24 @@ export default function App() {
           element={
             <Login
               userName={userName}
+              setUserName={setUserName}
               authState={authState}
-              onAuthChange={(userName, authState) => {
+              onAuthChange={(userData, authState) => {
                 setAuthState(authState);
-                setUserName(userName);
-                console.log("Logging in as " + userName);
-                navigate("/play");
+                setUserName(userData.email);
+                console.log("Logging in as " + userData.email);
+                localStorage.setItem("userData", JSON.stringify(userData));
+                setUserData(userData);
+                //navigate("/play");
               }}
-              logOut={logOut}
             />
           }
           exact
         />
-        <Route path="/play" element={<Play />} />
+        <Route
+          path="/play"
+          element={<Play authState={authState} userData={userData} />}
+        />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

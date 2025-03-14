@@ -90,89 +90,6 @@ export function TextBox({
 
   const insertRegex = /\$([^$]*)\$/g;
 
-  async function parseMD() {
-    let _story = [...story];
-    _story.push({ type: "turn", playerTurnName: currentPlayerName });
-    let s = "";
-    for (let i = 0; i < _story.length; i++) {
-      const {
-        type,
-        playerTurnName,
-        title,
-        text = [],
-        results: resultArr = [],
-      } = _story[i];
-      switch (type) {
-        case "intro":
-          s += `<h3 class="title">${title}</h3>\n\n`;
-          break;
-        case "turn":
-          s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;
-          break;
-      }
-      s += `${text.join("\n\n")}\n\n`;
-      for (let j = 0; j < resultArr.length; j++) {
-        const { type: resultType, item, amt, aspect } = resultArr[j];
-        switch (resultType) {
-          case "aspect-points":
-            s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
-            break;
-          case "item-obtained":
-            s += `<i class= "item">${getItemData(item).name} obtained</i>\n\n`;
-            break;
-        }
-      }
-    }
-    const matches = s.match(insertRegex);
-    if (matches) {
-      for (let j = 0; j < matches.length; j++) {
-        const m = matches[j];
-        let r = "DEFAULT REPLACE";
-        switch (m) {
-          case "$n$":
-            r = heroName;
-            break;
-          case "$They$":
-            r = pronouns.They[heroGender];
-            break;
-          case "$Their$":
-            r = pronouns.Their[heroGender];
-            break;
-          case "$Theirs$":
-            r = pronouns.Theirs[heroGender];
-            break;
-          case "$Them$":
-            r = pronouns.Them[heroGender];
-            break;
-          case "$they$":
-            r = pronouns.they[heroGender];
-            break;
-          case "$their$":
-            r = pronouns.their[heroGender];
-            break;
-          case "$theirs$":
-            r = pronouns.theirs[heroGender];
-            break;
-          case "$them$":
-            r = pronouns.them[heroGender];
-            break;
-          default:
-            r = await apiCall(m);
-            break;
-        }
-        s = s.replace(`${m}`, r);
-      }
-    }
-
-    //marked.use(renderer);
-
-    // Run marked
-    document.getElementById("parsedMD").innerHTML = marked.parse(s);
-
-    const elem = document.getElementById("textScroll");
-    elem.scrollTop = elem.scrollHeight;
-  }
-
   const [{ isOver }, drop] = useDrop(() => ({
     accept: dragItemType,
     drop(item, monitor) {
@@ -189,6 +106,90 @@ export function TextBox({
   }));
 
   React.useEffect(() => {
+    async function parseMD() {
+      let _story = [...story];
+      _story.push({ type: "turn", playerTurnName: currentPlayerName });
+      let s = "";
+      for (let i = 0; i < _story.length; i++) {
+        const {
+          type,
+          playerTurnName,
+          title,
+          text = [],
+          results: resultArr = [],
+        } = _story[i];
+        switch (type) {
+          case "intro":
+            s += `<h3 class="title">${title}</h3>\n\n`;
+            break;
+          case "turn":
+            s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;
+            break;
+        }
+        s += `${text.join("\n\n")}\n\n`;
+        for (let j = 0; j < resultArr.length; j++) {
+          const { type: resultType, item, amt, aspect } = resultArr[j];
+          switch (resultType) {
+            case "aspect-points":
+              s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
+              break;
+            case "item-obtained":
+              s += `<i class= "item">${
+                getItemData(item).name
+              } obtained</i>\n\n`;
+              break;
+          }
+        }
+      }
+      const matches = s.match(insertRegex);
+      if (matches) {
+        for (let j = 0; j < matches.length; j++) {
+          const m = matches[j];
+          let r = "DEFAULT REPLACE";
+          switch (m) {
+            case "$n$":
+              r = heroName;
+              break;
+            case "$They$":
+              r = pronouns.They[heroGender];
+              break;
+            case "$Their$":
+              r = pronouns.Their[heroGender];
+              break;
+            case "$Theirs$":
+              r = pronouns.Theirs[heroGender];
+              break;
+            case "$Them$":
+              r = pronouns.Them[heroGender];
+              break;
+            case "$they$":
+              r = pronouns.they[heroGender];
+              break;
+            case "$their$":
+              r = pronouns.their[heroGender];
+              break;
+            case "$theirs$":
+              r = pronouns.theirs[heroGender];
+              break;
+            case "$them$":
+              r = pronouns.them[heroGender];
+              break;
+            default:
+              r = await apiCall(m);
+              break;
+          }
+          s = s.replace(`${m}`, r);
+        }
+      }
+
+      //marked.use(renderer);
+
+      // Run marked
+      document.getElementById("parsedMD").innerHTML = marked.parse(s);
+
+      const elem = document.getElementById("textScroll");
+      elem.scrollTop = elem.scrollHeight;
+    }
     parseMD();
   }, [story]);
 

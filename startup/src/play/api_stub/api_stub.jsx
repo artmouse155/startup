@@ -98,18 +98,22 @@ export async function apiCall(call) {
       return getRandom(roomConditions);
     case "$inspirational-quote$":
       // const quote = getRandom(inspirationalQuotes);
+      // return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
       let quote = {};
-      await fetch(
-        "https://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en",
-        { mode: "no-cors" }
-      )
+      await fetch("https://quoteslate.vercel.app/api/quotes/random", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      })
         .then((response) => response.json())
         .then((jsonResponse) => {
           console.log(jsonResponse);
           quote = jsonResponse;
         });
 
-      return `"${quote.quoteText}" - ${quote.quoteAuthor}`; //This is an external API call.
+      return `"${quote.quote}" - ${quote.author}`; //This is an external API call.
     case "$feeling$":
       return getRandom(feelings);
     case "$book-title$":

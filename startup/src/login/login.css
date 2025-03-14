@@ -45,6 +45,7 @@
   padding: 0.7em 0.7em;
   font-weight: bold;
   color: whitesmoke;
+  transition: background-color 0.3s;
 }
 
 .input-box {
@@ -61,7 +62,7 @@
 }
 
 .login-button:hover {
-  background-color: #cc4f55;
+  background-color: #6f292b;
 }
 
 .signup-button {
@@ -69,5 +70,5 @@
 }
 
 .signup-button:hover {
-  background-color: #769fcc;
+  background-color: #244364;
 }

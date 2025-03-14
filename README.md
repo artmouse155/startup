@@ -106,13 +106,13 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [x] **Node.js/Express HTTP service** - My node.js functionality is working!
-- [ ] **Static middleware for frontend** - I am running into errors that are causing my program to not work.
+- [x] **Node.js/Express HTTP service** - Node.js is successfully used as the backend of my deliverable.
+- [x] **Static middleware for frontend** - I utilize static middleware for my front end by serving up the contents of the public folder.
 - For the Startup Service deliverable please specify the file in which you wrote your Third Party Endpoint, thanks!
-- [ ] **Calls to third party endpoints** - I ran into errors while doing this part of the deliverable. It should be in api_stub.jsx.
-- [ ] **Backend service endpoints** - I am running into errors that are causing my program to not work.
-- [ ] **Frontend calls service endpoints** - I am running into errors that are causing my program to not work.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I am running into errors that are causing my program to not work.
+- [x] **Calls to third party endpoints** - I have a call to https://quoteslate.vercel.app/api/quotes/random in my api_stub.jsx file.
+- [x] **Backend service endpoints** - I use backend service endpoints using `/api/*`.
+- [x] **Frontend calls service endpoints** - I have multiple frontend service endpoints.
+- [x] **Supports registration, login, logout, and restricted endpoint** - My registration, login, and logout is fully functional!
 
 ## 🚀 DB deliverable
 

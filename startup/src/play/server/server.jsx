@@ -2,7 +2,7 @@ import cards from "./cards.json";
 import items from "./items.json";
 import introJSON from "./intro.json";
 
-const NUM_CARDS = 6;
+const NUM_CARDS = 5;
 const NUM_PLAYERS = 4;
 const NUM_ITEM_SLOTS = 3;
 

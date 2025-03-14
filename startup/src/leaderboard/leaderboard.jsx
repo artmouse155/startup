@@ -1,14 +1,25 @@
 import React from "react";
 import "./leaderboard.css";
-//import scoresJSON from "./scores.json";
+import scoresJSON from "./scores.json";
 
 const MAX_SCORES = 10;
 
 export function Leaderboard() {
   const [scores, setScores] = React.useState([]);
 
+  // Demonstrates calling a service asynchronously so that
+  // React can properly update state objects with the results.
+  React.useEffect(() => {
+    fetch("/api/trophies")
+      .then((response) => response.json())
+      .then((scores) => {
+        console.log("Scores: ", scores);
+        setScores(scores);
+      });
+  }, []);
+
   function TableBody() {
-    let s = scores.sort((a, b) => b.score - a.score);
+    let s = scores.sort((a, b) => b.trophies - a.trophies);
     // Limit the number of scores displayed to MAX_SCORES
     s = s.slice(0, MAX_SCORES);
     let rows = [];
@@ -16,21 +27,13 @@ export function Leaderboard() {
       rows.push(
         <tr>
           <td>{i + 1}</td>
-          <td>{s[i].player}</td>
-          <td>{s[i].score}</td>
+          <td>{s[i].userName}</td>
+          <td>{s[i].trophies}</td>
         </tr>
       );
     }
     return <tbody>{rows}</tbody>;
   }
-
-  React.useEffect(() => {
-    fetch("/api/scores")
-      .then((response) => response.json())
-      .then((scores) => {
-        setScores(scores);
-      });
-  });
 
   return (
     <div className="leaderboard-main">
