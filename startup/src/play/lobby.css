@@ -84,3 +84,12 @@
     transform: scale(1);
   }
 }
+
+.room-code-input {
+  font-size: 2.5em;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 250px;
+}

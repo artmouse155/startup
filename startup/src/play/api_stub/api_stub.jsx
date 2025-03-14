@@ -39,16 +39,16 @@ const roomConditions = [
   "covered in mold",
 ];
 
-const inspirationalQuotes = [
-  {
-    text: "It's easy to stand in the crowd but it takes courage to stand alone.",
-    speaker: "Ghandi",
-  },
-  {
-    text: "*👏👏👏👏👏👏* Congratulations! You win 20 dollars!",
-    speaker: "Luke",
-  },
-];
+// const inspirationalQuotes = [
+//   {
+//     text: "It's easy to stand in the crowd but it takes courage to stand alone.",
+//     speaker: "Ghandi",
+//   },
+//   {
+//     text: "*👏👏👏👏👏👏* Congratulations! You win 20 dollars!",
+//     speaker: "Luke",
+//   },
+// ];
 
 const feelings = [
   "inspired",
@@ -84,7 +84,7 @@ function getRandom(array) {
   return array[getRandomInt(array.length)];
 }
 
-export function apiCall(call) {
+export async function apiCall(call) {
   switch (call) {
     case "$wow-long-quote$":
       return getRandom(wowLongQuotes);
@@ -97,8 +97,23 @@ export function apiCall(call) {
     case "$room-condition$":
       return getRandom(roomConditions);
     case "$inspirational-quote$":
-      const quote = getRandom(inspirationalQuotes);
-      return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
+      // const quote = getRandom(inspirationalQuotes);
+      // return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
+      let quote = {};
+      await fetch("https://quoteslate.vercel.app/api/quotes/random", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      })
+        .then((response) => response.json())
+        .then((jsonResponse) => {
+          console.log(jsonResponse);
+          quote = jsonResponse;
+        });
+
+      return `"${quote.quote}" - ${quote.author}`; //This is an external API call.
     case "$feeling$":
       return getRandom(feelings);
     case "$book-title$":

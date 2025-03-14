@@ -22,6 +22,14 @@ export function Lobby({
     React.useState(true);
   const [roomCode, setRoomCode] = React.useState("");
 
+  const inputRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [roomCode]);
+
   //console.log("Connection State: ", connectionState);
 
   async function handleExit(destination) {
@@ -195,15 +203,17 @@ export function Lobby({
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Join Game</h1>
+        <form className="room-code-form">
+          <input
+            className="room-code-input"
+            type="text"
+            placeholder="Room Code"
+            value={roomCode}
+            onChange={(e) => handleSetRoomCode(e)}
+            ref={inputRef}
+          />
+        </form>
         <div className="lobby-actions">
-          <form className="room-code-form">
-            <input
-              type="text"
-              placeholder="Room Code"
-              value={roomCode}
-              onChange={(e) => handleSetRoomCode(e)}
-            />
-          </form>
           <button
             className="lobby-button"
             onClick={() => handleJoinGame(roomCode)}

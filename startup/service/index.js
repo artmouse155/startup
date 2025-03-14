@@ -211,6 +211,9 @@ gameRouter.delete("/leave", verifyAuth, async (req, res) => {
   // Find by room code
 });
 
+var gameServerRouter = express.Router();
+gameRouter.use(`/server`, gameRouter);
+
 // Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
 async function findGame(field, value) {
   if (!value) return null;
@@ -243,6 +246,11 @@ async function removePlayerFromGame(email) {
 async function findGameIndexByPlayerEmail(email) {
   if (!email) return -1;
   return activeGames.findIndex((u) => u.players.find((p) => p.email == email));
+}
+
+async function findGameIndexByRoomCode(roomCode) {
+  if (!email) return -1;
+  return activeGames.findIndex((u) => u.roomCode == roomCode);
 }
 
 // Handle errors
