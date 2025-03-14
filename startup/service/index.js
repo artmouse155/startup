@@ -32,7 +32,7 @@ apiRouter.post("/auth/create", async (req, res) => {
     setAuthCookie(res, user.token);
     // respond with only the email
     console.log(users);
-    res.send({ email: user.email });
+    res.send({ email: user.email, trophies: user.trophies });
   }
 });
 
@@ -43,7 +43,7 @@ apiRouter.post("/auth/login", async (req, res) => {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
       setAuthCookie(res, user.token);
-      res.send({ email: user.email });
+      res.send({ email: user.email, trophies: user.trophies });
       return;
     }
   }
@@ -78,15 +78,35 @@ apiRouter.post("/trophy", verifyAuth, (req, res) => {
   res.send(trophies);
 });
 
+// Get all trophies
+apiRouter.get("/trophies", (req, res) => {
+  // only send the email and number of trophies for each user
+  // only return everything before the @ symbol of the email
+  const trophies = users.map((u) => ({
+    userName: u.email.split("@")[0],
+    trophies: u.trophies,
+  }));
+  res.send(trophies);
+});
+
+apiRouter.post("/game/start", verifyAuth, (req, res) => {
+  // add the game to the active games list
+  activeGames.push({
+    host: req.body.host,
+    players: req.body.players,
+    game: req.body.game,
+  });
+  res.send({ msg: "Game started" });
+});
+
 // Handle errors
 app.use(function (err, req, res, next) {
   console.log("Oops! Error.");
   res.status(500).send({ type: err.name, message: err.message });
 });
 
-// Return the default application page
+// Return the default application page (not during dev build)
 app.use((_req, res) => {
-  console.log("Well, looks like we are just serving up the default.");
   res.sendFile("index.html", { root: "public" });
 });
 

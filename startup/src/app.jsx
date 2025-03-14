@@ -21,11 +21,12 @@ import { Leaderboard } from "./leaderboard/leaderboard";
 export default function App() {
   console.log(localStorage);
   const [userData, setUserData] = React.useState(
-    localStorage.getItem("userData") || ""
+    JSON.parse(localStorage.getItem("userData")) || ""
   );
   const [userName, setUserName] = React.useState(
-    localStorage.getItem("userData") || ""
+    userData != "" ? userData.email : ""
   );
+
   const [authState, setAuthState] = React.useState(
     userName ? AuthState.Authenticated : AuthState.Unauthenticated
   );
@@ -77,7 +78,7 @@ export default function App() {
         {authState == AuthState.Authenticated ? (
           <div className="header-right">
             <div className="trophy-section header-text">
-              <b>🏆 37</b>
+              <b>{`🏆 ${userData.trophies}`}</b>
             </div>
             <form method="get">
               <NavLink
@@ -89,7 +90,7 @@ export default function App() {
                 Log Out
               </NavLink>
             </form>
-            <p className="header-text">{userName}</p>
+            <p className="header-text">{userName.split("@")[0]}</p>
             <img
               src="account_circle.png"
               width="30px"
@@ -111,17 +112,20 @@ export default function App() {
               authState={authState}
               onAuthChange={(userData, authState) => {
                 setAuthState(authState);
-                setUserName(userData.userName);
-                console.log("Logging in as " + userData.userName);
-                localStorage.setItem("userName", userData.userName);
-                localStorage.setItem("Trophies", userData.trophies);
+                setUserName(userData.email);
+                console.log("Logging in as " + userData.email);
+                localStorage.setItem("userData", JSON.stringify(userData));
+                setUserData(userData);
                 //navigate("/play");
               }}
             />
           }
           exact
         />
-        <Route path="/play" element={<Play />} />
+        <Route
+          path="/play"
+          element={<Play authState={authState} userData={userData} />}
+        />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
