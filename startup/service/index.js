@@ -92,7 +92,46 @@ apiRouter.get("/trophies", (req, res) => {
 var gameRouter = express.Router();
 apiRouter.use(`/game`, gameRouter);
 
-const sampleGameData = {};
+const NUM_CARDS = 6;
+const NUM_PLAYERS = 4;
+const NUM_ITEM_SLOTS = 3;
+
+const getSampleGameData = () => {
+  return {
+    aspects: {
+      MAGIC: 0,
+      STRENGTH: 0,
+      INTELLIGENCE: 0,
+      CHARISMA: 0,
+    },
+    players: [
+      {
+        name: "Alice",
+        aspect: "UNKNOWN",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+      {
+        name: "Bob",
+        aspect: "UNKNOWN",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+      {
+        name: "Seth",
+        aspect: "UNKNOWN",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+      {
+        name: "Cosmo",
+        aspect: "UNKNOWN",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+    ],
+    //inventory: ["magic-potion", "", ""],
+    inventory: Array(NUM_ITEM_SLOTS).fill(""),
+    current_turn_id: Math.floor(Math.random() * NUM_PLAYERS),
+    turns: 0,
+  };
+};
 
 gameRouter.post("/host", verifyAuth, (req, res) => {
   // add the game to the active games list
@@ -117,7 +156,7 @@ gameRouter.post("/host", verifyAuth, (req, res) => {
     host: req.body.email,
     roomCode: roomCode,
     players: [req.body.email],
-    gameData: sampleGameData,
+    //gameData: sampleGameData,
   };
   activeGames.push(newGame);
   res.send(newGame);
@@ -146,6 +185,13 @@ gameRouter.post("/join", verifyAuth, (req, res) => {
   }
   res.status(403).send({ msg: "Room Code Invalid" });
 });
+
+// Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
+async function findGame(field, value) {
+  if (!value) return null;
+
+  return activeGames.find((u) => u[field] === value);
+}
 
 // Handle errors
 app.use(function (err, req, res, next) {
