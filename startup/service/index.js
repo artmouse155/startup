@@ -134,11 +134,19 @@ const getSampleGameData = () => {
   };
 };
 
-gameRouter.post("/host", verifyAuth, (req, res) => {
+gameRouter.post("/host", verifyAuth, async (req, res) => {
   // add the game to the active games list
   // Create new roomCode that isn't in use
   // Create list of all room codes
   // Codes are 5 letters long
+  const i = await findGameIndexByPlayerEmail(req.body.email);
+  console.log(i);
+  if (i != -1) {
+    removePlayerFromGame(req.body.email);
+    return res
+      .status(409)
+      .send({ msg: `Already in game. Room code: ${activeGames[i].roomCode}.` });
+  }
   let usedCodes = activeGames.map((game) => game.roomCode);
   let roomCode = "";
   do {
@@ -161,6 +169,7 @@ gameRouter.post("/host", verifyAuth, (req, res) => {
     //gameData: sampleGameData,
   };
   activeGames.push(newGame);
+  console.log(req.body.email, "created", roomCode, newGame);
   res.send(newGame);
 });
 
@@ -178,37 +187,29 @@ gameRouter.post("/join", verifyAuth, (req, res) => {
       }
       for (let j = 0; j < activeGames[i].players.length; j++) {
         if (activeGames[i].players[j].email == req.body.email) {
-          return res.status(403).send({ msg: "Already in game" });
+          removePlayerFromGame(req.body.email);
+          return res.status(409).send({
+            msg: `Already in game. Room code: ${activeGames[i].roomCode}.`,
+          });
         }
       }
       activeGames[i].players.push({ email: req.body.email });
+      console.log(req.body.email, "joined", req.body.roomCode, activeGames[i]);
       res.status(200).send(activeGames[i]);
     }
   }
   res.status(403).send({ msg: "Room Code Invalid" });
 });
 
-gameRouter.delete("/leave", verifyAuth, (req, res) => {
+gameRouter.delete("/leave", verifyAuth, async (req, res) => {
   // Remove user from current game
-  for (let i = 0; i < activeGames.length; i++) {
-    // Find by room code
-    if (activeGames[i].roomCode == req.body.roomCode) {
-      for (let j = 0; j < activeGames[i].players.length; j++) {
-        if (activeGames[i].players[j].email == req.body.email) {
-          activeGames[i].players.splice(j, 1);
-          if (activeGames[i].players.length == 0) {
-            activeGames.splice(i, 1);
-          } else if (activeGames[i].host == req.body.email) {
-            // TODO Placeholder WebSocket: Tell clients the host has left
-            activeGames.splice(i, 1);
-          }
-
-          return res.status(200).end();
-        }
-      }
-    }
+  const i = await findGameIndexByPlayerEmail(req.body.email);
+  if (i == -1) {
+    return res.status(403).send({ msg: "Game not found" });
   }
-  res.status(403).send({ msg: "Game not found" });
+  removePlayerFromGame(req.body.email);
+  res.status(204).end();
+  // Find by room code
 });
 
 // Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
@@ -216,6 +217,33 @@ async function findGame(field, value) {
   if (!value) return null;
 
   return activeGames.find((u) => u[field] === value);
+}
+
+async function removePlayerFromGame(email) {
+  const i = await findGameIndexByPlayerEmail(email);
+  if (i == -1) {
+    return;
+  }
+  console.log(`removing ${email} from game`, activeGames[i]);
+  for (let j = 0; j < activeGames[i].players.length; j++) {
+    if (activeGames[i].players[j].email == email) {
+      activeGames[i].players.splice(j, 1);
+      console.log(email, "left", activeGames[i].roomCode);
+      if (activeGames[i].players.length == 0) {
+        activeGames.splice(i, 1);
+        return;
+      } else if (activeGames[i].host == email) {
+        // TODO Placeholder WebSocket: Tell clients the host has left
+        activeGames.splice(i, 1);
+        return;
+      }
+    }
+  }
+}
+
+async function findGameIndexByPlayerEmail(email) {
+  if (!email) return -1;
+  return activeGames.findIndex((u) => u.players.find((p) => p.email == email));
 }
 
 // Handle errors

@@ -7,7 +7,7 @@ export function Lobby({
   setConnectionState,
   connectionData,
   setConnectionData,
-  userName,
+  email,
   trophies,
 }) {
   const MENUSTATE = {
@@ -22,7 +22,28 @@ export function Lobby({
     React.useState(true);
   const [roomCode, setRoomCode] = React.useState("");
 
-  console.log("Connection State: ", connectionState);
+  //console.log("Connection State: ", connectionState);
+
+  async function handleExit(destination) {
+    // Handles canceling as either a host or a person joining
+    // setMenuState(destination);
+    const response = await fetch("api/game/leave", {
+      method: "delete",
+      body: JSON.stringify({ email: email, roomCode: roomCode }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+    if (response?.status === 204) {
+      setConnectionData(null);
+      setRoomCode("");
+      setMenuState(destination);
+      setConnectionState(ConnectionState.Disconnected);
+    } else {
+      const body = await response.json();
+      alert(`⚠ Error: ${body.msg}`);
+    }
+  }
 
   function handleSetRoomCode(e) {
     let code = e.target.value;
@@ -43,7 +64,7 @@ export function Lobby({
     console.log("Preparing to host!");
     const response = await fetch("api/game/host", {
       method: "post",
-      body: JSON.stringify({ email: userName }),
+      body: JSON.stringify({ email: email }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -56,18 +77,19 @@ export function Lobby({
       setRoomCode(body.roomCode);
       setMenuState(MENUSTATE.HOST);
     } else {
-      const body = await response.json();
-      alert(`⚠ Error: ${body.msg}`);
+      if (response?.status === 409) {
+        const body = await response.json();
+        alert(`${body.msg} You are no longer in the game.`);
+      } else {
+        const body = await response.json();
+        alert(`⚠ Error: ${body.msg}`);
+      }
     }
     console.log("Join Game Result");
   }
 
   async function handleHostStartGame() {
-    if (doPlaceholderWebsocket) {
-      setConnectionState(ConnectionState.Connected);
-    } else {
-      setMenuState(MENUSTATE.HOST_WAIT);
-    }
+    setConnectionState(ConnectionState.Connected);
   }
 
   async function handleJoinGame(roomCode) {
@@ -75,7 +97,7 @@ export function Lobby({
     console.log("Preparing to join!");
     const response = await fetch("api/game/join", {
       method: "post",
-      body: JSON.stringify({ email: userName, roomCode: roomCode }),
+      body: JSON.stringify({ email: email, roomCode: roomCode }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -87,8 +109,13 @@ export function Lobby({
       setConnectionState(ConnectionState.Connecting);
       setMenuState(MENUSTATE.JOIN_WAIT);
     } else {
-      const body = await response.json();
-      alert(`⚠ Error: ${body.msg}`);
+      if (response?.status === 409) {
+        const body = await response.json();
+        alert(`${body.msg}. You are no longer in the game.`);
+      } else {
+        const body = await response.json();
+        alert(`⚠ Error: ${body.msg}`);
+      }
     }
     console.log("Join Game Result");
   }
@@ -120,12 +147,9 @@ export function Lobby({
   function Root({ setMenuState }) {
     return (
       <div className="lobby-container">
-        <h1 className="lobby-title">Welcome to the Lobby</h1>
+        <h1 className="lobby-title">Welcome to the Lobby!</h1>
         <div className="lobby-actions">
-          <button
-            className="lobby-button"
-            onClick={() => setMenuState(handleHostGame)}
-          >
+          <button className="lobby-button" onClick={() => handleHostGame()}>
             Host Game
           </button>
           <button
@@ -142,6 +166,7 @@ export function Lobby({
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Host Game</h1>
+        <h1 className="room-code">{`Room Code: ${roomCode}`}</h1>
         <h4 className="num-connected">{`${connectionData.players.length}/4 players connected.\nWaiting for host to start game`}</h4>
         <ConnectedPlayerList />
         <Spinner />
@@ -149,13 +174,15 @@ export function Lobby({
           <button
             className="lobby-button"
             onClick={handleHostStartGame}
-            disabled={connectionData.players.length < 4}
+            disabled={
+              connectionData.players.length < 4 && !doPlaceholderWebsocket
+            }
           >
             Start Game
           </button>
           <button
             className="lobby-cancel-button"
-            onClick={() => setMenuState(MENUSTATE.ROOT)}
+            onClick={() => handleExit(MENUSTATE.ROOT)}
           >
             Cancel
           </button>
@@ -222,7 +249,7 @@ export function Lobby({
         <div className="lobby-actions">
           <button
             className="lobby-cancel-button"
-            onClick={() => setMenuState(MENUSTATE.JOIN)}
+            onClick={() => handleExit(MENUSTATE.JOIN)}
           >
             Cancel
           </button>
@@ -257,18 +284,18 @@ export function Lobby({
   return (
     <div className="login-main">
       <div className="login-screen">
+        <Menu menuState={menuState} />
         <input
           type="checkbox"
           id="do-placeholder"
           checked={doPlaceholderWebsocket}
           onChange={() => setDoPlaceholderWebsocket(!doPlaceholderWebsocket)}
-        />
+        />{" "}
         <label htmlFor="do-placeholder">
-          Do Placeholder Web Socket (Keep this toggled on and click "Host Game"
+          Do Placeholder Web Socket (Keep toggled on and click "Host Game"
           {`>`} "Start Game" to get to the external API call for this
           deliverable)
         </label>
-        <Menu menuState={menuState} />
       </div>
     </div>
   );

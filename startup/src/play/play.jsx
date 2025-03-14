@@ -22,7 +22,7 @@ export function Play({ userData, authState }) {
           setConnectionState={setConnectionState}
           connectionData={connectionData}
           setConnectionData={setConnectionData}
-          userName={userData.email.split("@")[0]}
+          email={userData.email}
           trophies={userData.trophies}
         />
       </div>
