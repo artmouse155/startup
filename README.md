@@ -111,8 +111,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - For the Startup Service deliverable please specify the file in which you wrote your Third Party Endpoint, thanks!
 - [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
 - [x] **Backend service endpoints** - I use backend service endpoints using `/api/*`.
-- [x] **Frontend calls service endpoints** - I
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
+- [x] **Frontend calls service endpoints** - I have multiple frontend service endpoints.
+- [x] **Supports registration, login, logout, and restricted endpoint** - My registration, login, and logout is fully functional!
 
 ## 🚀 DB deliverable
 
