@@ -9,6 +9,7 @@ export function Play({ userData, authState }) {
     ConnectionState.Disconnected
   );
   const [connectionData, setConnectionData] = React.useState(null);
+  const [roomCode, setRoomCode] = React.useState("");
 
   console.log("Auth State: ", authState);
   console.log("Connection State: ", connectionState);
@@ -20,6 +21,9 @@ export function Play({ userData, authState }) {
           connectionState={connectionState}
           setConnectionState={setConnectionState}
           connectionData={connectionData}
+          setConnectionData={setConnectionData}
+          roomCode={roomCode}
+          setRoomCode={setRoomCode}
           userName={userData.email.split("@")[0]}
           trophies={userData.trophies}
         />

@@ -6,6 +6,9 @@ export function Lobby({
   connectionState,
   setConnectionState,
   connectionData,
+  setConnectionData,
+  roomCode,
+  setRoomCode,
   userName,
   trophies,
 }) {
@@ -19,13 +22,19 @@ export function Lobby({
   const [menuState, setMenuState] = React.useState(MENUSTATE.ROOT);
   const [doPlaceholderWebsocket, setDoPlaceholderWebsocket] =
     React.useState(true);
-  const [roomCode, setRoomCode] = React.useState("");
+
   console.log("Connection State: ", connectionState);
 
   console.log("userName: ", userName);
   console.log("trophies: ", trophies);
 
-  function handleHostGame() {
+  function handleSetRoomCode(v) {
+    // It can be a max of 5 characters
+    setRoomCode(v.slice(0, 5));
+    // Set mouse focus to room code input
+  }
+
+  async function handleHostGame() {
     // Handles the host game button click
     if (doPlaceholderWebsocket) {
       setConnectionState(ConnectionState.Connected);
@@ -33,10 +42,24 @@ export function Lobby({
     setMenuState(MENUSTATE.HOST_WAIT);
   }
 
-  function handleJoinGame() {
+  async function handleJoinGame(roomCode) {
     // Check if the room code is valid
-
-    setMenuState(MENUSTATE.JOIN_WAIT);
+    const response = await fetch("api/game/join", {
+      method: "post",
+      body: JSON.stringify({ email: userName, roomCode: roomCode }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+    if (response?.status === 200) {
+      const body = await response.json();
+      setConnectionData(body);
+      setConnectionState(ConnectionState.Connecting);
+      setMenuState(MENUSTATE.JOIN_WAIT);
+    } else {
+      const body = await response.json();
+      alert(`⚠ Error: ${body.msg}`);
+    }
   }
 
   // returns a spinner component for loading
@@ -106,9 +129,16 @@ export function Lobby({
       <div className="lobby-container">
         <h1 className="lobby-title">Join Game</h1>
         <div className="lobby-actions">
+          <form className="room-code-form">
+            <input
+              type="text"
+              placeholder="Room Code"
+              onChange={(e) => setRoomCode(e.target.value)}
+            />
+          </form>
           <button
             className="lobby-button"
-            onClick={() => setMenuState(MENUSTATE.JOIN_WAIT)}
+            onClick={() => handleJoinGame(roomCode)}
           >
             Join Game
           </button>
