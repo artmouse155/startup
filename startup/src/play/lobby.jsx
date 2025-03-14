@@ -39,10 +39,35 @@ export function Lobby({
 
   async function handleHostGame() {
     // Handles the host game button click
+
+    console.log("Preparing to host!");
+    const response = await fetch("api/game/host", {
+      method: "post",
+      body: JSON.stringify({ email: userName }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+    if (response?.status === 200) {
+      const body = await response.json();
+      setConnectionData(body);
+      console.log("Connection Data: ", body);
+      setConnectionState(ConnectionState.Connecting);
+      setRoomCode(body.roomCode);
+      setMenuState(MENUSTATE.HOST);
+    } else {
+      const body = await response.json();
+      alert(`⚠ Error: ${body.msg}`);
+    }
+    console.log("Join Game Result");
+  }
+
+  async function handleHostStartGame() {
     if (doPlaceholderWebsocket) {
       setConnectionState(ConnectionState.Connected);
+    } else {
+      setMenuState(MENUSTATE.HOST_WAIT);
     }
-    setMenuState(MENUSTATE.HOST_WAIT);
   }
 
   async function handleJoinGame(roomCode) {
@@ -82,7 +107,9 @@ export function Lobby({
     let connectedList = [];
     for (let i = 0; i < connectionData.players.length; i++) {
       connectedList.push(
-        <p key={i}>{`${connectionData.players[i].userName} connected`}</p>
+        <p key={i}>{`${connectionData.players[i].userName} connected ${
+          i == 0 ? ` (host)` : ``
+        }`}</p>
       );
     }
 
@@ -97,7 +124,7 @@ export function Lobby({
         <div className="lobby-actions">
           <button
             className="lobby-button"
-            onClick={() => setMenuState(MENUSTATE.HOST)}
+            onClick={() => setMenuState(handleHostGame)}
           >
             Host Game
           </button>
@@ -116,7 +143,7 @@ export function Lobby({
       <div className="lobby-container">
         <h1 className="lobby-title">Host Game</h1>
         <div className="lobby-actions">
-          <button className="lobby-button" onClick={handleHostGame}>
+          <button className="lobby-button" onClick={handleHostStartGame}>
             Start Game
           </button>
           <button
@@ -170,6 +197,7 @@ export function Lobby({
           <button
             className="lobby-cancel-button"
             onClick={() => setMenuState(MENUSTATE.HOST)}
+            disabled={connectionData.players.length < 4}
           >
             Cancel
           </button>
@@ -182,7 +210,7 @@ export function Lobby({
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Waiting for Players</h1>
-        <h4 className="num-connected">{`${connectionData.players.length}/4 players connected`}</h4>
+        <h4 className="num-connected">{`${connectionData.players.length}/4 players connected.\nWaiting for host to start game`}</h4>
         <ConnectedPlayerList />
         <Spinner />
         <div className="lobby-actions">

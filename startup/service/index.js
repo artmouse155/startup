@@ -140,7 +140,7 @@ gameRouter.post("/host", verifyAuth, (req, res) => {
   // Codes are 5 letters long
   let usedCodes = activeGames.map((game) => game.roomCode);
   let roomCode = "";
-  while (usedCodes.length > 0 || usedCodes.includes(roomCode)) {
+  do {
     // Generate room code
     roomCode = "";
     let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -150,12 +150,13 @@ gameRouter.post("/host", verifyAuth, (req, res) => {
         Math.floor(Math.random() * characters.length)
       );
     }
-  }
+  } while (usedCodes.length > 0 && usedCodes.includes(roomCode));
 
   let newGame = {
     host: req.body.email,
     roomCode: roomCode,
     players: [req.body.email],
+    started: false,
     //gameData: sampleGameData,
   };
   activeGames.push(newGame);
