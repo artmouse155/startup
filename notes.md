@@ -1335,3 +1335,7 @@ app.use(function (err, req, res, next) {
   res.status(500).send({ type: err.name, message: err.message });
 });
 ```
+
+### node.js
+
+We are going to be moving the dist directory's contents into service/public so that we only have to run the backend and then everything works!
