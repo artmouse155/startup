@@ -5,23 +5,24 @@ export function Login({ userName, authState, onAuthChange, logOut }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  function handleLogin() {
-    createAuth("PUT");
+  async function handleLogin() {
+    loginOrCreate(`/api/auth/login`);
   }
 
-  function handleRegister() {
-    createAuth("POST");
+  async function handleRegister() {
+    loginOrCreate(`/api/auth/create`);
   }
 
-  async function createAuth(method) {
-    const res = await fetch("api/auth", {
-      method: method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+  async function loginOrCreate(endpoint) {
+    const response = await fetch(endpoint, {
+      method: "post",
+      body: JSON.stringify({ email: userName, password: password }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
     });
-    await res.json();
-    if (res.ok) {
-      navigate("/profile");
+    if (response?.status === 200) {
+      navigate("/");
     } else {
       alert("Authentication failed");
     }
@@ -38,12 +39,12 @@ export function Login({ userName, authState, onAuthChange, logOut }) {
         </p>
         <div className="login-body">
           <form
-            action={() => {
-              //const email = emailRef.current.value;
-              // const password = passwordRef.current.value;
-              const email = "temp@gmail.com";
-              onAuthChange(email, true);
-            }}
+            // action={() => {
+            //   //const email = emailRef.current.value;
+            //   // const password = passwordRef.current.value;
+            //   const email = "temp@gmail.com";
+            //   onAuthChange(email, true);
+            // }}
             className="login-form"
           >
             <label htmlFor="username">Email</label>
@@ -68,25 +69,25 @@ export function Login({ userName, authState, onAuthChange, logOut }) {
               required
             />
             <br />
-            <div className="button-div">
-              <button
-                type="submit"
-                className="login-screen-button login-button"
-                disabled={!(email && password)}
-                onClick={handleLogin}
-              >
-                Login
-              </button>
-              <button
-                type="submit"
-                className="login-screen-button signup-button"
-                disabled={!(email && password)}
-                onClick={handleRegister}
-              >
-                Sign Up
-              </button>
-            </div>
           </form>
+          <div className="button-div">
+            <button
+              type="submit"
+              className="login-screen-button login-button"
+              disabled={!(email && password)}
+              onClick={handleLogin}
+            >
+              Login
+            </button>
+            <button
+              type="submit"
+              className="login-screen-button signup-button"
+              disabled={!(email && password)}
+              onClick={handleRegister}
+            >
+              Sign Up
+            </button>
+          </div>
         </div>
       </div>
     </div>

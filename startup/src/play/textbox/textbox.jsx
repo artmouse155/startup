@@ -90,7 +90,7 @@ export function TextBox({
 
   const insertRegex = /\$([^$]*)\$/g;
 
-  function parseMD() {
+  async function parseMD() {
     let _story = [...story];
     _story.push({ type: "turn", playerTurnName: currentPlayerName });
     let s = "";
@@ -157,7 +157,7 @@ export function TextBox({
             r = pronouns.them[heroGender];
             break;
           default:
-            r = apiCall(m);
+            r = await apiCall(m);
             break;
         }
         s = s.replace(`${m}`, r);
@@ -188,7 +188,9 @@ export function TextBox({
     isDragging: monitor.isDragging(),
   }));
 
-  React.useEffect(parseMD, [story]);
+  React.useEffect(() => {
+    parseMD();
+  }, [story]);
 
   return (
     <div className={`text-adventure-container`} ref={drop}>

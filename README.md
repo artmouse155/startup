@@ -106,13 +106,13 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
+- [x] **Node.js/Express HTTP service** - My node.js functionality is working!
+- [ ] **Static middleware for frontend** - I am running into errors that are causing my program to not work.
 - For the Startup Service deliverable please specify the file in which you wrote your Third Party Endpoint, thanks!
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
+- [ ] **Calls to third party endpoints** - I ran into errors while doing this part of the deliverable. It should be in api_stub.jsx.
+- [ ] **Backend service endpoints** - I am running into errors that are causing my program to not work.
+- [ ] **Frontend calls service endpoints** - I am running into errors that are causing my program to not work.
+- [ ] **Supports registration, login, logout, and restricted endpoint** - I am running into errors that are causing my program to not work.
 
 ## 🚀 DB deliverable
 

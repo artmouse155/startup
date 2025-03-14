@@ -1,12 +1,14 @@
 import React from "react";
 import "./leaderboard.css";
-import scoresJSON from "./scores.json";
+//import scoresJSON from "./scores.json";
 
 const MAX_SCORES = 10;
 
 export function Leaderboard() {
+  const [scores, setScores] = React.useState([]);
+
   function TableBody() {
-    let s = scoresJSON.scores.sort((a, b) => b.score - a.score);
+    let s = scores.sort((a, b) => b.score - a.score);
     // Limit the number of scores displayed to MAX_SCORES
     s = s.slice(0, MAX_SCORES);
     let rows = [];
@@ -21,6 +23,14 @@ export function Leaderboard() {
     }
     return <tbody>{rows}</tbody>;
   }
+
+  React.useEffect(() => {
+    fetch("/api/scores")
+      .then((response) => response.json())
+      .then((scores) => {
+        setScores(scores);
+      });
+  });
 
   return (
     <div className="leaderboard-main">

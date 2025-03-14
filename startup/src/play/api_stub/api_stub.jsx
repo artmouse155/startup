@@ -84,7 +84,7 @@ function getRandom(array) {
   return array[getRandomInt(array.length)];
 }
 
-export function apiCall(call) {
+export async function apiCall(call) {
   switch (call) {
     case "$wow-long-quote$":
       return getRandom(wowLongQuotes);
@@ -97,9 +97,19 @@ export function apiCall(call) {
     case "$room-condition$":
       return getRandom(roomConditions);
     case "$inspirational-quote$":
-    // const quote = getRandom(inspirationalQuotes);
-    // return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
+      // const quote = getRandom(inspirationalQuotes);
+      let quote = {};
+      await fetch(
+        "https://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en",
+        { mode: "no-cors" }
+      )
+        .then((response) => response.json())
+        .then((jsonResponse) => {
+          console.log(jsonResponse);
+          quote = jsonResponse;
+        });
 
+      return `"${quote.quoteText}" - ${quote.quoteAuthor}`; //This is an external API call.
     case "$feeling$":
       return getRandom(feelings);
     case "$book-title$":
