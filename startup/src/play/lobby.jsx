@@ -5,6 +5,7 @@ import { ConnectionState } from "./connectionState";
 export function Lobby({
   connectionState,
   setConnectionState,
+  connectionData,
   userName,
   trophies,
 }) {
@@ -16,6 +17,9 @@ export function Lobby({
     JOIN_WAIT: 4,
   };
   const [menuState, setMenuState] = React.useState(MENUSTATE.ROOT);
+  const [doPlaceholderWebsocket, setDoPlaceholderWebsocket] =
+    React.useState(true);
+  const [roomCode, setRoomCode] = React.useState("");
   console.log("Connection State: ", connectionState);
 
   console.log("userName: ", userName);
@@ -23,8 +27,16 @@ export function Lobby({
 
   function handleHostGame() {
     // Handles the host game button click
-    setConnectionState(ConnectionState.Connected);
+    if (doPlaceholderWebsocket) {
+      setConnectionState(ConnectionState.Connected);
+    }
     setMenuState(MENUSTATE.HOST_WAIT);
+  }
+
+  function handleJoinGame() {
+    // Check if the room code is valid
+
+    setMenuState(MENUSTATE.JOIN_WAIT);
   }
 
   // returns a spinner component for loading
@@ -38,14 +50,21 @@ export function Lobby({
   }
 
   function ConnectedPlayerList() {
+    let connectedList = [];
+    for (let i = 0; i < connectionData.players.length; i++) {
+      connectedList.push(
+        <p key={i}>{`${connectionData.players[i].userName} connected`}</p>
+      );
+    }
+
+    return <div>{connectedList}</div>;
     // Returns a component that displays the list of connected players. Taken from connection state
   }
 
-  function Root() {
+  function Root({ setMenuState }) {
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Welcome to the Lobby</h1>
-        <div className="lobby-user-info"></div>
         <div className="lobby-actions">
           <button
             className="lobby-button"
@@ -63,11 +82,10 @@ export function Lobby({
       </div>
     );
   }
-  function Host() {
+  function Host({ setMenuState }) {
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Host Game</h1>
-        <div className="lobby-user-info"></div>
         <div className="lobby-actions">
           <button className="lobby-button" onClick={handleHostGame}>
             Start Game
@@ -83,15 +101,14 @@ export function Lobby({
     );
   }
 
-  function Join() {
+  function Join({ setMenuState }) {
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Join Game</h1>
-        <div className="lobby-user-info"></div>
         <div className="lobby-actions">
           <button
             className="lobby-button"
-            onClick={setMenuState(MENUSTATE.JOIN_WAIT)}
+            onClick={() => setMenuState(MENUSTATE.JOIN_WAIT)}
           >
             Join Game
           </button>
@@ -106,11 +123,10 @@ export function Lobby({
     );
   }
 
-  function HostWait() {
+  function HostWait({ setMenuState }) {
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Waiting for Players</h1>
-        <div className="lobby-user-info"></div>
         <Spinner />
         <div className="lobby-actions">
           <button
@@ -124,11 +140,13 @@ export function Lobby({
     );
   }
 
-  function JoinWait() {
+  function JoinWait({ setMenuState }) {
     return (
       <div className="lobby-container">
-        <h1 className="lobby-title">Waiting to Join</h1>
-        <div className="lobby-user-info"></div>
+        <h1 className="lobby-title">Waiting for Players</h1>
+        <h4 className="num-connected">{`${connectionData.players.length}/4 players connected`}</h4>
+        <ConnectedPlayerList />
+        <Spinner />
         <div className="lobby-actions">
           <button
             className="lobby-cancel-button"
@@ -144,15 +162,15 @@ export function Lobby({
   function Menu({ menuState }) {
     switch (menuState) {
       case MENUSTATE.ROOT:
-        return <Root />;
+        return <Root setMenuState={setMenuState} />;
       case MENUSTATE.HOST:
-        return <Host />;
+        return <Host setMenuState={setMenuState} />;
       case MENUSTATE.JOIN:
-        return <Join />;
+        return <Join setMenuState={setMenuState} />;
       case MENUSTATE.HOST_WAIT:
-        return <HostWait />;
+        return <HostWait setMenuState={setMenuState} />;
       case MENUSTATE.JOIN_WAIT:
-        return <JoinWait />;
+        return <JoinWait setMenuState={setMenuState} />;
       default:
         return <p>Unknown Menu State!</p>;
     }
@@ -161,6 +179,15 @@ export function Lobby({
   return (
     <div className="login-main">
       <div className="login-screen">
+        <input
+          type="checkbox"
+          id="do-placeholder"
+          checked={doPlaceholderWebsocket}
+          onChange={() => setDoPlaceholderWebsocket(!doPlaceholderWebsocket)}
+        />
+        <label htmlFor="do-placeholder">
+          Do Placeholder Web Socket (Show joining game)
+        </label>
         <Menu menuState={menuState} />
       </div>
     </div>

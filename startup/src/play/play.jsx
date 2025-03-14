@@ -8,6 +8,7 @@ export function Play({ userData, authState }) {
   const [connectionState, setConnectionState] = React.useState(
     ConnectionState.Disconnected
   );
+  const [connectionData, setConnectionData] = React.useState(null);
 
   console.log("Auth State: ", authState);
   console.log("Connection State: ", connectionState);
@@ -18,13 +19,14 @@ export function Play({ userData, authState }) {
         <Lobby
           connectionState={connectionState}
           setConnectionState={setConnectionState}
+          connectionData={connectionData}
           userName={userData.email.split("@")[0]}
           trophies={userData.trophies}
         />
       </div>
     ) : connectionState == ConnectionState.Connected ? (
       <div className="play-main">
-        <Game />
+        <Game userName={userData.email.split("@")[0]} />
       </div>
     ) : (
       <p className="login-main">Error: Unknown Connection State!</p>

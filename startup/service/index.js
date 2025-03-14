@@ -89,14 +89,43 @@ apiRouter.get("/trophies", (req, res) => {
   res.send(trophies);
 });
 
-apiRouter.post("/game/start", verifyAuth, (req, res) => {
+var gameRouter = express.Router();
+apiRouter.use(`/game`, gameRouter);
+
+gameRouter.post("/host", verifyAuth, (req, res) => {
   // add the game to the active games list
   activeGames.push({
     host: req.body.host,
+    roomCode: req.body.roomCode,
     players: req.body.players,
     game: req.body.game,
   });
-  res.send({ msg: "Game started" });
+  res.send({ msg: "Hosted new game" });
+});
+
+gameRouter.post("/join", verifyAuth, (req, res) => {
+  // See if req.body.roomCode is in the active games list
+  // Then, see if the player is already in the game or if there are already 4 players (the max)
+  // If the player is already in the game, respond with a message saying they are already in the game
+  // If there are already 4 players, respond with a message saying the game is full
+  // Otherwise, add the player to the game and respond with a message saying they joined the game
+  // If the room code is not in the active games list, respond with a message saying the game does not exist
+  let found = false;
+  for (let i = 0; i < activeGames.length; i++) {
+    if (activeGames[i].roomCode == req.body.roomCode) {
+      found = true;
+      if (activeGames[i].players.length >= 4) {
+        return res.send({ msg: "Game full" });
+      }
+      for (let j = 0; j < activeGames[i].players.length; j++) {
+        if (activeGames[i].players[j] == req.body.email) {
+          return res.send({ msg: "Already in game" });
+        }
+      }
+      activeGames[i].players.push(req.body.email);
+    }
+  }
+  res.send({ msg: "Game joined" });
 });
 
 // Handle errors

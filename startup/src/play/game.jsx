@@ -52,7 +52,7 @@ const defaultGameData = {
   turns: 0,
 };
 
-export function Game() {
+export function Game({ userName }) {
   const GAME_STATES = {
     PLAY: 0,
     END: 1,
