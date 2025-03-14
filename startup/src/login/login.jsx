@@ -5,9 +5,27 @@ export function Login({ userName, authState, onAuthChange, logOut }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  function handleLogin() {}
+  function handleLogin() {
+    createAuth("PUT");
+  }
 
-  function handleRegister() {}
+  function handleRegister() {
+    createAuth("POST");
+  }
+
+  async function createAuth(method) {
+    const res = await fetch("api/auth", {
+      method: method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    await res.json();
+    if (res.ok) {
+      navigate("/profile");
+    } else {
+      alert("Authentication failed");
+    }
+  }
 
   return !authState ? (
     <div className="login-main">

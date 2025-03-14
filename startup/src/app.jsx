@@ -22,7 +22,20 @@ export default function App() {
   const [userName, setUserName] = React.useState();
   let navigate = useNavigate();
 
+  const [userInfo, setUserInfo] = React.useState("");
+
+  React.useEffect(() => {
+    (async () => {
+      const res = await fetch("api/user/me");
+      const data = await res.json();
+      setUserInfo(data);
+    })();
+  }, []);
+
   function logOut() {
+    fetch("api/auth", {
+      method: "DELETE",
+    });
     navigate("/");
   }
 
