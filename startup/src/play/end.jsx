@@ -84,7 +84,9 @@ export function End({
         ))}
       </div>
       <div className="trophies">
-        <p>{`You won ${trophies} trophies!`}</p>
+        <p>
+          <b>{`You won ${trophies} trophies!`}</b>
+        </p>
       </div>
       <div className="end-actions">
         <button className="end-button" onClick={returnToLobby}>

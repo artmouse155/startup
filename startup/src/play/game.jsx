@@ -89,9 +89,9 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
 
   function gameSetup() {
     console.log("Setting up!");
-    const _myPlayerId = 3;
+    const _myPlayerId = 0;
     setMyPlayerID(_myPlayerId);
-    const { _gameData, _heroData } = createGame();
+    const { _gameData, _heroData } = createGame(userName);
 
     setGameData(_gameData);
     setHeroData(_heroData);

@@ -6,40 +6,7 @@ const NUM_CARDS = 5;
 const NUM_PLAYERS = 4;
 const NUM_ITEM_SLOTS = 3;
 
-let gameData = {
-  aspects: {
-    MAGIC: 10,
-    STRENGTH: 0,
-    INTELLIGENCE: 5,
-    CHARISMA: 5,
-  },
-  players: [
-    {
-      name: "Alice",
-      aspect: "UNKNOWN",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-    {
-      name: "Bob",
-      aspect: "UNKNOWN",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-    {
-      name: "Seth",
-      aspect: "UNKNOWN",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-    {
-      name: "Cosmo",
-      aspect: "UNKNOWN",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-  ],
-  //inventory: ["magic-potion", "", ""],
-  inventory: Array(NUM_ITEM_SLOTS).fill(""),
-  current_turn_id: 3,
-  turns: 0,
-};
+let gameData = {};
 
 let playerCards = [{}, {}, {}, {}];
 
@@ -68,14 +35,50 @@ function generateCards() {
   return cardsExport;
 }
 
-export function createGame() {
+export function createGame(userName) {
+  const defaultGameData = {
+    aspects: {
+      MAGIC: 0,
+      STRENGTH: 0,
+      INTELLIGENCE: 0,
+      CHARISMA: 0,
+    },
+    players: [
+      {
+        name: userName,
+        aspect: "INTELLIGENCE",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+      {
+        name: "P2",
+        aspect: "CHARISMA",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+      {
+        name: "P3",
+        aspect: "MAGIC",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+      {
+        name: "P4",
+        aspect: "STRENGTH",
+        cards: Array(NUM_CARDS).fill(1),
+      },
+    ],
+    inventory: Array(NUM_ITEM_SLOTS).fill(""),
+    current_turn_id: 0,
+    turns: 0,
+  };
+
+  let _gameData = { ...defaultGameData };
+
   // Assign a random order for players
   // From https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   // Shuffle players
 
   // Assign each player one of the four aspects
   const aspects = ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"];
-  gameData.players.forEach((player, index) => {
+  _gameData.players.forEach((player, index) => {
     player.aspect = aspects[index];
   });
 
@@ -84,13 +87,11 @@ export function createGame() {
     playerCards[i] = generateCards();
   }
 
-  let _gameData = { ...gameData };
-
   let _heroData = {
     heroName: "Elrond",
     heroGender: "male",
   };
-
+  gameData = _gameData;
   return { _gameData, _heroData };
 }
 
