@@ -70,12 +70,32 @@ const verifyAuth = async (req, res, next) => {
   }
 };
 
+async function getUserData(req) {
+  const user = await findUser("token", req.cookies[authCookieName]);
+  if (user) {
+    return { email: user.email, trophies: user.trophies };
+  } else {
+    return { email: null, trophies: null };
+  }
+}
+
 // Increase the number of trophies the user has
-apiRouter.post("/trophy", verifyAuth, (req, res) => {
-  // the conent is the email, and the number of trophies they just got
-  const trophyReturnData = addTrophies(req.body);
-  // respond with users list, but only the email and number of trophies
-  res.send(trophyReturnData);
+apiRouter.post("/trophy", verifyAuth, async (req, res) => {
+  const userData = await getUserData(req);
+  if (userData.email != req.body.email) {
+    console.log(
+      "userData email",
+      userData.email,
+      "req.body.email",
+      req.body.email
+    );
+    res.status(401).send({ msg: "Nice try, Daniel." });
+  } else {
+    // the conent is the email, and the number of trophies they just got
+    const trophyReturnData = addTrophies(req.body);
+    // respond with users list, but only the email and number of trophies
+    res.send(trophyReturnData);
+  }
 });
 
 // Get all trophies
@@ -269,7 +289,7 @@ app.use((_req, res) => {
 function addTrophies(newTrophyData) {
   for (let i = 0; i < users.length; i++) {
     if (users[i].email == newTrophyData.email) {
-      users[i].trophies += newTrophyData.trophies;
+      users[i].trophies += parseInt(newTrophyData.trophies);
       return { email: newTrophyData.email, trophies: users[i].trophies };
       break;
     }
