@@ -33,7 +33,8 @@ export function TextBox({
   React.useEffect(() => {
     if (!isSetupComplete) {
       const { init_story, init_name } = initTextbox();
-      setStory(init_story);
+      console.log("Init story", init_story);
+      setStory([...init_story]);
       setCurrentPlayerName(init_name);
       setIsSetupComplete(true);
     }

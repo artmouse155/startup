@@ -113,7 +113,7 @@ export async function apiCall(call) {
           quote = jsonResponse;
         });
 
-      return `"${quote.quote}" - ${quote.author}`; //This is an external API call.
+      return `"${quote.quote}" — ${quote.author}`; //This is an external API call.
     case "$feeling$":
       return getRandom(feelings);
     case "$book-title$":

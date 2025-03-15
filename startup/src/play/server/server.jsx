@@ -96,8 +96,9 @@ export function createGame(userName) {
 }
 
 export function initTextbox() {
+  console.log("⭐ Init textbox");
   const init_story = [
-    introJSON.sections[getRandomInt(introJSON.sections.length)],
+    { ...introJSON.sections[getRandomInt(introJSON.sections.length)] },
   ];
   const init_name = gameData.players[gameData.current_turn_id].name;
   return { init_story, init_name };
