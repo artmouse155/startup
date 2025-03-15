@@ -25,7 +25,7 @@ export function Leaderboard() {
     let rows = [];
     for (let i = 0; i < s.length; i++) {
       rows.push(
-        <tr>
+        <tr key={i}>
           <td>{i + 1}</td>
           <td>{s[i].userName}</td>
           <td>{s[i].trophies}</td>

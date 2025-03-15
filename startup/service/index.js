@@ -73,9 +73,9 @@ const verifyAuth = async (req, res, next) => {
 // Increase the number of trophies the user has
 apiRouter.post("/trophy", verifyAuth, (req, res) => {
   // the conent is the email, and the number of trophies they just got
-  trophies = addTrophies(req.body);
+  const trophyReturnData = addTrophies(req.body);
   // respond with users list, but only the email and number of trophies
-  res.send(trophies);
+  res.send(trophyReturnData);
 });
 
 // Get all trophies
@@ -256,6 +256,7 @@ async function findGameIndexByRoomCode(roomCode) {
 // Handle errors
 app.use(function (err, req, res, next) {
   console.log("Oops! Error.");
+  console.error(err.stack);
   res.status(500).send({ type: err.name, message: err.message });
 });
 
@@ -266,20 +267,15 @@ app.use((_req, res) => {
 
 // update trophies updates the number of trophies the user has.
 function addTrophies(newTrophyData) {
-  let found = false;
   for (let i = 0; i < users.length; i++) {
     if (users[i].email == newTrophyData.email) {
       users[i].trophies += newTrophyData.trophies;
-      found = true;
+      return { email: newTrophyData.email, trophies: users[i].trophies };
       break;
     }
   }
 
-  if (!found) {
-    return { msg: "User not found" };
-  }
-
-  return { email: newTrophyData.email, trophies: users[i].trophies };
+  return { msg: "User not found" };
 }
 
 // Creates a new user

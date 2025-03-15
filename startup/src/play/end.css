@@ -1,0 +1,58 @@
+.end-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.end-title {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.standings {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.standing {
+  margin-bottom: 10px;
+}
+
+.standing-name {
+  font-size: 1.5em;
+  color: #555;
+}
+
+.standing-score {
+  font-size: 1.2em;
+  color: #777;
+}
+
+.trophies {
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.end-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.end-button {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #3e70a7;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.end-button:hover {
+  background-color: #244364;
+}

@@ -124,7 +124,13 @@ export default function App() {
         />
         <Route
           path="/play"
-          element={<Play authState={authState} userData={userData} />}
+          element={
+            <Play
+              authState={authState}
+              userData={userData}
+              setUserData={setUserData}
+            />
+          }
         />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="*" element={<NotFound />} />

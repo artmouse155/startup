@@ -16,6 +16,7 @@ import {
 } from "./server/server.jsx";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
+import { End } from "./end.jsx";
 
 const debug = false;
 const defaultGameData = {
@@ -52,7 +53,7 @@ const defaultGameData = {
   turns: 0,
 };
 
-export function Game({ userName }) {
+export function Game({ userName, userData, setUserData, returnToLobby }) {
   const GAME_STATES = {
     PLAY: 0,
     END: 1,
@@ -82,7 +83,7 @@ export function Game({ userName }) {
   React.useEffect(() => {
     console.log("game Data updated!", gameData);
     if (gameData.turns >= NUM_PLAYERS * NUM_CARDS) {
-      setGameState(GAME_STATES.END);
+      endGame();
     }
   }, [gameData]);
 
@@ -98,6 +99,10 @@ export function Game({ userName }) {
     setGameState(GAME_STATES.PLAY);
     setIsSetupComplete(true);
     console.log("Setup complete!");
+  }
+
+  function endGame() {
+    setGameState(GAME_STATES.END);
   }
 
   function getAdventureTitle() {
@@ -411,6 +416,7 @@ export function Game({ userName }) {
           >
             Simulate Next Turn
           </button>
+          <button onClick={() => endGame()}>End Game</button>
         </div>
       );
     } else {
@@ -511,6 +517,14 @@ export function Game({ userName }) {
       </main>
     );
   } else if (gameState == GAME_STATES.END) {
-    return <p>Game is over!</p>;
+    return (
+      <End
+        userData={userData}
+        setUserData={setUserData}
+        gameData={gameData}
+        heroData={heroData}
+        returnToLobby={returnToLobby}
+      />
+    );
   }
 }
