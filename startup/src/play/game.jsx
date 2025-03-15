@@ -81,6 +81,9 @@ export function Game({ userName }) {
   React.useEffect(() => (isSetupComplete ? () => {} : gameSetup()));
   React.useEffect(() => {
     console.log("game Data updated!", gameData);
+    if (gameData.turns >= NUM_PLAYERS * NUM_CARDS) {
+      setGameState(GAME_STATES.END);
+    }
   }, [gameData]);
 
   function gameSetup() {
@@ -305,7 +308,7 @@ export function Game({ userName }) {
   }
 
   // I forgot to put props around it.
-  function Leaderboard({ aspects, players, currentTurn }) {
+  function Leaderboard({ aspects, players, currentTurn, numTurns, maxTurns }) {
     if (aspects && players) {
       // PlayerID, Standing
       let standings = Array(NUM_PLAYERS);
@@ -373,6 +376,9 @@ export function Game({ userName }) {
       console.log("current turn", currentTurn);
       return (
         <div className="players-boxes-container">
+          <h2 className="centered-header">
+            {`Turn ${numTurns + 1} of ${maxTurns}`}
+          </h2>
           <LeaderboardCard
             id={currentTurn == 0 ? "current-turn" : ""}
             data={{ standing: standings[0], ...players[0] }}
@@ -389,6 +395,22 @@ export function Game({ userName }) {
             id={currentTurn == 3 ? "current-turn" : ""}
             data={{ standing: standings[3], ...players[3] }}
           />
+          <button
+            onClick={() => {
+              // Evaluate random card of current player, using gameData.current_turn_id, gameData.players[gameData.current_turn_id].cards, and evalCard
+              const currentPlayerCards =
+                gameData.players[gameData.current_turn_id].cards;
+              const randomCardIndex = currentPlayerCards.findIndex(
+                (card) => card == 1
+              );
+              if (randomCardIndex !== -1) {
+                evalCard(randomCardIndex);
+              }
+            }}
+            //disabled={myPlayerId == gameData.current_turn_id}
+          >
+            Simulate Next Turn
+          </button>
         </div>
       );
     } else {
@@ -464,24 +486,11 @@ export function Game({ userName }) {
             aspects={gameData.aspects}
             players={gameData.players}
             currentTurn={gameData.current_turn_id}
+            numTurns={gameData.turns}
+            maxTurns={NUM_PLAYERS * NUM_CARDS}
           />
         </div>
-        <button
-          onClick={() => {
-            // Evaluate random card of current player, using gameData.current_turn_id, gameData.players[gameData.current_turn_id].cards, and evalCard
-            const currentPlayerCards =
-              gameData.players[gameData.current_turn_id].cards;
-            const randomCardIndex = currentPlayerCards.findIndex(
-              (card) => card == 1
-            );
-            if (randomCardIndex !== -1) {
-              evalCard(randomCardIndex);
-            }
-          }}
-          //disabled={myPlayerId == gameData.current_turn_id}
-        >
-          Simulate Next Turn
-        </button>
+
         {debug ? (
           <div>
             <button onClick={() => console.log(myCards)}>Print cards</button>

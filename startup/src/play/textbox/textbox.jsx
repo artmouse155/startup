@@ -107,10 +107,22 @@ export function TextBox({
 
   React.useEffect(() => {
     async function parseMD() {
+      // Check if anything in story doesn't have the rendered flag
+      if (story.length == 0) {
+        return;
+      }
+      // Check if anything in story doesn't have the rendered flag
+      if (story.every((elem) => elem.rendered)) {
+        return;
+      }
+
       let _story = [...story];
-      _story.push({ type: "turn", playerTurnName: currentPlayerName });
+      //_story.push({ type: "turn", playerTurnName: currentPlayerName });
       let s = "";
       for (let i = 0; i < _story.length; i++) {
+        if (_story[i].rendered) {
+          continue;
+        }
         const {
           type,
           playerTurnName,
@@ -140,6 +152,7 @@ export function TextBox({
               break;
           }
         }
+        _story[i].rendered = true;
       }
       const matches = s.match(insertRegex);
       if (matches) {
@@ -185,7 +198,10 @@ export function TextBox({
       //marked.use(renderer);
 
       // Run marked
-      document.getElementById("parsedMD").innerHTML = marked.parse(s);
+      document.getElementById("parsedMD").innerHTML += marked.parse(s);
+      document.getElementById("parsedMDTemp").innerHTML = marked.parse(
+        `<h5 class="playerTurn">${currentPlayerName}'s Turn</h5>\n\n`
+      );
 
       const elem = document.getElementById("textScroll");
       elem.scrollTop = elem.scrollHeight;
@@ -202,6 +218,7 @@ export function TextBox({
         id="textScroll"
       >
         <div className="text-adventure-text" id="parsedMD"></div>
+        <div className="text-adventure-text" id="parsedMDTemp"></div>
       </div>
       {isDragging ? (
         <div className={`drag-drop-overlay ${isOver ? "is-over-grow" : ""}`}>
