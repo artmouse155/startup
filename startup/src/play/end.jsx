@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ConnectionState } from "./connectionState";
-import { NUM_PLAYERS } from "./server/server.jsx";
+// import { NUM_PLAYERS } from "./server/server.jsx";
 import "./end.css";
 
 export function End({

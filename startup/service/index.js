@@ -1,3 +1,7 @@
+import cards from "./cards.json";
+import items from "./items.json";
+import introJSON from "./intro.json";
+
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 const express = require("express");
@@ -266,11 +270,18 @@ const verifyCurrentPlayer = async (req, res, next) => {
 
 gameRouter.use([verifyRoomCode, verifyCurrentPlayer]);
 
-gameServerRouter.post("card/:cardIndex/use", async (req, res) => {
+gameServerRouter.post("/card/:cardIndex/use", async (req, res) => {
   const roomCode = req.params.roomCode;
   // get user email based on their auth token
   const userData = await getUserData(req);
 });
+
+gameServerRouter.post("/connection/get", async (req, res) => {
+  const roomCode = req.params.roomCode;
+  // get user email based on their auth token
+  const userData = await getUserData(req);
+});
+
 // Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
 async function findGame(field, value) {
   if (!value) return null;
@@ -308,6 +319,152 @@ async function findGameIndexByPlayerEmail(email) {
 async function findGameIndexByRoomCode(roomCode) {
   if (!email) return -1;
   return activeGames.findIndex((u) => u.roomCode == roomCode);
+}
+
+async function parseMD(md, heroName, heroGender) {
+  const pronouns = {
+    They: {
+      male: "He",
+      female: "She",
+      other: "They",
+    },
+    Their: {
+      male: "His",
+      female: "Her",
+      other: "Their",
+    },
+    Theirs: {
+      male: "His",
+      female: "Hers",
+      other: "Theirs",
+    },
+    Them: {
+      male: "Him",
+      female: "Her",
+      other: "Them",
+    },
+    they: {
+      male: "he",
+      female: "she",
+      other: "they",
+    },
+    their: {
+      male: "his",
+      female: "her",
+      other: "their",
+    },
+    theirs: {
+      male: "his",
+      female: "hers",
+      other: "theirs",
+    },
+    them: {
+      male: "him",
+      female: "her",
+      other: "them",
+    },
+  };
+  const insertRegex = /\$([^$]*)\$/g;
+}
+
+async function evalCard(roomCode, gameIndex, card_num_id) {
+  // get result object from card based on checking conditions
+  // console.log("Checking card", card_id);
+  const current_turn_id = activeGames[gameIndex].gameData.current_turn_id;
+
+  let gameData = activeGames[gameIndex].gameData;
+  console.log(
+    `Player ${activeGames[gameIndex].gameData.players[current_turn_id].name} is playing card ${card_num_id} from their hand.`
+  );
+
+  // If this card has already been played, something crazy is going on!
+
+  const card_id = playerCards[current_turn_id][card_num_id].id;
+  const card = cards.find((card) => card.id == card_id);
+  if (!card) {
+    console.log("No card found for card", card_num_id);
+    return null;
+  }
+
+  const outcomes = card.outcomes;
+  if (!outcomes) {
+    console.log("No outcomes found for card", card);
+    return null;
+  }
+
+  // This card is no longer playable.
+  gameData.players[current_turn_id].cards[card_num_id] = 0;
+
+  for (let i = 0; i < outcomes.length; i++) {
+    const outcome = outcomes[i];
+    const conditions = outcome.conditions;
+
+    let conditionsMet = true;
+    for (let j = 0; j < conditions.length; j++) {
+      const condition = conditions[j];
+
+      if (condition.hasItem) {
+        if (!gameData.inventory.includes(condition.hasItem)) {
+          conditionsMet = false;
+          break;
+        }
+      }
+
+      if (condition.randomChance) {
+        if (Math.random() > parseFloat(condition.randomChance)) {
+          conditionsMet = false;
+          break;
+        }
+      }
+    }
+
+    if (conditionsMet) {
+      // Evaluate the result of outcome
+      if (outcome.results) {
+        const results = outcome.results;
+        for (let j = 0; j < results.length; j++) {
+          const result = results[j];
+
+          if (result.type == "aspect-points") {
+            gameData.aspects[result.aspect] += parseInt(result.amt);
+          }
+
+          if (result.type == "item-obtained") {
+            // Add item to inventory. The inventory is a list of strings that represent the item names.
+            // If there isn't an item in the slot, the value of the slot is "".
+            // You always have NUM_ITEM_SLOTS slots in your inventory.
+            // If you try to add an item to a full inventory, the oldest item disappears.
+            if (!gameData.inventory.includes("")) {
+              gameData.inventory.shift(); // Remove the oldest item
+              gameData.inventory.push(result.item);
+              outcome.text.push(`_Not enough room. Oldest item removed._`);
+            } else {
+              for (let k = 0; k < gameData.inventory.length; k++) {
+                if (gameData.inventory[k] == "") {
+                  gameData.inventory[k] = result.item;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      const cardPlayerName = gameData.players[gameData.current_turn_id].name;
+
+      textboxPushFunc({
+        ...outcome,
+        type: "turn",
+        playerTurnName: cardPlayerName,
+      });
+
+      // Go to next player's turn
+      nextTurn();
+
+      return true;
+    }
+  }
+  console.log("No outcome found for card", card);
+  return null;
 }
 
 // Handle errors
