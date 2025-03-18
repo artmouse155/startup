@@ -11,7 +11,7 @@ const app = express();
 const authCookieName = "token";
 
 let users = [];
-let activeGames = [];
+let games = [];
 
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
@@ -164,16 +164,15 @@ gameRouter.post("/host", async (req, res) => {
   // Create new roomCode that isn't in use
   // Create list of all room codes
   // Codes are 5 letters long
-  const i = await findGameIndexByPlayerEmail(req.body.email);
+  let roomCode = await findRoomCodeByPlayerEmail(req.body.email);
   console.log(i);
-  if (i != -1) {
+  if (roomCode != -1) {
     removePlayerFromGame(req.body.email);
     return res
       .status(409)
-      .send({ msg: `Already in game. Room code: ${activeGames[i].roomCode}.` });
+      .send({ msg: `Already in game. Room code: ${roomCode}.` });
   }
-  let usedCodes = activeGames.map((game) => game.roomCode);
-  let roomCode = "";
+  let usedCodes = Object.keys(games);
   do {
     // Generate room code
     roomCode = "";
@@ -193,37 +192,35 @@ gameRouter.post("/host", async (req, res) => {
     started: false,
     //gameData: sampleGameData,
   };
-  activeGames.push(newGame);
+  games[roomCode] = newGame;
   console.log(req.body.email, "created", roomCode, newGame);
   res.send(newGame);
 });
 
-gameRouter.post("/join", (req, res) => {
+gameRouter.post("/join", verifyRoomCode, (req, res) => {
   // See if req.body.roomCode is in the active games list
   // Then, see if the player is already in the game or if there are already 4 players (the max)
   // If the player is already in the game, respond with a message saying they are already in the game
   // If there are already 4 players, respond with a message saying the game is full
   // Otherwise, add the player to the game and respond with a message saying they joined the game
   // If the room code is not in the active games list, respond with a message saying the game does not exist
-  for (let i = 0; i < activeGames.length; i++) {
-    if (activeGames[i].roomCode == req.body.roomCode) {
-      if (activeGames[i].players.length >= 4) {
-        return res.status(403).send({ msg: "Game full" });
-      }
-      for (let j = 0; j < activeGames[i].players.length; j++) {
-        if (activeGames[i].players[j].email == req.body.email) {
-          removePlayerFromGame(req.body.email);
-          return res.status(409).send({
-            msg: `Already in game. Room code: ${activeGames[i].roomCode}.`,
-          });
-        }
-      }
-      activeGames[i].players.push({ email: req.body.email });
-      console.log(req.body.email, "joined", req.body.roomCode, activeGames[i]);
-      res.status(200).send(activeGames[i]);
+  const roomCode = req.body.roomCode;
+  if (games[roomCode]) {
+    if (games[roomCode].players.length >= 4) {
+      return res.status(403).send({ msg: "Game full" });
     }
+    for (let j = 0; j < games[roomCode].players.length; j++) {
+      if (games[roomCode].players[j].email == req.body.email) {
+        removePlayerFromGame(req.body.email);
+        return res.status(409).send({
+          msg: `Already in game. Room code: ${roomCode}.`,
+        });
+      }
+    }
+    games[roomCode].players.push({ email: req.body.email });
+    console.log(req.body.email, "joined", roomCode, games[roomCode]);
+    res.status(200).send(games[roomCode]);
   }
-  res.status(403).send({ msg: "Room Code Invalid" });
 });
 
 gameRouter.delete("/leave", async (req, res) => {
@@ -241,8 +238,7 @@ var gameServerRouter = express.Router();
 gameRouter.use(`/server/:roomCode`, gameServerRouter);
 
 const verifyRoomCode = async (req, res, next) => {
-  await findGameIndexByRoomCode(req.params.roomCode);
-  if (i == -1) {
+  if (games[roomCode]) {
     return res.status(403).send({ msg: "Game not found" });
   } else {
     next();
@@ -255,9 +251,8 @@ const verifyCurrentPlayer = async (req, res, next) => {
   const userData = await getUserData(req);
 
   // verify that it is the sender's turn
-  const gameIndex = findGameIndexByRoomCode(req.params.roomCode);
-  let connectionData = activeGames[gameIndex];
-  const currentTurnId = connectionData.gameData.current_turn_id;
+  const game = games[roomCode];
+  const currentTurnId = game.gameData.current_turn_id;
   const currentPlayerEmail = connectionData.players[currentTurnId].email;
   if (currentPlayerEmail) {
     if (userData.email == currentPlayerEmail) {
@@ -282,43 +277,38 @@ gameServerRouter.post("/connection/get", async (req, res) => {
   const userData = await getUserData(req);
 });
 
-// Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
-async function findGame(field, value) {
-  if (!value) return null;
-
-  return activeGames.find((u) => u[field] === value);
-}
-
 async function removePlayerFromGame(email) {
-  const i = await findGameIndexByPlayerEmail(email);
-  if (i == -1) {
+  const roomCode = await findRoomCodeByPlayerEmail(email);
+  if (roomCode == -1) {
     return;
   }
-  console.log(`removing ${email} from game`, activeGames[i]);
-  for (let j = 0; j < activeGames[i].players.length; j++) {
-    if (activeGames[i].players[j].email == email) {
-      activeGames[i].players.splice(j, 1);
-      console.log(email, "left", activeGames[i].roomCode);
-      if (activeGames[i].players.length == 0) {
-        activeGames.splice(i, 1);
+  console.log(`removing ${email} from game`, games[roomCode]);
+  const players = games[roomCode].players;
+  for (let j = 0; j < players.length; j++) {
+    if (players[j].email == email) {
+      games[roomCode].players.splice(j, 1);
+      console.log(email, "left", roomCode);
+      if (players.length == 0) {
+        delete games[roomCode];
         return;
-      } else if (activeGames[i].host == email) {
+      } else if (games[roomCode].host == email) {
         // TODO Placeholder WebSocket: Tell clients the host has left
-        activeGames.splice(i, 1);
+        delete games[roomCode];
         return;
       }
     }
   }
 }
 
-async function findGameIndexByPlayerEmail(email) {
+async function findRoomCodeByPlayerEmail(email) {
   if (!email) return -1;
-  return activeGames.findIndex((u) => u.players.find((p) => p.email == email));
-}
-
-async function findGameIndexByRoomCode(roomCode) {
-  if (!email) return -1;
-  return activeGames.findIndex((u) => u.roomCode == roomCode);
+  for (const roomCode in games) {
+    game = games[roomCode];
+    for (const player in game.players) {
+      if (player.email == email) return game.roomCode;
+    }
+  }
+  return -1;
 }
 
 async function parseMD(md, heroName, heroGender) {
@@ -367,19 +357,19 @@ async function parseMD(md, heroName, heroGender) {
   const insertRegex = /\$([^$]*)\$/g;
 }
 
-async function evalCard(roomCode, gameIndex, card_num_id) {
+async function evalCard(roomCode, card_num_id) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
-  const current_turn_id = activeGames[gameIndex].gameData.current_turn_id;
+  let gameData = games[roomCode].gameData;
+  const current_turn_id = gameData.current_turn_id;
+  const current_turn_email = "email@email.com";
 
-  let gameData = activeGames[gameIndex].gameData;
   console.log(
-    `Player ${activeGames[gameIndex].gameData.players[current_turn_id].name} is playing card ${card_num_id} from their hand.`
+    `[${roomCode}] Player ${gameData.players[current_turn_id].name} is playing card ${card_num_id} from their hand.`
   );
 
   // If this card has already been played, something crazy is going on!
-
-  const card_id = playerCards[current_turn_id][card_num_id].id;
+  const card_id = games[roomCode].players[email].cards[card_num_id].id;
   const card = cards.find((card) => card.id == card_id);
   if (!card) {
     console.log("No card found for card", card_num_id);
@@ -393,7 +383,7 @@ async function evalCard(roomCode, gameIndex, card_num_id) {
   }
 
   // This card is no longer playable.
-  gameData.players[current_turn_id].cards[card_num_id] = 0;
+  games[roomCode].gameData.players[current_turn_id].cards[card_num_id] = 0;
 
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];
@@ -426,7 +416,9 @@ async function evalCard(roomCode, gameIndex, card_num_id) {
           const result = results[j];
 
           if (result.type == "aspect-points") {
-            gameData.aspects[result.aspect] += parseInt(result.amt);
+            games[roomCode].gameData.aspects[result.aspect] += parseInt(
+              result.amt
+            );
           }
 
           if (result.type == "item-obtained") {
@@ -434,14 +426,18 @@ async function evalCard(roomCode, gameIndex, card_num_id) {
             // If there isn't an item in the slot, the value of the slot is "".
             // You always have NUM_ITEM_SLOTS slots in your inventory.
             // If you try to add an item to a full inventory, the oldest item disappears.
-            if (!gameData.inventory.includes("")) {
-              gameData.inventory.shift(); // Remove the oldest item
-              gameData.inventory.push(result.item);
+            if (!games[roomCode].gameData.inventory.includes("")) {
+              games[roomCode].gameData.inventory.shift(); // Remove the oldest item
+              games[roomCode].gameData.inventory.push(result.item);
               outcome.text.push(`_Not enough room. Oldest item removed._`);
             } else {
-              for (let k = 0; k < gameData.inventory.length; k++) {
-                if (gameData.inventory[k] == "") {
-                  gameData.inventory[k] = result.item;
+              for (
+                let k = 0;
+                k < games[roomCode].gameData.inventory.length;
+                k++
+              ) {
+                if (games[roomCode].gameData.inventory[k] == "") {
+                  games[roomCode].gameData.inventory[k] = result.item;
                   break;
                 }
               }
@@ -451,14 +447,16 @@ async function evalCard(roomCode, gameIndex, card_num_id) {
       }
       const cardPlayerName = gameData.players[gameData.current_turn_id].name;
 
-      textboxPushFunc({
-        ...outcome,
-        type: "turn",
-        playerTurnName: cardPlayerName,
-      });
-
+      // PLACEHOLDER for websocket
+      for (const player in games[roomCode]) {
+        // textboxPushFunc({
+        //   ...outcome,
+        //   type: "turn",
+        //   playerTurnName: cardPlayerName,
+        // });
+      }
       // Go to next player's turn
-      nextTurn();
+      nextTurn(roomCode);
 
       return true;
     }

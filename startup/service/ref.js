@@ -56,13 +56,16 @@ const Games = () => {
   return {
     _roomCode: {
       roomCode: String,
+      gameState: String,
+      host: String, // Attr not present on server side; this is the email of the host
       players: { _email: { email: String, turnIndex: Number, cards: [Card] } }, // Attr not present on client side
       heroData: {
+        // TODO: Change to just hero
         heroName: String,
         heroGender: String,
       },
       gameData: GameData,
-      story: { title: String, ...Outcome },
+      story: [{ title: String, ...Outcome }],
       tempStory: Outcome,
     },
   };
@@ -84,17 +87,18 @@ const ClientCard = () => {
   };
 };
 
-// connectionData
-const connectionData = () => {
+// ConnectionData
+const ConnectionData = () => {
   return {
     roomCode: String,
+    gameState: String,
     myCards: [ClientCard], // Attr not present on server side
     heroData: {
       heroName: String,
       heroGender: String,
     },
     gameData: GameData,
-    story: { title: String, ...Outcome },
+    story: [{ title: String, ...Outcome }],
     tempStory: Outcome,
   };
 };
