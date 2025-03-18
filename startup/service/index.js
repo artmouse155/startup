@@ -1,6 +1,7 @@
-import cards from "./cards.json";
-import items from "./items.json";
-import introJSON from "./intro.json";
+const cards = require("./game/cards.json");
+const items = require("./game/items.json");
+const introJSON = require("./game/intro.json");
+const storyApi = require("./game/story_api.js");
 
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
@@ -118,46 +119,33 @@ apiRouter.use(`/game`, gameRouter);
 
 gameRouter.use(verifyAuth);
 
-const NUM_CARDS = 6;
-const NUM_PLAYERS = 4;
-const NUM_ITEM_SLOTS = 3;
-
-const getSampleGameData = () => {
-  return {
-    aspects: {
-      MAGIC: 0,
-      STRENGTH: 0,
-      INTELLIGENCE: 0,
-      CHARISMA: 0,
-    },
-    players: [
-      {
-        name: "Alice",
-        aspect: "UNKNOWN",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-      {
-        name: "Bob",
-        aspect: "UNKNOWN",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-      {
-        name: "Seth",
-        aspect: "UNKNOWN",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-      {
-        name: "Cosmo",
-        aspect: "UNKNOWN",
-        cards: Array(NUM_CARDS).fill(1),
-      },
-    ],
-    //inventory: ["magic-potion", "", ""],
-    inventory: Array(NUM_ITEM_SLOTS).fill(""),
-    current_turn_id: Math.floor(Math.random() * NUM_PLAYERS),
-    turns: 0,
-  };
+const verifyRoomCode = async (req, res, next) => {
+  if (games[roomCode]) {
+    return res.status(403).send({ msg: "Game not found" });
+  } else {
+    next();
+  }
 };
+
+const verifyCurrentPlayer = async (req, res, next) => {
+  const roomCode = req.params.roomCode;
+  // get user email based on their auth token
+  const userData = await getUserData(req);
+
+  // verify that it is the sender's turn
+  const game = games[roomCode];
+  const currentTurnId = game.gameData.current_turn_id;
+  const currentPlayerEmail = connectionData.players[currentTurnId].email;
+  if (currentPlayerEmail) {
+    if (userData.email == currentPlayerEmail) {
+      next();
+    } else {
+      res.status(401).send({ msg: "Nice try, Daniel." });
+    }
+  }
+};
+
+gameRouter.use([verifyRoomCode, verifyCurrentPlayer]);
 
 gameRouter.post("/host", async (req, res) => {
   // add the game to the active games list
@@ -185,26 +173,62 @@ gameRouter.post("/host", async (req, res) => {
     }
   } while (usedCodes.length > 0 && usedCodes.includes(roomCode));
 
+  const NUM_CARDS = 5;
+  const NUM_PLAYERS = 4;
+  const NUM_ITEM_SLOTS = 3;
+
+  const GAME_STATES = {
+    LOBBY: 0,
+    PLAY: 1,
+    END: 2,
+  };
+
+  let gameData = {
+    aspects: {
+      MAGIC: 0,
+      STRENGTH: 0,
+      INTELLIGENCE: 0,
+      CHARISMA: 0,
+    },
+    players: [], // Create when we start
+    inventory: [], // Create when we call start
+    current_turn_id: 0,
+    turns: 0, // How many turns have passed
+  };
+
   let newGame = {
-    host: req.body.email,
     roomCode: roomCode,
-    players: [{ email: req.body.email }],
-    started: false,
-    //gameData: sampleGameData,
+    gameState: GAME_STATES.LOBBY,
+    host: email, // Attr not present on server side; this is the email of the host
+    players: {}, // Attr not present on client side
+    constants: {
+      num_cards: NUM_CARDS,
+      num_players: NUM_PLAYERS,
+      num_item_slots: NUM_ITEM_SLOTS,
+    },
+    heroData: {}, // Create when we call start
+    gameData: gameData,
+    story: [{ title: String, ...Outcome }], // Create when we call start
+    tempStory: Outcome, // Create when we call start
+  };
+  newGame.players[req.body.email] = {
+    email: req.body.email,
+    // turnIndex: Number, Create when we call start
+    // cards: [Card], Create when we call start
   };
   games[roomCode] = newGame;
   console.log(req.body.email, "created", roomCode, newGame);
   res.send(newGame);
 });
 
-gameRouter.post("/join", verifyRoomCode, (req, res) => {
+gameRouter.post("/join/:roomCode", verifyRoomCode, (req, res) => {
   // See if req.body.roomCode is in the active games list
   // Then, see if the player is already in the game or if there are already 4 players (the max)
   // If the player is already in the game, respond with a message saying they are already in the game
   // If there are already 4 players, respond with a message saying the game is full
   // Otherwise, add the player to the game and respond with a message saying they joined the game
   // If the room code is not in the active games list, respond with a message saying the game does not exist
-  const roomCode = req.body.roomCode;
+  const roomCode = req.params.roomCode;
   if (games[roomCode]) {
     if (games[roomCode].players.length >= 4) {
       return res.status(403).send({ msg: "Game full" });
@@ -236,34 +260,6 @@ gameRouter.delete("/leave", async (req, res) => {
 
 var gameServerRouter = express.Router();
 gameRouter.use(`/server/:roomCode`, gameServerRouter);
-
-const verifyRoomCode = async (req, res, next) => {
-  if (games[roomCode]) {
-    return res.status(403).send({ msg: "Game not found" });
-  } else {
-    next();
-  }
-};
-
-const verifyCurrentPlayer = async (req, res, next) => {
-  const roomCode = req.params.roomCode;
-  // get user email based on their auth token
-  const userData = await getUserData(req);
-
-  // verify that it is the sender's turn
-  const game = games[roomCode];
-  const currentTurnId = game.gameData.current_turn_id;
-  const currentPlayerEmail = connectionData.players[currentTurnId].email;
-  if (currentPlayerEmail) {
-    if (userData.email == currentPlayerEmail) {
-      next();
-    } else {
-      res.status(401).send({ msg: "Nice try, Daniel." });
-    }
-  }
-};
-
-gameRouter.use([verifyRoomCode, verifyCurrentPlayer]);
 
 gameServerRouter.post("/card/:cardIndex/use", async (req, res) => {
   const roomCode = req.params.roomCode;

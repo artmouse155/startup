@@ -1,3 +1,14 @@
+const heroes = [
+  {
+    name: "Elrond",
+    gender: "male",
+  },
+  {
+    name: "Jamie",
+    gender: "female",
+  },
+];
+
 const wowLongQuotes = [
   "This doesn't look like Kansas anymore!",
   "I've never seen anything like it in my life!",
@@ -126,4 +137,8 @@ export async function apiCall(call) {
     default:
       return `<🛑undefined API call: "${call}"🛑>`;
   }
+}
+
+export async function getRandomHero() {
+  return getRandom(heroes);
 }
