@@ -39,16 +39,17 @@ const roomConditions = [
   "covered in mold",
 ];
 
-// const inspirationalQuotes = [
-//   {
-//     text: "It's easy to stand in the crowd but it takes courage to stand alone.",
-//     speaker: "Ghandi",
-//   },
-//   {
-//     text: "*👏👏👏👏👏👏* Congratulations! You win 20 dollars!",
-//     speaker: "Luke",
-//   },
-// ];
+// Fallback if quote API breaks
+const inspirationalQuotes = [
+  {
+    text: "It's easy to stand in the crowd but it takes courage to stand alone.",
+    speaker: "Ghandi",
+  },
+  {
+    text: "*👏👏👏👏👏👏* Congratulations! You win 20 dollars!",
+    speaker: "Luke",
+  },
+];
 
 const feelings = [
   "inspired",
@@ -97,23 +98,25 @@ export async function apiCall(call) {
     case "$room-condition$":
       return getRandom(roomConditions);
     case "$inspirational-quote$":
-      // const quote = getRandom(inspirationalQuotes);
-      // return `"${quote.text}" - ${quote.speaker}`; //This is a stub for an external API call.
       let quote = {};
-      await fetch("https://quoteslate.vercel.app/api/quotes/random", {
+      const response = await fetch("http://api.quotable.io/quotes/random", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
         },
-      })
-        .then((response) => response.json())
-        .then((jsonResponse) => {
-          console.log(jsonResponse);
-          quote = jsonResponse;
-        });
+      });
+      if (response?.status === 200) {
+        const body = await response.json();
+        const quote = body[0];
+        return `"${quote.content}" — ${quote.author}`; //This is an external API call. Source: https://github.com/lukePeavey/quotable?tab=readme-ov-file
+      } else {
+        const quote = getRandom(inspirationalQuotes);
+        return `*Error: External API Call failed. Using local quote falback.*\n*"${quote.text}" — ${quote.speaker}`; //This is a stub for an external API call.
+        // const body = await response.json();
+        // alert(`⚠ Error: ${body.msg}`);
+      }
 
-      return `"${quote.quote}" — ${quote.author}`; //This is an external API call.
     case "$feeling$":
       return getRandom(feelings);
     case "$book-title$":

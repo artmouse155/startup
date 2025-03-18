@@ -109,8 +109,10 @@ apiRouter.get("/trophies", (req, res) => {
   res.send(trophies);
 });
 
-var gameRouter = express.Router();
+var gameRouter = express.Router(); // Must be authenticated to use
 apiRouter.use(`/game`, gameRouter);
+
+gameRouter.use(verifyAuth);
 
 const NUM_CARDS = 6;
 const NUM_PLAYERS = 4;
@@ -153,7 +155,7 @@ const getSampleGameData = () => {
   };
 };
 
-gameRouter.post("/host", verifyAuth, async (req, res) => {
+gameRouter.post("/host", async (req, res) => {
   // add the game to the active games list
   // Create new roomCode that isn't in use
   // Create list of all room codes
@@ -192,7 +194,7 @@ gameRouter.post("/host", verifyAuth, async (req, res) => {
   res.send(newGame);
 });
 
-gameRouter.post("/join", verifyAuth, (req, res) => {
+gameRouter.post("/join", (req, res) => {
   // See if req.body.roomCode is in the active games list
   // Then, see if the player is already in the game or if there are already 4 players (the max)
   // If the player is already in the game, respond with a message saying they are already in the game
@@ -220,7 +222,7 @@ gameRouter.post("/join", verifyAuth, (req, res) => {
   res.status(403).send({ msg: "Room Code Invalid" });
 });
 
-gameRouter.delete("/leave", verifyAuth, async (req, res) => {
+gameRouter.delete("/leave", async (req, res) => {
   // Remove user from current game
   const i = await findGameIndexByPlayerEmail(req.body.email);
   if (i == -1) {
@@ -232,8 +234,43 @@ gameRouter.delete("/leave", verifyAuth, async (req, res) => {
 });
 
 var gameServerRouter = express.Router();
-gameRouter.use(`/server`, gameRouter);
+gameRouter.use(`/server/:roomCode`, gameServerRouter);
 
+const verifyRoomCode = async (req, res, next) => {
+  await findGameIndexByRoomCode(req.params.roomCode);
+  if (i == -1) {
+    return res.status(403).send({ msg: "Game not found" });
+  } else {
+    next();
+  }
+};
+
+const verifyCurrentPlayer = async (req, res, next) => {
+  const roomCode = req.params.roomCode;
+  // get user email based on their auth token
+  const userData = await getUserData(req);
+
+  // verify that it is the sender's turn
+  const gameIndex = findGameIndexByRoomCode(req.params.roomCode);
+  let connectionData = activeGames[gameIndex];
+  const currentTurnId = connectionData.gameData.current_turn_id;
+  const currentPlayerEmail = connectionData.players[currentTurnId].email;
+  if (currentPlayerEmail) {
+    if (userData.email == currentPlayerEmail) {
+      next();
+    } else {
+      res.status(401).send({ msg: "Nice try, Daniel." });
+    }
+  }
+};
+
+gameRouter.use([verifyRoomCode, verifyCurrentPlayer]);
+
+gameServerRouter.post("card/:cardIndex/use", async (req, res) => {
+  const roomCode = req.params.roomCode;
+  // get user email based on their auth token
+  const userData = await getUserData(req);
+});
 // Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
 async function findGame(field, value) {
   if (!value) return null;
