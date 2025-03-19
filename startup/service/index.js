@@ -115,14 +115,14 @@ apiRouter.get("/trophies", (req, res) => {
   res.send(trophies);
 });
 
-apiRouter.get("/items/:itemId", (req, res) => {
-  const item = items.find((item) => item.id == req.params.itemId);
-  if (item) {
-    res.send(item);
-  } else {
-    res.status(404).send({ msg: `Item "${req.params.itemID}" not found` });
-  }
-});
+// apiRouter.get("/items/:itemId", (req, res) => {
+//   const item = items.find((item) => item.id == req.params.itemId);
+//   if (item) {
+//     res.send(item);
+//   } else {
+//     res.status(404).send({ msg: `Item "${req.params.itemID}" not found` });
+//   }
+// });
 
 var gameRouter = express.Router(); // Must be authenticated to use
 apiRouter.use(`/game`, gameRouter);
@@ -379,6 +379,17 @@ gameServerRouter.post("/connection/get", async (req, res) => {
 async function getConnectionData(roomCode, email) {
   const game = games[roomCode];
   const player = game.players[email];
+  const clientGameData = { ...game.gameData };
+  clientGameData.players = clientGameData.players.map((p) => {
+    return {
+      name: usernameFromEmail(p.email),
+      aspect: p.aspect,
+      cards: p.cards,
+    };
+  });
+  clientGameData.inventory = clientGameData.inventory.map((i) =>
+    getItemData(i)
+  );
   const connectionData = {
     roomCode: roomCode,
     gameState: game.gameState,
@@ -388,7 +399,7 @@ async function getConnectionData(roomCode, email) {
     myCards: player.cards,
     constants: game.constants,
     heroData: game.heroData,
-    gameData: game.gameData,
+    gameData: clientGameData,
     story: game.story,
     tempStory: game.tempStory,
   };
@@ -581,6 +592,19 @@ async function evalCard(roomCode, card_num_id) {
   }
   console.log("No outcome found for card", card);
   return null;
+}
+
+function getItemData(item_id) {
+  if (item_id == "") {
+    return null;
+  }
+  const item = items.find((item) => item.id == item_id);
+  if (item) {
+    return item;
+  } else {
+    console.log("No item found for item_id", item_id);
+    return null;
+  }
 }
 
 // Handle errors

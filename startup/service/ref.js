@@ -41,12 +41,12 @@ const GameData = () => {
     },
     players: [
       {
-        name: String,
+        email: String,
         aspect: String,
         cards: [Number],
-      },
+      }, // Attr different on client side
     ],
-    inventory: [String],
+    inventory: [String], // Attr different on client side. ="" or ="item-id-here!"
     current_turn_id: Number,
     turns: Number, // How many turns have passed
   };
@@ -92,6 +92,28 @@ const ClientCard = () => {
   };
 };
 
+// GameData
+const ClientGameData = () => {
+  return {
+    aspects: {
+      MAGIC: Number,
+      STRENGTH: Number,
+      INTELLIGENCE: Number,
+      CHARISMA: Number,
+    },
+    players: [
+      {
+        name: String,
+        aspect: String,
+        cards: [Number],
+      }, // Attr different on server side
+    ],
+    inventory: [{ id: String, name: String, icon: String }], // Attr different on server side
+    current_turn_id: Number,
+    turns: Number, // How many turns have passed
+  };
+};
+
 // ConnectionData
 const ConnectionData = () => {
   return {
@@ -110,7 +132,7 @@ const ConnectionData = () => {
       heroName: String,
       heroGender: String,
     },
-    gameData: GameData,
+    gameData: ClientGameData,
     story: [{ title: String, ...Outcome }],
     tempStory: Outcome,
   };
