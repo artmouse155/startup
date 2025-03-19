@@ -96,7 +96,7 @@ function getRandom(array) {
   return array[getRandomInt(array.length)];
 }
 
-export async function apiCall(call) {
+async function apiCall(call) {
   switch (call) {
     case "$wow-long-quote$":
       return getRandom(wowLongQuotes);
@@ -139,6 +139,6 @@ export async function apiCall(call) {
   }
 }
 
-export async function getRandomHero() {
+async function getRandomHero() {
   return getRandom(heroes);
 }

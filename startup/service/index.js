@@ -2,6 +2,7 @@ const cards = require("./game/cards.json");
 const items = require("./game/items.json");
 const introJSON = require("./game/intro.json");
 const storyApi = require("./game/story_api.js");
+const shuffler = require("./game/shuffler.js");
 
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
@@ -119,6 +120,12 @@ apiRouter.use(`/game`, gameRouter);
 
 gameRouter.use(verifyAuth);
 
+const GAME_STATES = {
+  LOBBY: 0,
+  PLAY: 1,
+  END: 2,
+};
+
 const verifyRoomCode = async (req, res, next) => {
   if (games[roomCode]) {
     return res.status(403).send({ msg: "Game not found" });
@@ -177,12 +184,6 @@ gameRouter.post("/host", async (req, res) => {
   const NUM_PLAYERS = 4;
   const NUM_ITEM_SLOTS = 3;
 
-  const GAME_STATES = {
-    LOBBY: 0,
-    PLAY: 1,
-    END: 2,
-  };
-
   let gameData = {
     aspects: {
       MAGIC: 0,
@@ -218,10 +219,10 @@ gameRouter.post("/host", async (req, res) => {
   };
   games[roomCode] = newGame;
   console.log(req.body.email, "created", roomCode, newGame);
-  res.send(newGame);
+  res.send(await getConnectionData(roomCode, req.body.email));
 });
 
-gameRouter.post("/join/:roomCode", verifyRoomCode, (req, res) => {
+gameRouter.post("/join/:roomCode", verifyRoomCode, async (req, res) => {
   // See if req.body.roomCode is in the active games list
   // Then, see if the player is already in the game or if there are already 4 players (the max)
   // If the player is already in the game, respond with a message saying they are already in the game
@@ -243,7 +244,7 @@ gameRouter.post("/join/:roomCode", verifyRoomCode, (req, res) => {
     }
     games[roomCode].players.push({ email: req.body.email });
     console.log(req.body.email, "joined", roomCode, games[roomCode]);
-    res.status(200).send(games[roomCode]);
+    res.status(200).send(await getConnectionData(roomCode, req.body.email));
   }
 });
 
@@ -261,6 +262,66 @@ gameRouter.delete("/leave", async (req, res) => {
 var gameServerRouter = express.Router();
 gameRouter.use(`/server/:roomCode`, gameServerRouter);
 
+gameServerRouter.post("/start", async (req, res) => {
+  const roomCode = req.params.roomCode;
+  // get user email based on their auth token
+  const userData = await getUserData(req);
+  // If the user is the host, start the game
+  if (games[roomCode].host == userData.email) {
+    // Set up the game
+    // Assign a random order to the players, then assign random aspects.
+    let order = [0, 1, 2, 3];
+    const orderShuffled = shuffler.shuffled(order);
+
+    let aspects = ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"];
+    const aspectsShuffled = shuffler.shuffled(aspects);
+    // First, assign each player in games[roomCode].players a random turnIndex
+    let i = 0;
+    let gameDataPlayers = [];
+    for (const [email, player] of Object.entries(games[roomCode].players)) {
+      games[roomCode].players[email].turnIndex = orderShuffled[i];
+      gameDataPlayers.push({
+        email: email,
+        aspect: aspectsShuffled[i],
+        cards: Array(games[roomCode].constants.num_cards).fill(1),
+      });
+      i++;
+    }
+    // sortgameDataPlayers by game[roomCode].players[email].turnIndex
+    gameDataPlayers.sort((a, b) => {
+      return (
+        games[roomCode].players[a.email].turnIndex -
+        games[roomCode].players[b.email].turnIndex
+      );
+    });
+    games[roomCode].gameData.players = gameDataPlayers;
+    // Set the gameState to PLAY
+    games[roomCode].gameState = GAME_STATES.PLAY;
+    // Set the heroData to the heroName and heroGender from the request body
+    games[roomCode].heroData = storyApi.getRandomHero();
+
+    for (let i = 0; i < games[roomCode].players.length; i++) {
+      const email = games[roomCode].gameData.players[i].email;
+
+      // Generate 5 random cards for each player
+      // PLACEHOLDER: Variation based on the current aspect of the player
+      let cardsExport = [];
+      for (let j = 0; j < games[roomCode].constants.num_cards; i++) {
+        let { outcomes, ...cardWithoutOutcomes } =
+          cards[getRandomInt(cards.length)];
+        let n = { num_id: i, ...cardWithoutOutcomes };
+        cardsExport.push(n);
+      }
+      games[roomCode].players[email].cards = cardsExport;
+    }
+    // Set the story to the introJSON
+    games[roomCode].gameData.story = shuffler.getRandom(introJSON.sections);
+    // Set the tempStory to something random
+    games[roomCode].gameData.tempStory = {};
+    // PLACEHOLDER: Respond with the connection data
+  }
+});
+
 gameServerRouter.post("/card/:cardIndex/use", async (req, res) => {
   const roomCode = req.params.roomCode;
   // get user email based on their auth token
@@ -271,7 +332,23 @@ gameServerRouter.post("/connection/get", async (req, res) => {
   const roomCode = req.params.roomCode;
   // get user email based on their auth token
   const userData = await getUserData(req);
+  res.status(200).send(await getConnectionData(roomCode, userData.email));
 });
+
+async function getConnectionData(roomCode, email) {
+  const game = games[roomCode];
+  const player = game.players[email];
+  const connectionData = {
+    roomCode: roomCode,
+    gameState: game.gameState,
+    myCards: player.cards,
+    constants: game.constants,
+    heroData: game.heroData,
+    story: game.story,
+    tempStory: game.tempStory,
+  };
+  return connectionData;
+}
 
 async function removePlayerFromGame(email) {
   const roomCode = await findRoomCodeByPlayerEmail(email);
