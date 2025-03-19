@@ -13,7 +13,7 @@ const app = express();
 const authCookieName = "token";
 
 let users = [];
-let games = [];
+let games = {};
 
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
@@ -127,22 +127,24 @@ const GAME_STATES = {
 };
 
 const verifyRoomCode = async (req, res, next) => {
-  if (games[roomCode]) {
-    return res.status(403).send({ msg: "Game not found" });
-  } else {
+  if (games[req.roomCode]) {
     next();
+  } else {
+    res
+      .status(403)
+      .send({ msg: `Game not found (Room code: ${req.roomCode})` });
   }
 };
 
 const verifyCurrentPlayer = async (req, res, next) => {
-  const roomCode = req.params.roomCode;
+  const roomCode = req.roomCode;
   // get user email based on their auth token
   const userData = await getUserData(req);
 
   // verify that it is the sender's turn
   const game = games[roomCode];
   const currentTurnId = game.gameData.current_turn_id;
-  const currentPlayerEmail = connectionData.players[currentTurnId].email;
+  const currentPlayerEmail = game.gameData.players[currentTurnId].email;
   if (currentPlayerEmail) {
     if (userData.email == currentPlayerEmail) {
       next();
@@ -152,15 +154,13 @@ const verifyCurrentPlayer = async (req, res, next) => {
   }
 };
 
-gameRouter.use([verifyRoomCode, verifyCurrentPlayer]);
-
 gameRouter.post("/host", async (req, res) => {
   // add the game to the active games list
   // Create new roomCode that isn't in use
   // Create list of all room codes
   // Codes are 5 letters long
   let roomCode = await findRoomCodeByPlayerEmail(req.body.email);
-  console.log(i);
+  console.log(roomCode);
   if (roomCode != -1) {
     removePlayerFromGame(req.body.email);
     return res
@@ -200,7 +200,7 @@ gameRouter.post("/host", async (req, res) => {
   let newGame = {
     roomCode: roomCode,
     gameState: GAME_STATES.LOBBY,
-    host: email, // Attr not present on server side; this is the email of the host
+    host: req.body.email, // Attr not present on server side; this is the email of the host
     players: {}, // Attr not present on client side
     constants: {
       num_cards: NUM_CARDS,
@@ -209,8 +209,8 @@ gameRouter.post("/host", async (req, res) => {
     },
     heroData: {}, // Create when we call start
     gameData: gameData,
-    story: [{ title: String, ...Outcome }], // Create when we call start
-    tempStory: Outcome, // Create when we call start
+    // story: [{ title: String, ...Outcome }], // Create when we call start
+    // tempStory: Outcome, // Create when we call start
   };
   newGame.players[req.body.email] = {
     email: req.body.email,
@@ -248,12 +248,8 @@ gameRouter.post("/join/:roomCode", verifyRoomCode, async (req, res) => {
   }
 });
 
-gameRouter.delete("/leave", async (req, res) => {
+gameRouter.delete("/leave", verifyRoomCode, async (req, res) => {
   // Remove user from current game
-  const i = await findGameIndexByPlayerEmail(req.body.email);
-  if (i == -1) {
-    return res.status(403).send({ msg: "Game not found" });
-  }
   removePlayerFromGame(req.body.email);
   res.status(204).end();
   // Find by room code
@@ -262,74 +258,93 @@ gameRouter.delete("/leave", async (req, res) => {
 var gameServerRouter = express.Router();
 gameRouter.use(`/server/:roomCode`, gameServerRouter);
 
+gameRouter.param("roomCode", (req, res, next, roomCode) => {
+  console.log("param roomCode", roomCode);
+  req.roomCode = roomCode;
+  next();
+});
+
+gameServerRouter.use(verifyRoomCode);
+
 gameServerRouter.post("/start", async (req, res) => {
-  const roomCode = req.params.roomCode;
+  const roomCode = req.roomCode;
   // get user email based on their auth token
   const userData = await getUserData(req);
   // If the user is the host, start the game
+  console.log("Starting game", roomCode, games[roomCode]);
   if (games[roomCode].host == userData.email) {
-    // Set up the game
-    // Assign a random order to the players, then assign random aspects.
-    let order = [0, 1, 2, 3];
-    const orderShuffled = shuffler.shuffled(order);
+    // If the game state is already play, we don't need to set up. Instead, we return an error.
+    if (games[roomCode].gameState == GAME_STATES.PLAY) {
+      res.status(409).send({ msg: "Game already started" });
+    } else {
+      // Set up the game
+      // Assign a random order to the players, then assign random aspects.
+      let order = [0, 1, 2, 3];
+      const orderShuffled = shuffler.shuffled(order);
 
-    let aspects = ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"];
-    const aspectsShuffled = shuffler.shuffled(aspects);
-    // First, assign each player in games[roomCode].players a random turnIndex
-    let i = 0;
-    let gameDataPlayers = [];
-    for (const [email, player] of Object.entries(games[roomCode].players)) {
-      games[roomCode].players[email].turnIndex = orderShuffled[i];
-      gameDataPlayers.push({
-        email: email,
-        aspect: aspectsShuffled[i],
-        cards: Array(games[roomCode].constants.num_cards).fill(1),
-      });
-      i++;
-    }
-    // sortgameDataPlayers by game[roomCode].players[email].turnIndex
-    gameDataPlayers.sort((a, b) => {
-      return (
-        games[roomCode].players[a.email].turnIndex -
-        games[roomCode].players[b.email].turnIndex
-      );
-    });
-    games[roomCode].gameData.players = gameDataPlayers;
-    // Set the gameState to PLAY
-    games[roomCode].gameState = GAME_STATES.PLAY;
-    // Set the heroData to the heroName and heroGender from the request body
-    games[roomCode].heroData = storyApi.getRandomHero();
-
-    for (let i = 0; i < games[roomCode].players.length; i++) {
-      const email = games[roomCode].gameData.players[i].email;
-
-      // Generate 5 random cards for each player
-      // PLACEHOLDER: Variation based on the current aspect of the player
-      let cardsExport = [];
-      for (let j = 0; j < games[roomCode].constants.num_cards; i++) {
-        let { outcomes, ...cardWithoutOutcomes } =
-          cards[getRandomInt(cards.length)];
-        let n = { num_id: i, ...cardWithoutOutcomes };
-        cardsExport.push(n);
+      let aspects = ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"];
+      const aspectsShuffled = shuffler.shuffled(aspects);
+      // First, assign each player in games[roomCode].players a random turnIndex
+      let i = 0;
+      let gameDataPlayers = [];
+      for (const [email, player] of Object.entries(games[roomCode].players)) {
+        games[roomCode].players[email].turnIndex = orderShuffled[i];
+        gameDataPlayers.push({
+          email: email,
+          aspect: aspectsShuffled[i],
+          cards: Array(games[roomCode].constants.num_cards).fill(1),
+        });
+        i++;
       }
-      games[roomCode].players[email].cards = cardsExport;
+      // sortgameDataPlayers by game[roomCode].players[email].turnIndex
+      gameDataPlayers.sort((a, b) => {
+        return (
+          games[roomCode].players[a.email].turnIndex -
+          games[roomCode].players[b.email].turnIndex
+        );
+      });
+      games[roomCode].gameData.players = gameDataPlayers;
+      // Set the gameState to PLAY
+      games[roomCode].gameState = GAME_STATES.PLAY;
+      // Set the heroData to the heroName and heroGender from the request body
+      games[roomCode].heroData = storyApi.getRandomHero();
+
+      for (let i = 0; i < games[roomCode].players.length; i++) {
+        const email = games[roomCode].gameData.players[i].email;
+
+        // Generate 5 random cards for each player
+        // PLACEHOLDER: Variation based on the current aspect of the player
+        let cardsExport = [];
+        for (let j = 0; j < games[roomCode].constants.num_cards; i++) {
+          let { outcomes, ...cardWithoutOutcomes } =
+            cards[getRandomInt(cards.length)];
+          let n = { num_id: i, ...cardWithoutOutcomes };
+          cardsExport.push(n);
+        }
+        games[roomCode].players[email].cards = cardsExport;
+      }
+      // Set the story to the introJSON
+      games[roomCode].story = shuffler.getRandom(introJSON.sections);
+      // Set the tempStory to something random
+      games[roomCode].tempStory = {};
+      // PLACEHOLDER: Respond with the connection data
+      res.status(200).end();
     }
-    // Set the story to the introJSON
-    games[roomCode].gameData.story = shuffler.getRandom(introJSON.sections);
-    // Set the tempStory to something random
-    games[roomCode].gameData.tempStory = {};
-    // PLACEHOLDER: Respond with the connection data
   }
 });
 
-gameServerRouter.post("/card/:cardIndex/use", async (req, res) => {
-  const roomCode = req.params.roomCode;
-  // get user email based on their auth token
-  const userData = await getUserData(req);
-});
+gameServerRouter.post(
+  "/card/:cardIndex/use",
+  verifyCurrentPlayer,
+  async (req, res) => {
+    const roomCode = req.roomCode;
+    // get user email based on their auth token
+    const userData = await getUserData(req);
+  }
+);
 
 gameServerRouter.post("/connection/get", async (req, res) => {
-  const roomCode = req.params.roomCode;
+  const roomCode = req.roomCode;
   // get user email based on their auth token
   const userData = await getUserData(req);
   res.status(200).send(await getConnectionData(roomCode, userData.email));
@@ -341,6 +356,8 @@ async function getConnectionData(roomCode, email) {
   const connectionData = {
     roomCode: roomCode,
     gameState: game.gameState,
+    host: usernameFromEmail(game.host),
+    players: Object.keys(game.players).map((p) => usernameFromEmail(p)),
     myCards: player.cards,
     constants: game.constants,
     heroData: game.heroData,
@@ -353,7 +370,7 @@ async function getConnectionData(roomCode, email) {
 async function removePlayerFromGame(email) {
   const roomCode = await findRoomCodeByPlayerEmail(email);
   if (roomCode == -1) {
-    return;
+    return false;
   }
   console.log(`removing ${email} from game`, games[roomCode]);
   const players = games[roomCode].players;
@@ -363,11 +380,11 @@ async function removePlayerFromGame(email) {
       console.log(email, "left", roomCode);
       if (players.length == 0) {
         delete games[roomCode];
-        return;
+        return true;
       } else if (games[roomCode].host == email) {
         // TODO Placeholder WebSocket: Tell clients the host has left
         delete games[roomCode];
-        return;
+        return true;
       }
     }
   }
@@ -596,3 +613,7 @@ function setAuthCookie(res, authToken) {
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+function usernameFromEmail(email) {
+  return email.split("@")[0];
+}

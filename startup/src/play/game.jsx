@@ -21,8 +21,9 @@ import { End } from "./end.jsx";
 const debug = true;
 
 const GAME_STATES = {
-  PLAY: 0,
-  END: 1,
+  LOBBY: 0,
+  PLAY: 1,
+  END: 2,
 };
 
 export function Game({ userData, setUserData, connectionData, returnToLobby }) {

@@ -32,6 +32,41 @@ export function Play({ userData, setUserData, authState }) {
       alert(`⚠ Error: ${body.msg}`);
     }
   }
+
+  async function getConnectionData() {
+    if (connectionData && connectionData.roomCode) {
+      const response = await fetch(
+        `api/game/server/${connectionData.roomCode}/connection/get`,
+        {
+          method: "post",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      );
+      if (response?.status === 200) {
+        const body = await response.json();
+        setConnectionData(body);
+      } else {
+        const body = await response.json();
+        alert(`⚠ Error: ${body.msg}`);
+      }
+    }
+  }
+
+  // Includes a button to get connection data and a button to start the game. Also a button to end the game
+  function DebugButtons() {
+    return (
+      <div className="debug-buttons">
+        <button onClick={getConnectionData}>⭐ Get Connection Data</button>
+        <button onClick={() => setConnectionState(ConnectionState.Connected)}>
+          🐻 Start Game
+        </button>
+        <button>End Game</button>
+      </div>
+    );
+  }
+
   switch (authState) {
     case AuthState.Authenticated:
       switch (connectionState) {
@@ -39,6 +74,7 @@ export function Play({ userData, setUserData, authState }) {
         case ConnectionState.Connecting:
           return (
             <div className="login-main">
+              <DebugButtons />
               <Lobby
                 connectionState={connectionState}
                 setConnectionState={setConnectionState}
@@ -52,6 +88,7 @@ export function Play({ userData, setUserData, authState }) {
         case ConnectionState.Connected:
           return (
             <div className="play-main">
+              <DebugButtons />
               <Game
                 userData={userData}
                 setUserData={setUserData}

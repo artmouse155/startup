@@ -142,3 +142,5 @@ async function apiCall(call) {
 async function getRandomHero() {
   return getRandom(heroes);
 }
+
+module.exports = { apiCall, getRandomHero };

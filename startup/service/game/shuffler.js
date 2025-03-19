@@ -15,3 +15,5 @@ function shuffled(array) {
   }
   return temp;
 }
+
+module.exports = { getRandom, shuffled };

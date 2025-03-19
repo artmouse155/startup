@@ -56,9 +56,9 @@ const Games = () => {
   return {
     _roomCode: {
       roomCode: String,
-      gameState: String, // PLAY = 0, END = 1
-      host: String, // Attr not present on server side; this is the email of the host
-      players: { _email: { email: String, turnIndex: Number, cards: [Card] } }, // Attr not present on client side
+      gameState: String, // LOBBY = 0, PLAY = 1, END = 2
+      host: String, // Attr is different on client side; this is the email of the host. On client side, is just username
+      players: { _email: { email: String, turnIndex: Number, cards: [Card] } }, // Attr different on client side
       constants: {
         num_cards: Number,
         num_players: Number,
@@ -97,7 +97,9 @@ const ConnectionData = () => {
   return {
     roomCode: String,
     gameState: String,
-    myCards: [ClientCard], // Attr not present on server side
+    host: String, // Attr different on server side, just a username. On server side, is an email
+    players: [String], // Attr different on server side, a list of usernames. On server side, is a list of emails
+    myCards: [ClientCard], // Attr not present on server side. A list of cards that the player has
     constants: {
       num_cards: Number,
       num_players: Number,

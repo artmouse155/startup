@@ -97,7 +97,27 @@ export function Lobby({
   }
 
   async function handleHostStartGame() {
-    setConnectionState(ConnectionState.Connected);
+    if (connectionData && connectionData.roomCode) {
+      const response = await fetch(
+        `api/game/server/${connectionData.roomCode}/start`,
+        {
+          method: "post",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      );
+      if (response?.status === 200) {
+        // const body = await response.json();
+        // setConnectionData(body);
+        alert(
+          `Success! While we wait for websockets, press "⭐ get connection data" and then "🐻 Start Game" to continue.`
+        );
+      } else {
+        const body = await response.json();
+        alert(`⚠ Error: ${body.msg}`);
+      }
+    }
   }
 
   async function handleJoinGame(roomCode) {
@@ -142,9 +162,9 @@ export function Lobby({
     let connectedList = [];
     for (let i = 0; i < connectionData.players.length; i++) {
       connectedList.push(
-        <p key={i}>{`${
-          connectionData.players[i].email.split("@")[0]
-        } connected ${i == 0 ? ` (host)` : ``}`}</p>
+        <p key={i}>{`${connectionData.players[i]} connected ${
+          i == 0 ? ` (host)` : ``
+        }`}</p>
       );
     }
 
