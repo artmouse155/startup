@@ -34,6 +34,9 @@ export function Play({ userData, setUserData, authState }) {
   }
 
   async function getItemData(itemId) {
+    if (itemId == "") {
+      return null;
+    }
     // call api to get item data
     const response = await fetch(`api/items/${itemId}`, {
       method: "get",

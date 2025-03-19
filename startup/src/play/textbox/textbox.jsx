@@ -190,7 +190,7 @@ export function TextBox({
         }`}
         id="textScroll"
       >
-        <TextAdvText story={story} tempStory={tempStory} />
+        <TextAdvText storyMD={storyMD} tempStoryMD={tempStoryMD} />
       </div>
       {isDragging ? (
         <div className={`drag-drop-overlay ${isOver ? "is-over-grow" : ""}`}>

@@ -27,7 +27,7 @@ export function Game({
     gameState,
     host,
     myPlayerId,
-    players,
+    players = connectionDataPlayers,
     constants,
     myCards,
     heroData,
@@ -35,9 +35,25 @@ export function Game({
     story,
     tempStory,
   } = connectionData;
+  console.log("💤 Connection Data: ", connectionData);
+  const [itemData, setItemData] = React.useState(
+    Array(constants.num_item_slots).fill(null)
+  );
+  React.useEffect(() => {
+    async function getItemData() {
+      let itemData = [];
+      for (let i = 0; i < constants.num_item_slots; i++) {
+        const item = await getItemData(gameData.inventory[i]);
+        itemData.push(item);
+      }
+      setItemData(itemData);
+    }
+    getItemData();
+  }, [gameData.inventory]);
   const ItemType = { CARD_TYPE: "card" };
 
-  function CardBox(isMyTurn, cards) {
+  function CardBox({ isMyTurn, cards }) {
+    console.log("Rendering player cards!", cards);
     function CardDragLayer() {
       // Code from https://react-dnd.github.io/react-dnd/about
       function getItemStyles(initialOffset, currentOffset) {
@@ -197,14 +213,17 @@ export function Game({
   //   setGameData(gameDataCopy);
   // }
 
-  function InventoryContainer({ inventory }) {
+  function InventoryContainer({ inventory, itemData }) {
     let itemBoxes = [];
     for (let i = 0; i < constants.num_item_slots; i++) {
-      const itemData = getItemData(inventory[i]);
+      console.log("Trying to get item data!", inventory[i]);
       itemBoxes.push(
         <div className="item-box" key={i}>
-          <p className="item-box-text" title={itemData.name}>
-            {inventory[i] == "" ? i + 1 : itemData.icon}
+          <p
+            className="item-box-text"
+            title={itemData[i] ? itemData[i].name : `Empty Slot`}
+          >
+            {itemData[i] ? itemData[i].icon : i + 1}
           </p>
         </div>
       );
@@ -218,20 +237,18 @@ export function Game({
   }
 
   // I forgot to put props around it.
-  function Leaderboard({
-    aspects,
-    players,
-    currentTurn,
-    numTurns,
-    maxTurns,
-    currentPlayerCards,
-  }) {
+  function Leaderboard({ gameData, constants }) {
+    const { aspects, players, current_turn_id, turns } = gameData;
+    const maxTurns = constants.num_players * constants.num_cards;
+    const player_count = players ? players.length : 0;
     if (aspects && players) {
       // PlayerID, Standing
-      let standings = Array(constants.num_players);
-      for (let i = 0; i < constants.num_players; i++) {
+      let standings = Array(player_count);
+      // This needs to equal the true number of players, not just the capacity.
+      for (let i = 0; i < player_count; i++) {
         standings[i] = 0;
-        for (let j = 0; j < constants.num_players; j++) {
+        for (let j = 0; j < player_count; j++) {
+          console.log("Comparing", players[i].aspect, players[j].aspect);
           if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
             standings[i]++;
           }
@@ -290,31 +307,29 @@ export function Game({
           </div>
         );
       }
-      console.log("current turn", currentTurn);
+      console.log("current turn", current_turn_id);
+
+      let leaderboardCardList = [];
+      for (let i = 0; i < player_count; i++) {
+        leaderboardCardList.push(
+          <LeaderboardCard
+            id={current_turn_id == i ? "current-turn" : ""}
+            data={{ standing: standings[i], ...players[i] }}
+            key={i}
+          />
+        );
+      }
+
       return (
         <div className="players-boxes-container">
           <h2 className="centered-header">
-            {`Turn ${numTurns + 1} of ${maxTurns}`}
+            {`Turn ${turns + 1} of ${maxTurns}`}
           </h2>
-          <LeaderboardCard
-            id={currentTurn == 0 ? "current-turn" : ""}
-            data={{ standing: standings[0], ...players[0] }}
-          />
-          <LeaderboardCard
-            id={currentTurn == 1 ? "current-turn" : ""}
-            data={{ standing: standings[1], ...players[1] }}
-          />
-          <LeaderboardCard
-            id={currentTurn == 2 ? "current-turn" : ""}
-            data={{ standing: standings[2], ...players[2] }}
-          />
-          <LeaderboardCard
-            id={currentTurn == 3 ? "current-turn" : ""}
-            data={{ standing: standings[3], ...players[3] }}
-          />
+          {leaderboardCardList}
           <button
             onClick={() => {
               // Evaluate random card of current player, using gameData.current_turn_id, gameData.players[gameData.current_turn_id].cards, and evalCard
+              const currentPlayerCards = players[current_turn_id].cards;
               const randomCardIndex = currentPlayerCards.findIndex(
                 (card) => card == 1
               );
@@ -383,7 +398,10 @@ export function Game({
                 />
               </DndProvider>
               <div className="left-align-container">
-                <InventoryContainer inventory={gameData.inventory} />
+                <InventoryContainer
+                  inventory={gameData.inventory}
+                  itemData={itemData}
+                />
               </div>
             </div>
             <div className="whose-turn-and-all-card-sections">
@@ -402,26 +420,18 @@ export function Game({
                 <div className="card-section">
                   <CardBox
                     isMyTurn={gameData.current_turn_id == myPlayerId}
-                    cards={myCards.filter(
-                      (card, index) =>
-                        gameData.players[myPlayerId].cards[index] == 1
-                    )}
+                    // cards={myCards.filter(
+                    //   (card, index) =>
+                    //     gameData.players[myPlayerId].cards[index] == 1
+                    // )}
+                    cards={myCards}
                   />
                   <h2 className="my-turn">My Turn</h2>
                 </div>
               </div>
             </div>
           </div>
-          <Leaderboard
-            aspects={gameData.aspects}
-            players={gameData.players}
-            currentTurn={gameData.current_turn_id}
-            numTurns={gameData.turns}
-            maxTurns={constants.num_players * constants.num_cards}
-            currentPlayerCards={
-              gameData.players[gameData.current_turn_id].cards
-            }
-          />
+          <Leaderboard gameData={gameData} constants={constants} />
         </div>
 
         {debug ? (

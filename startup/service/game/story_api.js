@@ -139,7 +139,7 @@ async function apiCall(call) {
   }
 }
 
-async function getRandomHero() {
+function getRandomHero() {
   return getRandom(heroes);
 }
 

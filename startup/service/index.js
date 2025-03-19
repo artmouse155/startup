@@ -333,6 +333,10 @@ gameServerRouter.post("/start", async (req, res) => {
         }
         games[roomCode].players[email].cards = cardsExport;
       }
+      // Set an empty inventory
+      games[roomCode].gameData.inventory = Array(
+        games[roomCode].constants.num_item_slots
+      ).fill("");
       // Set the story to the introJSON
       games[roomCode].story = [shuffler.getRandom(introJSON.sections)];
       // Set the tempStory to something random
