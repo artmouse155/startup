@@ -3,7 +3,7 @@ import { DndProvider, useDragLayer, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Aspects } from "../aspects.jsx";
 // import { apiCall } from "../api_stub/api_stub.jsx";
-import { marked } from "marked";
+import { marked, parse } from "marked";
 import Parser from "html-react-parser";
 //import { renderer } from "./md_extension.jsx";
 // import items from "../server/items.json";
@@ -24,7 +24,7 @@ export function TextBox({
 }) {
   const [storyMD, setStoryMD] = React.useState("");
   const [tempStoryMD, setTempStoryMD] = React.useState("");
-  React.useEffect(async () => {
+  React.useEffect(() => {
     async function parseMD(sections) {
       console.log("Parsing MD", sections);
       // Check if anything in story doesn't have the rendered flag
@@ -74,17 +74,17 @@ export function TextBox({
         _story[i].rendered = true;
       }
 
-      return s;
+      setStoryMD(s);
       // // Run marked
       // document.getElementById("parsedMD").innerHTML += marked.parse(s);
       // document.getElementById("parsedMDTemp").innerHTML = marked.parse(
       //   `<h5 class="playerTurn">${currentPlayerName}'s Turn</h5>\n\n`
       // );
     }
-    setStoryMD(await parseMD(story));
+    parseMD(story);
   }, [story]);
 
-  React.useEffect(async () => {
+  React.useEffect(() => {
     async function parseMD(sections) {
       console.log("Parsing MD", sections);
       // Check if anything in story doesn't have the rendered flag
@@ -134,14 +134,14 @@ export function TextBox({
         _story[i].rendered = true;
       }
 
-      return s;
+      setTempStoryMD(s);
       // // Run marked
       // document.getElementById("parsedMD").innerHTML += marked.parse(s);
       // document.getElementById("parsedMDTemp").innerHTML = marked.parse(
       //   `<h5 class="playerTurn">${currentPlayerName}'s Turn</h5>\n\n`
       // );
     }
-    setTempStoryMD(await parseMD(tempStory));
+    parseMD(tempStory);
   }, [tempStory]);
 
   React.useEffect(() => {
