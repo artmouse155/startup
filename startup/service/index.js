@@ -115,6 +115,15 @@ apiRouter.get("/trophies", (req, res) => {
   res.send(trophies);
 });
 
+apiRouter.get("/items/:itemId", (req, res) => {
+  const item = items.find((item) => item.id == req.params.itemId);
+  if (item) {
+    res.send(item);
+  } else {
+    res.status(404).send({ msg: `Item "${req.params.itemID}" not found` });
+  }
+});
+
 var gameRouter = express.Router(); // Must be authenticated to use
 apiRouter.use(`/game`, gameRouter);
 
@@ -279,8 +288,10 @@ gameServerRouter.post("/start", async (req, res) => {
     } else {
       // Set up the game
       // Assign a random order to the players, then assign random aspects.
-      let order = [0, 1, 2, 3];
+      const num_players = Object.entries(games[roomCode].players).length;
+      let order = Array.from({ length: num_players }, (_, i) => i); // From https://dev.to/ycmjason/how-to-create-range-in-javascript-539i
       const orderShuffled = shuffler.shuffled(order);
+      console.log("orderShuffled:", orderShuffled);
 
       let aspects = ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"];
       const aspectsShuffled = shuffler.shuffled(aspects);
@@ -309,25 +320,36 @@ gameServerRouter.post("/start", async (req, res) => {
       // Set the heroData to the heroName and heroGender from the request body
       games[roomCode].heroData = storyApi.getRandomHero();
 
-      for (let i = 0; i < games[roomCode].players.length; i++) {
+      for (let i = 0; i < games[roomCode].gameData.players.length; i++) {
         const email = games[roomCode].gameData.players[i].email;
-
+        console.log("email:", email);
         // Generate 5 random cards for each player
         // PLACEHOLDER: Variation based on the current aspect of the player
         let cardsExport = [];
-        for (let j = 0; j < games[roomCode].constants.num_cards; i++) {
-          let { outcomes, ...cardWithoutOutcomes } =
-            cards[getRandomInt(cards.length)];
-          let n = { num_id: i, ...cardWithoutOutcomes };
+        for (let j = 0; j < games[roomCode].constants.num_cards; j++) {
+          let { outcomes, ...cardWithoutOutcomes } = shuffler.getRandom(cards);
+          let n = { num_id: j, ...cardWithoutOutcomes };
           cardsExport.push(n);
         }
         games[roomCode].players[email].cards = cardsExport;
       }
       // Set the story to the introJSON
-      games[roomCode].story = shuffler.getRandom(introJSON.sections);
+      games[roomCode].story = [shuffler.getRandom(introJSON.sections)];
       // Set the tempStory to something random
-      games[roomCode].tempStory = {};
+      games[roomCode].tempStory = {
+        text: ["This is a placeholder story."],
+        type: "turn",
+        playerTurnName: "Placeholder",
+      };
       // PLACEHOLDER: Respond with the connection data
+      for (const player in games[roomCode].players) {
+        console.log(
+          "Sending connection data to",
+          player,
+          ":",
+          await getConnectionData(roomCode, player)
+        );
+      }
       res.status(200).end();
     }
   }
@@ -357,10 +379,12 @@ async function getConnectionData(roomCode, email) {
     roomCode: roomCode,
     gameState: game.gameState,
     host: usernameFromEmail(game.host),
+    myPlayerId: player.turnIndex,
     players: Object.keys(game.players).map((p) => usernameFromEmail(p)),
     myCards: player.cards,
     constants: game.constants,
     heroData: game.heroData,
+    gameData: game.gameData,
     story: game.story,
     tempStory: game.tempStory,
   };

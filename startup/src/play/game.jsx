@@ -3,17 +3,6 @@ import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
-// import {
-//   nextTurn,
-//   setTurnEndFunc,
-//   createGame,
-//   getPlayerCards,
-//   getItemData,
-//   evalCard,
-//   NUM_PLAYERS,
-//   NUM_CARDS,
-//   NUM_ITEM_SLOTS,
-// } from "./server/server.jsx";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 import { End } from "./end.jsx";
@@ -26,58 +15,29 @@ const GAME_STATES = {
   END: 2,
 };
 
-export function Game({ userData, setUserData, connectionData, returnToLobby }) {
-  const { roomCode, myPlayerId, myCards, heroData, gameData, story } =
-    connectionData;
+export function Game({
+  userData,
+  setUserData,
+  connectionData,
+  getItemData,
+  returnToLobby,
+}) {
+  const {
+    roomCode,
+    gameState,
+    host,
+    myPlayerId,
+    players,
+    constants,
+    myCards,
+    heroData,
+    gameData,
+    story,
+    tempStory,
+  } = connectionData;
   const ItemType = { CARD_TYPE: "card" };
-  const [gameState, setGameState] = React.useState(GAME_STATES.PLAY);
-  // const [myCards, setMyCards] = React.useState([]);
-  //const [gameData, setGameData] = React.useState(defaultGameData);
-  // const [myPlayerId, setMyPlayerID] = React.useState(-1);
 
-  // setTurnEndFunc((_gameData) => {
-  //   console.log("Turn ended hook started! Updating player data.", _gameData);
-  //   setGameData({ ..._gameData }); // Create a shallow copy to ensure state update
-  // });
-
-  // function getPlayerID() {
-  //   console.log("Accessed player ID!");
-  //   return myPlayerId;
-  // }
-
-  // const [heroData, setHeroData] = React.useState({
-  //   heroName: "<Null Name>",
-  //   heroGender: "unknown",
-  // });
-  const [isSetupComplete, setIsSetupComplete] = React.useState(false);
-
-  React.useEffect(() => (isSetupComplete ? () => {} : gameSetup()));
-  React.useEffect(() => {
-    console.log("game Data updated!", gameData);
-    if (gameData.turns >= NUM_PLAYERS * NUM_CARDS) {
-      endGame();
-    }
-  }, [gameData]);
-
-  function gameSetup() {
-    console.log("Setting up!");
-    // const _myPlayerId = 0;
-    // setMyPlayerID(_myPlayerId);
-    // const { _gameData, _heroData } = createGame(userName);
-
-    // setGameData(_gameData);
-    // setHeroData(_heroData);
-    // setMyCards(getPlayerCards(_myPlayerId));
-    setGameState(GAME_STATES.PLAY);
-    setIsSetupComplete(true);
-    console.log("Setup complete!");
-  }
-
-  function endGame() {
-    setGameState(GAME_STATES.END);
-  }
-
-  function CardBox(isMyTurn, getCards) {
+  function CardBox(isMyTurn, cards) {
     function CardDragLayer() {
       // Code from https://react-dnd.github.io/react-dnd/about
       function getItemStyles(initialOffset, currentOffset) {
@@ -141,7 +101,6 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
       return card;
     }
 
-    const cards = getCards;
     function Card({
       num_id = "-1",
       id = "null",
@@ -240,7 +199,7 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
 
   function InventoryContainer({ inventory }) {
     let itemBoxes = [];
-    for (let i = 0; i < NUM_ITEM_SLOTS; i++) {
+    for (let i = 0; i < constants.num_item_slots; i++) {
       const itemData = getItemData(inventory[i]);
       itemBoxes.push(
         <div className="item-box" key={i}>
@@ -269,10 +228,10 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
   }) {
     if (aspects && players) {
       // PlayerID, Standing
-      let standings = Array(NUM_PLAYERS);
-      for (let i = 0; i < NUM_PLAYERS; i++) {
+      let standings = Array(constants.num_players);
+      for (let i = 0; i < constants.num_players; i++) {
         standings[i] = 0;
-        for (let j = 0; j < NUM_PLAYERS; j++) {
+        for (let j = 0; j < constants.num_players; j++) {
           if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
             standings[i]++;
           }
@@ -419,6 +378,7 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
                   dragItemType={ItemType.CARD_TYPE}
                   story={story}
                   tempStory={tempStory}
+                  getItemData={getItemData}
                   useCard={useCard}
                 />
               </DndProvider>
@@ -442,9 +402,10 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
                 <div className="card-section">
                   <CardBox
                     isMyTurn={gameData.current_turn_id == myPlayerId}
-                    getCards={() => {
-                      return;
-                    }}
+                    cards={myCards.filter(
+                      (card, index) =>
+                        gameData.players[myPlayerId].cards[index] == 1
+                    )}
                   />
                   <h2 className="my-turn">My Turn</h2>
                 </div>
@@ -456,7 +417,7 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
             players={gameData.players}
             currentTurn={gameData.current_turn_id}
             numTurns={gameData.turns}
-            maxTurns={NUM_PLAYERS * NUM_CARDS}
+            maxTurns={constants.num_players * constants.num_cards}
             currentPlayerCards={
               gameData.players[gameData.current_turn_id].cards
             }

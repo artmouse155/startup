@@ -98,6 +98,7 @@ const ConnectionData = () => {
     roomCode: String,
     gameState: String,
     host: String, // Attr different on server side, just a username. On server side, is an email
+    myPlayerId: Number, // Attr not present on server side
     players: [String], // Attr different on server side, a list of usernames. On server side, is a list of emails
     myCards: [ClientCard], // Attr not present on server side. A list of cards that the player has
     constants: {

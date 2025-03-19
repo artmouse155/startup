@@ -33,6 +33,24 @@ export function Play({ userData, setUserData, authState }) {
     }
   }
 
+  async function getItemData(itemId) {
+    // call api to get item data
+    const response = await fetch(`api/items/${itemId}`, {
+      method: "get",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+    if (response?.status === 200) {
+      const body = await response.json();
+      console.log("⭐ Got Item Data: ", body);
+      return body;
+    } else {
+      const body = await response.json();
+      alert(`⚠ Error: ${body.msg}`);
+    }
+  }
+
   async function getConnectionData() {
     if (connectionData && connectionData.roomCode) {
       const response = await fetch(
@@ -46,6 +64,7 @@ export function Play({ userData, setUserData, authState }) {
       );
       if (response?.status === 200) {
         const body = await response.json();
+        console.log("⭐ Got Connection Data: ", body);
         setConnectionData(body);
       } else {
         const body = await response.json();
@@ -92,7 +111,8 @@ export function Play({ userData, setUserData, authState }) {
               <Game
                 userData={userData}
                 setUserData={setUserData}
-                userName={userData.email.split("@")[0]}
+                connectionData={connectionData}
+                getItemData={getItemData}
                 returnToLobby={returnToLobby}
               />
             </div>
