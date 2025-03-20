@@ -119,6 +119,7 @@ const ConnectionData = () => {
   return {
     roomCode: String,
     gameState: String,
+    amHost: Boolean, // Attr not present on server side
     host: String, // Attr different on server side, just a username. On server side, is an email
     myPlayerId: Number, // Attr not present on server side
     players: [String], // Attr different on server side, a list of usernames. On server side, is a list of emails

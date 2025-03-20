@@ -2,14 +2,7 @@ import React from "react";
 import "./lobby.css";
 import { ConnectionState } from "./connectionState";
 
-export function Lobby({
-  connectionState,
-  setConnectionState,
-  connectionData,
-  setConnectionData,
-  email,
-  trophies,
-}) {
+export function Lobby({ setWebSocket, connectionData, email }) {
   const MENUSTATE = {
     ROOT: 0,
     HOST: 1,
@@ -18,52 +11,50 @@ export function Lobby({
     JOIN_WAIT: 4,
   };
   const [menuState, setMenuState] = React.useState(MENUSTATE.ROOT);
-  const [doPlaceholderWebsocket, setDoPlaceholderWebsocket] =
-    React.useState(true);
-  const [roomCode, setRoomCode] = React.useState("");
-
+  const [roomCodeInput, setRoomCodeInput] = React.useState("");
   const inputRef = React.useRef(null);
 
   React.useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [roomCode]);
+  }, [roomCodeInput]);
+
+  React.useEffect(() => {
+    if (connectionData) {
+      if (connectionData.amHost) {
+        console.log("Hosting. Connection Data: ", connectionData);
+        setMenuState(MENUSTATE.HOST);
+        return;
+      } else {
+        console.log("Joining Wait. Connection Data: ", connectionData);
+        setMenuState(MENUSTATE.JOIN_WAIT);
+        return;
+      }
+    }
+    if (menuState == MENUSTATE.JOIN_WAIT) {
+      setMenuState(MENUSTATE.JOIN);
+      return;
+    }
+    setMenuState(MENUSTATE.ROOT);
+  }, [connectionData]);
 
   //console.log("Connection State: ", connectionState);
 
-  async function handleExit(destination) {
+  async function handleExit() {
     // Handles canceling as either a host or a person joining
-    // setMenuState(destination);
     const response = await fetch("api/game/leave", {
       method: "delete",
-      body: JSON.stringify({ email: email, roomCode: roomCode }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
     });
     if (response?.status === 204) {
-      setConnectionData(null);
-      setRoomCode("");
-      setMenuState(destination);
-      setConnectionState(ConnectionState.Disconnected);
+      setWebSocket(null);
     } else {
       const body = await response.json();
       alert(`⚠ Error: ${body.msg}`);
     }
-  }
-
-  function handleSetRoomCode(e) {
-    let code = e.target.value;
-    // Make code all caps
-    code = code.toUpperCase();
-    // keep only a-z characters
-    code = code.replaceAll(/([^A-Z])+/g, "");
-    // It can be a max of 5 characters
-    code = code.slice(0, 5);
-
-    setRoomCode(code);
-    // Set mouse focus to room code input
   }
 
   async function handleHostGame() {
@@ -78,11 +69,8 @@ export function Lobby({
     });
     if (response?.status === 200) {
       const body = await response.json();
-      setConnectionData(body);
-      console.log("Connection Data: ", body);
-      setConnectionState(ConnectionState.Connecting);
-      setRoomCode(body.roomCode);
-      setMenuState(MENUSTATE.HOST);
+      //console.log("Host Game Result: ", body);
+      setWebSocket(body.roomCode);
     } else {
       if (response?.status === 409) {
         const body = await response.json();
@@ -128,12 +116,7 @@ export function Lobby({
       },
     });
     if (response?.status === 200) {
-      const body = await response.json();
-      setConnectionData(body);
-      console.log("Connection Data: ", body);
-      setConnectionState(ConnectionState.Connecting);
-      setRoomCode(body.roomCode);
-      setMenuState(MENUSTATE.JOIN_WAIT);
+      setWebSocket(roomCode);
     } else {
       if (response?.status === 409) {
         const body = await response.json();
@@ -146,6 +129,18 @@ export function Lobby({
     console.log("Join Game Result");
   }
 
+  function handleSetRoomCodeInput(e) {
+    let code = e.target.value;
+    // Make code all caps
+    code = code.toUpperCase();
+    // keep only a-z characters
+    code = code.replaceAll(/([^A-Z])+/g, "");
+    // It can be a max of 5 characters
+    code = code.slice(0, 5);
+
+    setRoomCodeInput(code);
+    // Set mouse focus to room code input
+  }
   // returns a spinner component for loading
   function Spinner() {
     return (
@@ -188,24 +183,34 @@ export function Lobby({
       </div>
     );
   }
-  function Host({ setMenuState }) {
+
+  function Host() {
+    const playerCount = connectionData ? connectionData.players.length : 0;
+    const maxPlayers = connectionData
+      ? connectionData.constants.num_players
+      : 0;
+    const roomCode = connectionData ? connectionData.roomCode : null;
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Host Game</h1>
-        <h1 className="room-code">{`Room Code: ${roomCode}`}</h1>
-        <h4 className="num-connected">{`${connectionData.players.length}/4 players connected.\nWaiting for host to start game`}</h4>
-        <ConnectedPlayerList />
+        <h1 className="room-code">
+          {connectionData
+            ? `Room Code: ${connectionData.roomCode}`
+            : `Disconnected`}
+        </h1>
+        <h4 className="num-connected">{`${playerCount}/${maxPlayers} players connected.\nWaiting for host to start game`}</h4>
+        {connectionData ? <ConnectedPlayerList /> : null}
         <Spinner />
         <div className="lobby-actions">
-          <button
-            className="lobby-button"
-            onClick={handleHostStartGame}
-            disabled={
-              connectionData.players.length < 4 && !doPlaceholderWebsocket
-            }
-          >
-            Start Game
-          </button>
+          {connectionData ? (
+            <button
+              className="lobby-button"
+              onClick={handleHostStartGame}
+              disabled={playerCount < maxPlayers}
+            >
+              Start Game
+            </button>
+          ) : null}
           <button
             className="lobby-cancel-button"
             onClick={() => handleExit(MENUSTATE.ROOT)}
@@ -217,7 +222,7 @@ export function Lobby({
     );
   }
 
-  function Join({ setMenuState, roomCode }) {
+  function Join({ setMenuState, roomCodeInput }) {
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Join Game</h1>
@@ -226,16 +231,16 @@ export function Lobby({
             className="room-code-input"
             type="text"
             placeholder="Room Code"
-            value={roomCode}
-            onChange={(e) => handleSetRoomCode(e)}
+            value={roomCodeInput}
+            onChange={(e) => handleSetRoomCodeInput(e)}
             ref={inputRef}
           />
         </form>
         <div className="lobby-actions">
           <button
             className="lobby-button"
-            onClick={() => handleJoinGame(roomCode)}
-            disabled={roomCode.length != 5}
+            onClick={() => handleJoinGame(roomCodeInput)}
+            disabled={roomCodeInput.length != 5}
           >
             Join Game
           </button>
@@ -250,28 +255,11 @@ export function Lobby({
     );
   }
 
-  function HostWait({ setMenuState }) {
+  function JoinWait() {
     return (
       <div className="lobby-container">
         <h1 className="lobby-title">Waiting for Players</h1>
-        <Spinner />
-        <div className="lobby-actions">
-          <button
-            className="lobby-cancel-button"
-            onClick={() => setMenuState(MENUSTATE.HOST)}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  function JoinWait({ setMenuState }) {
-    return (
-      <div className="lobby-container">
-        <h1 className="lobby-title">Waiting for Players</h1>
-        <h4 className="num-connected">{`${connectionData.players.length}/4 players connected.\nWaiting for host to start game`}</h4>
+        <h4 className="num-connected">{`${connectionData.players.length}/${connectionData.constants.num_players} players connected.\nWaiting for host to start game`}</h4>
         <ConnectedPlayerList />
         <Spinner />
         <div className="lobby-actions">
@@ -291,19 +279,13 @@ export function Lobby({
       case MENUSTATE.ROOT:
         return <Root setMenuState={setMenuState} />;
       case MENUSTATE.HOST:
-        return <Host setMenuState={setMenuState} />;
+        return <Host />;
       case MENUSTATE.JOIN:
         return (
-          <Join
-            setMenuState={setMenuState}
-            roomCode={roomCode}
-            setRoomCode={setRoomCode}
-          />
+          <Join setMenuState={setMenuState} roomCodeInput={roomCodeInput} />
         );
-      //   case MENUSTATE.HOST_WAIT:
-      //     return <HostWait setMenuState={setMenuState} />;
       case MENUSTATE.JOIN_WAIT:
-        return <JoinWait setMenuState={setMenuState} />;
+        return <JoinWait />;
       default:
         return <p>Unknown Menu State!</p>;
     }
@@ -313,17 +295,6 @@ export function Lobby({
     <div className="login-main">
       <div className="login-screen">
         <Menu menuState={menuState} />
-        <input
-          type="checkbox"
-          id="do-placeholder"
-          checked={doPlaceholderWebsocket}
-          onChange={() => setDoPlaceholderWebsocket(!doPlaceholderWebsocket)}
-        />{" "}
-        <label htmlFor="do-placeholder">
-          Do Placeholder Web Socket (Keep toggled on and click "Host Game"
-          {`>`} "Start Game" to get to the external API call for this
-          deliverable)
-        </label>
       </div>
     </div>
   );

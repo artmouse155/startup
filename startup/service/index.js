@@ -230,7 +230,7 @@ gameRouter.post("/host", async (req, res) => {
   };
   games[roomCode] = newGame;
   console.log(email, "created", roomCode, newGame);
-  res.send(await getConnectionData(roomCode, email));
+  res.status(200).send({ roomCode: roomCode });
 });
 
 gameRouter.post("/join/:roomCode", async (req, res) => {
@@ -416,6 +416,7 @@ async function getConnectionData(roomCode, email) {
   const connectionData = {
     roomCode: roomCode,
     gameState: game.gameState,
+    amHost: game.host == email,
     host: usernameFromEmail(game.host),
     myPlayerId: player.turnIndex,
     players: Object.keys(game.players).map((p) => usernameFromEmail(p)),
@@ -431,7 +432,7 @@ async function getConnectionData(roomCode, email) {
 
 async function removePlayerFromGame(email) {
   const roomCode = await findRoomCodeByPlayerEmail(email);
-  if (roomCode == -1) {
+  if (!roomCode) {
     return false;
   }
   console.log(`removing ${email} from game`, games[roomCode]);
