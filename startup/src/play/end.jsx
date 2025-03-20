@@ -4,13 +4,7 @@ import { ConnectionState } from "./connectionState";
 // import { NUM_PLAYERS } from "./server/server.jsx";
 import "./end.css";
 
-export function End({
-  userData,
-  setUserData,
-  returnToLobby,
-  gameData,
-  heroData,
-}) {
+export function End({ userData, setUserData, handleExit, gameData, heroData }) {
   const [trophies, setTrophies] = React.useState(0);
   React.useEffect(() => {
     handleGetTrophies();
@@ -89,7 +83,7 @@ export function End({
         </p>
       </div>
       <div className="end-actions">
-        <button className="end-button" onClick={returnToLobby}>
+        <button className="end-button" onClick={handleExit}>
           Back to Lobby
         </button>
         <button className="end-button" onClick={() => navigate("/leaderboard")}>

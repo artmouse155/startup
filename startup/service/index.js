@@ -389,6 +389,13 @@ gameServerRouter.post(
     const roomCode = req.roomCode;
     // get user email based on their auth token
     const userData = await getUserData(req);
+    const email = userData.email;
+    // Apply aspect changes, item changes, and story changes. Switch turn AND take away the card.
+    if (await evalCard(roomCode, email, req.params.cardIndex)) {
+      res.status(200).end();
+    } else {
+      res.status(409).send({ msg: "Card not played" });
+    }
   }
 );
 
@@ -462,12 +469,11 @@ async function findRoomCodeByPlayerEmail(email) {
   return false;
 }
 
-async function evalCard(roomCode, card_num_id) {
+async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
   let gameData = games[roomCode].gameData;
   const current_turn_id = gameData.current_turn_id;
-  const current_turn_email = "email@email.com";
 
   console.log(
     `[${roomCode}] Player ${gameData.players[current_turn_id].name} is playing card ${card_num_id} from their hand.`
@@ -478,13 +484,13 @@ async function evalCard(roomCode, card_num_id) {
   const card = cards.find((card) => card.id == card_id);
   if (!card) {
     console.log("No card found for card", card_num_id);
-    return null;
+    return false;
   }
 
   const outcomes = card.outcomes;
   if (!outcomes) {
     console.log("No outcomes found for card", card);
-    return null;
+    return false;
   }
 
   // This card is no longer playable.
@@ -547,10 +553,35 @@ async function evalCard(roomCode, card_num_id) {
                 }
               }
             }
+            result.item = getItemData(result.item);
           }
         }
       }
-      const cardPlayerName = gameData.players[gameData.current_turn_id].name;
+      const getCardUserName = () => {
+        return usernameFromEmail(
+          gameData.players[gameData.current_turn_id].email
+        );
+      };
+
+      // Push outcome to story
+      await pushOutcome(roomCode, {
+        type: "turn",
+        playerTurnName: getCardUserName(),
+        text: outcome.text,
+        results: outcome.results,
+      });
+
+      // Go to next player's turn
+      if (doNextTurn) {
+        nextTurn(roomCode);
+      }
+
+      // Set tempStory
+      games[roomCode].tempStory = {
+        type: "turn",
+        playerTurnName: getCardUserName(),
+        text: [],
+      };
 
       // PLACEHOLDER for websocket
       for (const player in games[roomCode]) {
@@ -560,14 +591,12 @@ async function evalCard(roomCode, card_num_id) {
         //   playerTurnName: cardPlayerName,
         // });
       }
-      // Go to next player's turn
-      nextTurn(roomCode);
 
       return true;
     }
   }
   console.log("No outcome found for card", card);
-  return null;
+  return false;
 }
 
 async function pushOutcome(roomCode, outcome) {
@@ -592,6 +621,17 @@ function getItemData(item_id) {
   } else {
     console.log("No item found for item_id", item_id);
     return null;
+  }
+}
+
+function nextTurn(roomCode) {
+  games[roomCode].gameData.current_turn_id++;
+  if (
+    games[roomCode].gameData.current_turn_id >=
+    games[roomCode].gameData.players.length
+  ) {
+    games[roomCode].gameData.current_turn_id = 0;
+    games[roomCode].gameData.turns++;
   }
 }
 

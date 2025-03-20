@@ -50,7 +50,8 @@ export function Play({ userData, setUserData, authState }) {
     }
   }
 
-  async function returnToLobby() {
+  async function handleExit() {
+    // Handles canceling as either a host or a person joining
     const response = await fetch("api/game/leave", {
       method: "delete",
       headers: {
@@ -58,7 +59,7 @@ export function Play({ userData, setUserData, authState }) {
       },
     });
     if (response?.status === 204) {
-      setConnectionState(ConnectionState.Disconnected);
+      setWebSocket(null);
     } else {
       const body = await response.json();
       alert(`⚠ Error: ${body.msg}`);
@@ -103,6 +104,10 @@ export function Play({ userData, setUserData, authState }) {
     );
   }
 
+  function pingServer() {
+    getConnectionData();
+  }
+
   switch (authState) {
     case AuthState.Authenticated:
       switch (connectionState) {
@@ -116,7 +121,8 @@ export function Play({ userData, setUserData, authState }) {
                   userData={userData}
                   setUserData={setUserData}
                   connectionData={connectionData}
-                  returnToLobby={returnToLobby}
+                  handleExit={handleExit}
+                  pingServer={pingServer}
                 />
               </div>
             );
@@ -127,8 +133,9 @@ export function Play({ userData, setUserData, authState }) {
               <DebugButtons />
               <Lobby
                 setWebSocket={setWebSocket}
-                email={userData.email}
+                pingServer={pingServer}
                 connectionData={connectionData}
+                handleExit={handleExit}
               />
             </div>
           );

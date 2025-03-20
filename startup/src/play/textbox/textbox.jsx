@@ -59,8 +59,7 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
             break;
           case "item-obtained":
-            s += `<i class= "item">${await getItemData(item)
-              .name} obtained</i>\n\n`;
+            s += `<i class= "item">${item ? item.name : `❔`} obtained</i>\n\n`;
             break;
         }
       }

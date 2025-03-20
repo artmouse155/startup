@@ -15,7 +15,13 @@ const GAME_STATES = {
   END: 2,
 };
 
-export function Game({ userData, setUserData, connectionData, returnToLobby }) {
+export function Game({
+  userData,
+  setUserData,
+  connectionData,
+  handleExit,
+  pingServer,
+}) {
   const {
     roomCode,
     gameState,
@@ -29,7 +35,6 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
     story,
     tempStory,
   } = connectionData;
-  console.log("💤 Connection Data: ", connectionData);
 
   const ItemType = { CARD_TYPE: "card" };
 
@@ -166,6 +171,8 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
     return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
   }
 
+  function endGame() {}
+
   async function useCard(card) {
     let card_num_id = card.num_id;
     if (gameData.players[gameData.current_turn_id].cards[card_num_id] == 1) {
@@ -179,6 +186,7 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
         }
       );
       if (response?.status === 200) {
+        pingServer();
         return true;
       } else {
         const body = await response.json();
@@ -329,7 +337,8 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
           >
             Simulate Next Turn
           </button>
-          <button onClick={() => endGame()}>End Game</button>
+          <button onClick={() => endGame()}>Finish Game</button>
+          <button onClick={handleExit}>Exit Game</button>
         </div>
       );
     } else {
@@ -408,7 +417,10 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
                     //   (card, index) =>
                     //     gameData.players[myPlayerId].cards[index] == 1
                     // )}
-                    cards={myCards}
+                    cards={myCards.filter(
+                      (card, index) =>
+                        gameData.players[myPlayerId].cards[index] == 1
+                    )}
                   />
                   <h2 className="my-turn">My Turn</h2>
                 </div>
@@ -444,7 +456,7 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
         setUserData={setUserData}
         gameData={gameData}
         heroData={heroData}
-        returnToLobby={returnToLobby}
+        handleExit={handleExit}
       />
     );
   }

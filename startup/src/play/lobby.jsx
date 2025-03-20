@@ -2,7 +2,12 @@ import React from "react";
 import "./lobby.css";
 import { ConnectionState } from "./connectionState";
 
-export function Lobby({ setWebSocket, connectionData, email }) {
+export function Lobby({
+  setWebSocket,
+  connectionData,
+  handleExit,
+  pingServer,
+}) {
   const MENUSTATE = {
     ROOT: 0,
     HOST: 1,
@@ -41,22 +46,6 @@ export function Lobby({ setWebSocket, connectionData, email }) {
 
   //console.log("Connection State: ", connectionState);
 
-  async function handleExit() {
-    // Handles canceling as either a host or a person joining
-    const response = await fetch("api/game/leave", {
-      method: "delete",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    if (response?.status === 204) {
-      setWebSocket(null);
-    } else {
-      const body = await response.json();
-      alert(`⚠ Error: ${body.msg}`);
-    }
-  }
-
   async function handleHostGame() {
     // Handles the host game button click
 
@@ -94,9 +83,7 @@ export function Lobby({ setWebSocket, connectionData, email }) {
         }
       );
       if (response?.status === 200) {
-        alert(
-          `Success! While we wait for websockets, press [⟳ Ping Server] to continue!`
-        );
+        pingServer();
         return true;
       } else {
         const body = await response.json();
