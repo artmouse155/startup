@@ -108,14 +108,14 @@ export function Lobby({
         }
       );
       if (response?.status === 200) {
-        // const body = await response.json();
-        // setConnectionData(body);
         alert(
-          `Success! While we wait for websockets, press "⭐ get connection data" and then "🐻 Start Game" to continue.`
+          `Success! While we wait for websockets, press "⭐ Fake Websocket ⭐" to continue!`
         );
+        return true;
       } else {
         const body = await response.json();
         alert(`⚠ Error: ${body.msg}`);
+        return false;
       }
     }
   }
@@ -123,9 +123,8 @@ export function Lobby({
   async function handleJoinGame(roomCode) {
     // Check if the room code is valid
     console.log("Preparing to join!");
-    const response = await fetch("api/game/join", {
+    const response = await fetch(`api/game/join/${roomCode}`, {
       method: "post",
-      body: JSON.stringify({ email: email, roomCode: roomCode }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },

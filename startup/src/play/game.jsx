@@ -15,13 +15,7 @@ const GAME_STATES = {
   END: 2,
 };
 
-export function Game({
-  userData,
-  setUserData,
-  connectionData,
-  getItemData,
-  returnToLobby,
-}) {
+export function Game({ userData, setUserData, connectionData, returnToLobby }) {
   const {
     roomCode,
     gameState,
@@ -36,20 +30,7 @@ export function Game({
     tempStory,
   } = connectionData;
   console.log("💤 Connection Data: ", connectionData);
-  const [itemData, setItemData] = React.useState(
-    Array(constants.num_item_slots).fill(null)
-  );
-  React.useEffect(() => {
-    async function getItemData() {
-      let itemData = [];
-      for (let i = 0; i < constants.num_item_slots; i++) {
-        const item = await getItemData(gameData.inventory[i]);
-        itemData.push(item);
-      }
-      setItemData(itemData);
-    }
-    getItemData();
-  }, [gameData.inventory]);
+
   const ItemType = { CARD_TYPE: "card" };
 
   function CardBox({ isMyTurn, cards }) {
@@ -185,17 +166,24 @@ export function Game({
     return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
   }
 
-  function useCard(card) {
+  async function useCard(card) {
     let card_num_id = card.num_id;
     if (gameData.players[gameData.current_turn_id].cards[card_num_id] == 1) {
-      // console.log("Making Game Data copy.");
-      // console.log("current_turn_id:", gameData.current_turn_id);
-      // let gameDataCopy = { ...gameData };
-      // console.log("copied current_turn_id:", gameDataCopy.current_turn_id);
-      // gameDataCopy.players[_playerID].cards[card_num_id] = 0;
-      // setGameData({ ...gameDataCopy });
-      evalCard(card_num_id);
-      return true;
+      const response = await fetch(
+        `api/game/server/${roomCode}/card/${card.num_id}/use`,
+        {
+          method: "post",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      );
+      if (response?.status === 200) {
+        return true;
+      } else {
+        const body = await response.json();
+        alert(`⚠ Error: ${body.msg}`);
+      }
     }
     console.log("Card not found in player's hand.");
     return false;
@@ -213,7 +201,7 @@ export function Game({
   //   setGameData(gameDataCopy);
   // }
 
-  function InventoryContainer({ inventory, itemData }) {
+  function InventoryContainer({ inventory }) {
     let itemBoxes = [];
     for (let i = 0; i < constants.num_item_slots; i++) {
       console.log("Trying to get item data!", inventory[i]);
@@ -221,9 +209,9 @@ export function Game({
         <div className="item-box" key={i}>
           <p
             className="item-box-text"
-            title={itemData[i] ? itemData[i].name : `Empty Slot`}
+            title={inventory[i] ? inventory[i].name : `Empty Slot`}
           >
-            {itemData[i] ? itemData[i].icon : i + 1}
+            {inventory[i] ? inventory[i].icon : i + 1}
           </p>
         </div>
       );
@@ -393,15 +381,11 @@ export function Game({
                   dragItemType={ItemType.CARD_TYPE}
                   story={story}
                   tempStory={tempStory}
-                  getItemData={getItemData}
                   useCard={useCard}
                 />
               </DndProvider>
               <div className="left-align-container">
-                <InventoryContainer
-                  inventory={gameData.inventory}
-                  itemData={itemData}
-                />
+                <InventoryContainer inventory={gameData.inventory} />
               </div>
             </div>
             <div className="whose-turn-and-all-card-sections">
@@ -438,10 +422,10 @@ export function Game({
           <div>
             <button onClick={() => console.log(myCards)}>Print cards</button>
             <button onClick={() => console.log(myPlayerId)}>
-              Print My Player ID
+              Print My Player Turn #
             </button>
             <button onClick={() => console.log(gameData.current_turn_id)}>
-              Print Turn Id
+              Print Current Player Turn #
             </button>
             <button onClick={() => console.log(heroData)}>
               Print Hero Data

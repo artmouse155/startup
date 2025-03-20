@@ -238,22 +238,24 @@ gameRouter.post("/join/:roomCode", verifyRoomCode, async (req, res) => {
   // If there are already 4 players, respond with a message saying the game is full
   // Otherwise, add the player to the game and respond with a message saying they joined the game
   // If the room code is not in the active games list, respond with a message saying the game does not exist
+  const userData = await getUserData(req);
+  const email = userData.email;
   const roomCode = req.params.roomCode;
   if (games[roomCode]) {
     if (games[roomCode].players.length >= 4) {
       return res.status(403).send({ msg: "Game full" });
     }
     for (let j = 0; j < games[roomCode].players.length; j++) {
-      if (games[roomCode].players[j].email == req.body.email) {
-        removePlayerFromGame(req.body.email);
+      if (games[roomCode].players[j].email == email) {
+        removePlayerFromGame(email);
         return res.status(409).send({
           msg: `Already in game. Room code: ${roomCode}.`,
         });
       }
     }
-    games[roomCode].players.push({ email: req.body.email });
-    console.log(req.body.email, "joined", roomCode, games[roomCode]);
-    res.status(200).send(await getConnectionData(roomCode, req.body.email));
+    games[roomCode].players.push({ email: email });
+    console.log(email, "joined", roomCode, games[roomCode]);
+    res.status(200).send(await getConnectionData(roomCode, email));
   }
 });
 

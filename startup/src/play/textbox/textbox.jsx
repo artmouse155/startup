@@ -15,139 +15,71 @@ import "./textbox.css";
 //   getItemData,
 // } from "../server/server.jsx";
 
-export function TextBox({
-  story,
-  tempStory,
-  getItemData,
-  dragItemType,
-  useCard,
-}) {
+export function TextBox({ story, tempStory, dragItemType, useCard }) {
   const [storyMD, setStoryMD] = React.useState("");
   const [tempStoryMD, setTempStoryMD] = React.useState("");
-  React.useEffect(() => {
-    async function parseMD(sections) {
-      console.log("Parsing MD", sections);
-      // Check if anything in story doesn't have the rendered flag
-      if (sections.length == 0) {
-        return `No story elements found.`;
-      }
-      // Check if anything in story doesn't have the rendered flag
-      if (sections.every((elem) => elem.rendered)) {
-        return `Everything has been rendered.`;
-      }
-
-      let _story = [...sections];
-      //_story.push({ type: "turn", playerTurnName: currentPlayerName });
-      let s = "";
-      for (let i = 0; i < _story.length; i++) {
-        if (_story[i].rendered) {
-          continue;
-        }
-        const {
-          type,
-          playerTurnName,
-          title,
-          text = [],
-          results: resultArr = [],
-        } = _story[i];
-        switch (type) {
-          case "intro":
-            s += `<h3 class="title">${title}</h3>\n\n`;
-            break;
-          case "turn":
-            s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;
-            break;
-        }
-        s += `${text.join("\n\n")}\n\n`;
-        for (let j = 0; j < resultArr.length; j++) {
-          const { type: resultType, item, amt, aspect } = resultArr[j];
-          switch (resultType) {
-            case "aspect-points":
-              s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
-              break;
-            case "item-obtained":
-              s += `<i class= "item">${await getItemData(item)
-                .name} obtained</i>\n\n`;
-              break;
-          }
-        }
-        _story[i].rendered = true;
-      }
-
-      setStoryMD(s);
-      // // Run marked
-      // document.getElementById("parsedMD").innerHTML += marked.parse(s);
-      // document.getElementById("parsedMDTemp").innerHTML = marked.parse(
-      //   `<h5 class="playerTurn">${currentPlayerName}'s Turn</h5>\n\n`
-      // );
+  const parseMD = async (sections, setFunc) => {
+    console.log("Parsing MD", sections);
+    // Check if anything in story doesn't have the rendered flag
+    if (sections.length == 0) {
+      return `No story elements found.`;
     }
-    parseMD(story);
+    // Check if anything in story doesn't have the rendered flag
+    if (sections.every((elem) => elem.rendered)) {
+      return `Everything has been rendered.`;
+    }
+
+    let _story = [...sections];
+    //_story.push({ type: "turn", playerTurnName: currentPlayerName });
+    let s = "";
+    for (let i = 0; i < _story.length; i++) {
+      if (_story[i].rendered) {
+        continue;
+      }
+      const {
+        type,
+        playerTurnName,
+        title,
+        text = [],
+        results: resultArr = [],
+      } = _story[i];
+      switch (type) {
+        case "intro":
+          s += `<h3 class="title">${title}</h3>\n\n`;
+          break;
+        case "turn":
+          s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;
+          break;
+      }
+      s += `${text.join("\n\n")}\n\n`;
+      for (let j = 0; j < resultArr.length; j++) {
+        const { type: resultType, item, amt, aspect } = resultArr[j];
+        switch (resultType) {
+          case "aspect-points":
+            s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
+            break;
+          case "item-obtained":
+            s += `<i class= "item">${await getItemData(item)
+              .name} obtained</i>\n\n`;
+            break;
+        }
+      }
+      _story[i].rendered = true;
+    }
+    setFunc(s);
+  };
+  React.useEffect(() => {
+    parseMD(story, setStoryMD);
   }, [story]);
 
   React.useEffect(() => {
-    async function parseMD(sections) {
-      console.log("Parsing MD", sections);
-      // Check if anything in story doesn't have the rendered flag
-      if (sections.length == 0) {
-        return `No story elements found.`;
-      }
-      // Check if anything in story doesn't have the rendered flag
-      if (sections.every((elem) => elem.rendered)) {
-        return `Everything has been rendered.`;
-      }
-
-      let _story = [...sections];
-      //_story.push({ type: "turn", playerTurnName: currentPlayerName });
-      let s = "";
-      for (let i = 0; i < _story.length; i++) {
-        if (_story[i].rendered) {
-          continue;
-        }
-        const {
-          type,
-          playerTurnName,
-          title,
-          text = [],
-          results: resultArr = [],
-        } = _story[i];
-        switch (type) {
-          case "intro":
-            s += `<h3 class="title">${title}</h3>\n\n`;
-            break;
-          case "turn":
-            s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;
-            break;
-        }
-        s += `${text.join("\n\n")}\n\n`;
-        for (let j = 0; j < resultArr.length; j++) {
-          const { type: resultType, item, amt, aspect } = resultArr[j];
-          switch (resultType) {
-            case "aspect-points":
-              s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
-              break;
-            case "item-obtained":
-              s += `<i class= "item">${await getItemData(item)
-                .name} obtained</i>\n\n`;
-              break;
-          }
-        }
-        _story[i].rendered = true;
-      }
-
-      setTempStoryMD(s);
-      // // Run marked
-      // document.getElementById("parsedMD").innerHTML += marked.parse(s);
-      // document.getElementById("parsedMDTemp").innerHTML = marked.parse(
-      //   `<h5 class="playerTurn">${currentPlayerName}'s Turn</h5>\n\n`
-      // );
-    }
-    parseMD(tempStory);
+    parseMD([tempStory], setTempStoryMD);
   }, [tempStory]);
 
   React.useEffect(() => {
     const textScroll = document.getElementById("textScroll");
     textScroll.scrollTop = textScroll.scrollHeight;
-  }, [story, tempStory]);
+  }, [storyMD, tempStoryMD]);
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: dragItemType,

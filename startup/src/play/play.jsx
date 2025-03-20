@@ -4,6 +4,12 @@ import { Game } from "./game.jsx";
 import { Lobby } from "./lobby.jsx";
 import { ConnectionState } from "./connectionState";
 
+const GAME_STATES = {
+  LOBBY: 0,
+  PLAY: 1,
+  END: 2,
+};
+
 export function Play({ userData, setUserData, authState }) {
   const [connectionState, setConnectionState] = React.useState(
     ConnectionState.Disconnected
@@ -33,26 +39,26 @@ export function Play({ userData, setUserData, authState }) {
     }
   }
 
-  async function getItemData(itemId) {
-    if (itemId == "") {
-      return null;
-    }
-    // call api to get item data
-    const response = await fetch(`api/items/${itemId}`, {
-      method: "get",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    if (response?.status === 200) {
-      const body = await response.json();
-      console.log("⭐ Got Item Data: ", body);
-      return body;
-    } else {
-      const body = await response.json();
-      alert(`⚠ Error: ${body.msg}`);
-    }
-  }
+  // async function getItemData(itemId) {
+  //   if (itemId == "") {
+  //     return null;
+  //   }
+  //   // call api to get item data
+  //   const response = await fetch(`api/items/${itemId}`, {
+  //     method: "get",
+  //     headers: {
+  //       "Content-type": "application/json; charset=UTF-8",
+  //     },
+  //   });
+  //   if (response?.status === 200) {
+  //     const body = await response.json();
+  //     console.log("⭐ Got Item Data: ", body);
+  //     return body;
+  //   } else {
+  //     const body = await response.json();
+  //     alert(`⚠ Error: ${body.msg}`);
+  //   }
+  // }
 
   async function getConnectionData() {
     if (connectionData && connectionData.roomCode) {
@@ -69,6 +75,9 @@ export function Play({ userData, setUserData, authState }) {
         const body = await response.json();
         console.log("⭐ Got Connection Data: ", body);
         setConnectionData(body);
+        if (body.gameState == GAME_STATES.PLAY) {
+          setConnectionState(ConnectionState.Connected);
+        }
       } else {
         const body = await response.json();
         alert(`⚠ Error: ${body.msg}`);
@@ -80,11 +89,7 @@ export function Play({ userData, setUserData, authState }) {
   function DebugButtons() {
     return (
       <div className="debug-buttons">
-        <button onClick={getConnectionData}>⭐ Get Connection Data</button>
-        <button onClick={() => setConnectionState(ConnectionState.Connected)}>
-          🐻 Start Game
-        </button>
-        <button>End Game</button>
+        <button onClick={getConnectionData}>⭐ Fake Websocket ⭐</button>
       </div>
     );
   }
@@ -115,7 +120,6 @@ export function Play({ userData, setUserData, authState }) {
                 userData={userData}
                 setUserData={setUserData}
                 connectionData={connectionData}
-                getItemData={getItemData}
                 returnToLobby={returnToLobby}
               />
             </div>
