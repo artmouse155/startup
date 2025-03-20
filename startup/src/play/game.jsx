@@ -39,7 +39,7 @@ export function Game({
   const ItemType = { CARD_TYPE: "card" };
 
   function CardBox({ isMyTurn, cards }) {
-    console.log("Rendering player cards!", cards);
+    // console.log("Rendering player cards!", cards);
     function CardDragLayer() {
       // Code from https://react-dnd.github.io/react-dnd/about
       function getItemStyles(initialOffset, currentOffset) {
@@ -155,7 +155,7 @@ export function Game({
     }
 
     let cardArray = [];
-    console.log("Rendered player cards!");
+    // console.log("Rendered player cards!");
     for (let index = 0; index < cards.length; index++) {
       const { num_id, id, desc, effects = [] } = cards[index];
       cardArray.push(
@@ -212,7 +212,7 @@ export function Game({
   function InventoryContainer({ inventory }) {
     let itemBoxes = [];
     for (let i = 0; i < constants.num_item_slots; i++) {
-      console.log("Trying to get item data!", inventory[i]);
+      // console.log("Trying to get item data!", inventory[i]);
       itemBoxes.push(
         <div className="item-box" key={i}>
           <p
@@ -232,33 +232,38 @@ export function Game({
     );
   }
 
+  function getStandings(aspects, players, player_count) {
+    // PlayerID, Standing
+    let standings = Array(player_count);
+    // This needs to equal the true number of players, not just the capacity.
+    for (let i = 0; i < player_count; i++) {
+      standings[i] = 0;
+      for (let j = 0; j < player_count; j++) {
+        // console.log("Comparing", players[i].aspect, players[j].aspect);
+        if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
+          standings[i]++;
+        }
+      }
+    }
+    return standings;
+  }
+
   // I forgot to put props around it.
   function Leaderboard({ gameData, constants }) {
     const { aspects, players, current_turn_id, turns } = gameData;
     const maxTurns = players.length * constants.num_cards;
     const player_count = players ? players.length : 0;
     if (aspects && players) {
-      // PlayerID, Standing
-      let standings = Array(player_count);
-      // This needs to equal the true number of players, not just the capacity.
-      for (let i = 0; i < player_count; i++) {
-        standings[i] = 0;
-        for (let j = 0; j < player_count; j++) {
-          console.log("Comparing", players[i].aspect, players[j].aspect);
-          if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
-            standings[i]++;
-          }
-        }
-      }
+      const standings = getStandings(aspects, players, player_count);
 
-      console.log(
-        "Rendering Leaderboard! Standings:",
-        standings,
-        "aspects",
-        aspects,
-        "players",
-        players
-      );
+      // console.log(
+      //   "Rendering Leaderboard! Standings:",
+      //   standings,
+      //   "aspects",
+      //   aspects,
+      //   "players",
+      //   players
+      // );
       function LeaderboardCard({ id, data }) {
         const emoji = Aspects[data.aspect].emoji;
 
@@ -303,7 +308,7 @@ export function Game({
           </div>
         );
       }
-      console.log("current turn", current_turn_id);
+      // console.log("current turn", current_turn_id);
 
       let leaderboardCardList = [];
       for (let i = 0; i < player_count; i++) {
@@ -456,6 +461,13 @@ export function Game({
         setUserData={setUserData}
         gameData={gameData}
         heroData={heroData}
+        getStandings={() =>
+          getStandings(
+            gameData.aspects,
+            gameData.players,
+            gameData.players.length
+          )
+        }
         handleExit={handleExit}
       />
     );

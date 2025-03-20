@@ -19,7 +19,7 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
   const [storyMD, setStoryMD] = React.useState("");
   const [tempStoryMD, setTempStoryMD] = React.useState("");
   const parseMD = async (sections, setFunc) => {
-    console.log("Parsing MD", sections);
+    // console.log("Parsing MD", sections);
     // Check if anything in story doesn't have the rendered flag
     if (sections.length == 0) {
       return `No story elements found.`;
@@ -83,7 +83,7 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: dragItemType,
     drop(item, monitor) {
-      console.log(item);
+      // console.log(item);
 
       useCard(item);
       return undefined;

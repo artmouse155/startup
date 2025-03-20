@@ -19,7 +19,7 @@ import { Play } from "./play/play";
 import { Leaderboard } from "./leaderboard/leaderboard";
 
 export default function App() {
-  console.log(localStorage);
+  // console.log(localStorage);
   const [userData, setUserData] = React.useState(
     JSON.parse(localStorage.getItem("userData")) || ""
   );

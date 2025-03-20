@@ -4,8 +4,15 @@ import { ConnectionState } from "./connectionState";
 // import { NUM_PLAYERS } from "./server/server.jsx";
 import "./end.css";
 
-export function End({ userData, setUserData, handleExit, gameData, heroData }) {
-  const [trophies, setTrophies] = React.useState(0);
+export function End({
+  userData,
+  setUserData,
+  handleExit,
+  getStandings,
+  gameData,
+  heroData,
+}) {
+  const [trophyDiff, setTrophyDiff] = React.useState(0);
   React.useEffect(() => {
     handleGetTrophies();
   }, []);
@@ -21,20 +28,15 @@ export function End({ userData, setUserData, handleExit, gameData, heroData }) {
   players.sort((a, b) => b.score - a.score);
 
   async function handleGetTrophies() {
-    const trophies_earned = 5;
     const response = await fetch("api/trophy", {
-      method: "post",
-      body: JSON.stringify({
-        email: userData.email,
-        trophies: trophies_earned,
-      }),
+      method: "get",
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
     });
     if (response?.status === 200) {
       const body = await response.json();
-      setTrophies(trophies_earned);
+      setTrophyDiff(body.trophies - userData.trophies);
       setUserData((d) => {
         let temp = { ...d };
         temp.trophies = body.trophies;
@@ -45,20 +47,6 @@ export function End({ userData, setUserData, handleExit, gameData, heroData }) {
       const body = await response.json();
       alert(`⚠ Error: ${body.msg}`);
     }
-  }
-
-  function getStandings() {
-    // PlayerID, Standing
-    let standings = Array(NUM_PLAYERS);
-    for (let i = 0; i < NUM_PLAYERS; i++) {
-      standings[i] = 0;
-      for (let j = 0; j < NUM_PLAYERS; j++) {
-        if (players[i].score < players[j].score) {
-          standings[i]++;
-        }
-      }
-    }
-    return standings;
   }
 
   const standings = getStandings();
@@ -79,7 +67,7 @@ export function End({ userData, setUserData, handleExit, gameData, heroData }) {
       </div>
       <div className="trophies">
         <p>
-          <b>{`You won ${trophies} trophies!`}</b>
+          <b>{`You won ${trophyDiff} trophies!`}</b>
         </p>
       </div>
       <div className="end-actions">

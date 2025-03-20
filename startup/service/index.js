@@ -85,23 +85,10 @@ async function getUserData(req) {
   }
 }
 
-// Increase the number of trophies the user has
-apiRouter.post("/trophy", verifyAuth, async (req, res) => {
+// Get the number of trophies the user has
+apiRouter.get("/trophy", verifyAuth, async (req, res) => {
   const userData = await getUserData(req);
-  if (userData.email != req.body.email) {
-    console.log(
-      "userData email",
-      userData.email,
-      "req.body.email",
-      req.body.email
-    );
-    res.status(401).send({ msg: "Nice try, Daniel." });
-  } else {
-    // the conent is the email, and the number of trophies they just got
-    const trophyReturnData = addTrophies(req.body);
-    // respond with users list, but only the email and number of trophies
-    res.send(trophyReturnData);
-  }
+  res.send({ trophies: userData.trophies });
 });
 
 // Get all trophies
@@ -447,9 +434,13 @@ async function removePlayerFromGame(email) {
   if (games[roomCode].players[email]) {
     console.log(email, "left", roomCode);
     delete games[roomCode].players[email];
-    // If email was host or no players left, delete game
-    if (Object.keys(players).length == 0 || games[roomCode].host == email) {
-      // TODO Placeholder WebSocket: Tell clients the host has left
+    // If (game in progress) or (email was host) or (no players left), delete game
+    if (
+      games[roomCode].gameState == GAME_STATES.PLAY ||
+      Object.keys(players).length == 0 ||
+      games[roomCode].host == email
+    ) {
+      // TODO Placeholder WebSocket: Tell clients the host has left, or tell other players the game has ended
       console.log("Game", roomCode, "deleted");
       delete games[roomCode];
     }
@@ -633,6 +624,24 @@ function nextTurn(roomCode) {
     games[roomCode].gameData.current_turn_id = 0;
     games[roomCode].gameData.turns++;
   }
+  if (
+    games[roomCode].gameData.turns >=
+    games[roomCode].constants.num_cards *
+      Object.keys(games[roomCode].players).length
+  ) {
+    finishGame(roomCode);
+  }
+}
+
+function finishGame(roomCode) {
+  if (games[roomCode].gameState != GAME_STATES.END) {
+    games[roomCode].gameState = GAME_STATES.END;
+    // PLACEHOLDER: Tell clients the game has ended
+    // PLACEHOLDER: Give each client 5 trophies
+    for (const key of Object.keys(games[roomCode].players)) {
+      addTrophies({ email: key, trophies: 5 });
+    }
+  }
 }
 
 // Handle errors
@@ -648,16 +657,15 @@ app.use((_req, res) => {
 });
 
 // update trophies updates the number of trophies the user has.
-function addTrophies(newTrophyData) {
+function addTrophies({ email, trophies } = newTrophyData) {
   for (let i = 0; i < users.length; i++) {
-    if (users[i].email == newTrophyData.email) {
-      users[i].trophies += parseInt(newTrophyData.trophies);
-      return { email: newTrophyData.email, trophies: users[i].trophies };
-      break;
+    if (users[i].email == email) {
+      users[i].trophies += parseInt(trophies);
+      return true;
     }
   }
 
-  return { msg: "User not found" };
+  return false;
 }
 
 // Creates a new user
