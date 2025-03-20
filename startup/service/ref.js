@@ -61,13 +61,13 @@ const Games = () => {
       players: { _email: { email: String, turnIndex: Number, cards: [Card] } }, // Attr different on client side
       constants: {
         num_cards: Number,
-        num_players: Number,
+        num_players: Number, // Max number of players. May be greater than actual number of players.
         num_item_slots: Number,
       },
       heroData: {
         // TODO: Change to just hero
-        heroName: String,
-        heroGender: String,
+        name: String,
+        gender: String,
       },
       gameData: GameData,
       story: [{ title: String, ...Outcome }],
@@ -125,12 +125,12 @@ const ConnectionData = () => {
     myCards: [ClientCard], // Attr not present on server side. A list of cards that the player has
     constants: {
       num_cards: Number,
-      num_players: Number,
+      num_players: Number, // Max number of players. May be greater than actual number of players.
       num_item_slots: Number,
     },
     heroData: {
-      heroName: String,
-      heroGender: String,
+      name: String,
+      gender: String,
     },
     gameData: ClientGameData,
     story: [{ title: String, ...Outcome }],

@@ -227,7 +227,7 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
   // I forgot to put props around it.
   function Leaderboard({ gameData, constants }) {
     const { aspects, players, current_turn_id, turns } = gameData;
-    const maxTurns = constants.num_players * constants.num_cards;
+    const maxTurns = players.length * constants.num_cards;
     const player_count = players ? players.length : 0;
     if (aspects && players) {
       // PlayerID, Standing
@@ -343,7 +343,7 @@ export function Game({ userData, setUserData, connectionData, returnToLobby }) {
         <div className="all-play-sections">
           <div className="text-and-inv-and-header">
             <h3 className="centered-header" id="adventure-title">
-              {`${heroData.heroName}'s Quest`}
+              {`${heroData.name}'s Quest`}
             </h3>
             <div className="text-and-inv-section">
               <div className="right-align-container">

@@ -168,10 +168,12 @@ gameRouter.post("/host", async (req, res) => {
   // Create new roomCode that isn't in use
   // Create list of all room codes
   // Codes are 5 letters long
-  let roomCode = await findRoomCodeByPlayerEmail(req.body.email);
+  const userData = await getUserData(req);
+  const email = userData.email;
+  let roomCode = await findRoomCodeByPlayerEmail(email);
   console.log(roomCode);
-  if (roomCode != -1) {
-    removePlayerFromGame(req.body.email);
+  if (roomCode) {
+    removePlayerFromGame(email);
     return res
       .status(409)
       .send({ msg: `Already in game. Room code: ${roomCode}.` });
@@ -209,7 +211,7 @@ gameRouter.post("/host", async (req, res) => {
   let newGame = {
     roomCode: roomCode,
     gameState: GAME_STATES.LOBBY,
-    host: req.body.email, // Attr not present on server side; this is the email of the host
+    host: email, // Attr not present on server side; this is the email of the host
     players: {}, // Attr not present on client side
     constants: {
       num_cards: NUM_CARDS,
@@ -221,28 +223,34 @@ gameRouter.post("/host", async (req, res) => {
     // story: [{ title: String, ...Outcome }], // Create when we call start
     // tempStory: Outcome, // Create when we call start
   };
-  newGame.players[req.body.email] = {
-    email: req.body.email,
+  newGame.players[email] = {
+    email: email,
     // turnIndex: Number, Create when we call start
     // cards: [Card], Create when we call start
   };
   games[roomCode] = newGame;
-  console.log(req.body.email, "created", roomCode, newGame);
-  res.send(await getConnectionData(roomCode, req.body.email));
+  console.log(email, "created", roomCode, newGame);
+  res.send(await getConnectionData(roomCode, email));
 });
 
-gameRouter.post("/join/:roomCode", verifyRoomCode, async (req, res) => {
-  // See if req.body.roomCode is in the active games list
+gameRouter.post("/join/:roomCode", async (req, res) => {
+  // See if req.params.roomCode is in the active games list
   // Then, see if the player is already in the game or if there are already 4 players (the max)
   // If the player is already in the game, respond with a message saying they are already in the game
   // If there are already 4 players, respond with a message saying the game is full
   // Otherwise, add the player to the game and respond with a message saying they joined the game
   // If the room code is not in the active games list, respond with a message saying the game does not exist
+
   const userData = await getUserData(req);
   const email = userData.email;
   const roomCode = req.params.roomCode;
   if (games[roomCode]) {
-    if (games[roomCode].players.length >= 4) {
+    if (games[roomCode].gameState != GAME_STATES.LOBBY) {
+      return res.status(409).send({ msg: "Game already started or ended" });
+    }
+    if (
+      games[roomCode].players.length >= games[roomCode].constants.num_players
+    ) {
       return res.status(403).send({ msg: "Game full" });
     }
     for (let j = 0; j < games[roomCode].players.length; j++) {
@@ -253,15 +261,21 @@ gameRouter.post("/join/:roomCode", verifyRoomCode, async (req, res) => {
         });
       }
     }
-    games[roomCode].players.push({ email: email });
+    games[roomCode].players[email] = { email: email };
     console.log(email, "joined", roomCode, games[roomCode]);
     res.status(200).send(await getConnectionData(roomCode, email));
+  } else {
+    res
+      .status(403)
+      .send({ msg: `Game not found (Room code: ${req.roomCode})` });
   }
 });
 
-gameRouter.delete("/leave", verifyRoomCode, async (req, res) => {
+gameRouter.delete("/leave", async (req, res) => {
   // Remove user from current game
-  removePlayerFromGame(req.body.email);
+  const userData = await getUserData(req);
+  const email = userData.email;
+  removePlayerFromGame(email);
   res.status(204).end();
   // Find by room code
 });
@@ -340,12 +354,19 @@ gameServerRouter.post("/start", async (req, res) => {
         games[roomCode].constants.num_item_slots
       ).fill("");
       // Set the story to the introJSON
-      games[roomCode].story = [shuffler.getRandom(introJSON.sections)];
+      games[roomCode].story = [];
+      const intro_outcome = shuffler.getRandom(introJSON.sections);
+
+      // Push the intro story, using storyAPI.apiCall to replace $stuff$.
+      await pushOutcome(roomCode, intro_outcome);
+
       // Set the tempStory to something random
       games[roomCode].tempStory = {
-        text: ["This is a placeholder story."],
+        text: [],
         type: "turn",
-        playerTurnName: "Placeholder",
+        playerTurnName: usernameFromEmail(
+          games[roomCode].gameData.players[0].email
+        ),
       };
       // PLACEHOLDER: Respond with the connection data
       for (const player in games[roomCode].players) {
@@ -415,77 +436,29 @@ async function removePlayerFromGame(email) {
   }
   console.log(`removing ${email} from game`, games[roomCode]);
   const players = games[roomCode].players;
-  for (let j = 0; j < players.length; j++) {
-    if (players[j].email == email) {
-      games[roomCode].players.splice(j, 1);
-      console.log(email, "left", roomCode);
-      if (players.length == 0) {
-        delete games[roomCode];
-        return true;
-      } else if (games[roomCode].host == email) {
-        // TODO Placeholder WebSocket: Tell clients the host has left
-        delete games[roomCode];
-        return true;
-      }
+  if (games[roomCode].players[email]) {
+    console.log(email, "left", roomCode);
+    delete games[roomCode].players[email];
+    // If email was host or no players left, delete game
+    if (Object.keys(players).length == 0 || games[roomCode].host == email) {
+      // TODO Placeholder WebSocket: Tell clients the host has left
+      console.log("Game", roomCode, "deleted");
+      delete games[roomCode];
     }
+    return true;
   }
 }
 
 async function findRoomCodeByPlayerEmail(email) {
-  if (!email) return -1;
-  for (const roomCode in games) {
-    game = games[roomCode];
-    for (const player in game.players) {
-      if (player.email == email) return game.roomCode;
+  if (!email) return false;
+  for (const roomCode of Object.keys(games)) {
+    console.log("Checking room", roomCode, Object.keys(games));
+    const game = games[roomCode];
+    for (const playerEmail of Object.keys(game.players)) {
+      if (playerEmail == email) return game.roomCode;
     }
   }
-  return -1;
-}
-
-async function parseMD(md, heroName, heroGender) {
-  const pronouns = {
-    They: {
-      male: "He",
-      female: "She",
-      other: "They",
-    },
-    Their: {
-      male: "His",
-      female: "Her",
-      other: "Their",
-    },
-    Theirs: {
-      male: "His",
-      female: "Hers",
-      other: "Theirs",
-    },
-    Them: {
-      male: "Him",
-      female: "Her",
-      other: "Them",
-    },
-    they: {
-      male: "he",
-      female: "she",
-      other: "they",
-    },
-    their: {
-      male: "his",
-      female: "her",
-      other: "their",
-    },
-    theirs: {
-      male: "his",
-      female: "hers",
-      other: "theirs",
-    },
-    them: {
-      male: "him",
-      female: "her",
-      other: "them",
-    },
-  };
-  const insertRegex = /\$([^$]*)\$/g;
+  return false;
 }
 
 async function evalCard(roomCode, card_num_id) {
@@ -594,6 +567,18 @@ async function evalCard(roomCode, card_num_id) {
   }
   console.log("No outcome found for card", card);
   return null;
+}
+
+async function pushOutcome(roomCode, outcome) {
+  const heroData = games[roomCode].heroData;
+  console.log("Parsing outcome", outcome);
+  updatedText = [...outcome.text];
+  for (let i = 0; i < updatedText.length; i++) {
+    updatedText[i] = await storyApi.apiCall(updatedText[i], heroData);
+  }
+  const updatedOutcome = { ...outcome, text: updatedText };
+  console.log("Updated outcome", updatedOutcome);
+  games[roomCode].story.push(updatedOutcome);
 }
 
 function getItemData(item_id) {

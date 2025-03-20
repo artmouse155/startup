@@ -72,7 +72,6 @@ export function Lobby({
     console.log("Preparing to host!");
     const response = await fetch("api/game/host", {
       method: "post",
-      body: JSON.stringify({ email: email }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -93,7 +92,6 @@ export function Lobby({
         alert(`⚠ Error: ${body.msg}`);
       }
     }
-    console.log("Join Game Result");
   }
 
   async function handleHostStartGame() {
@@ -134,11 +132,12 @@ export function Lobby({
       setConnectionData(body);
       console.log("Connection Data: ", body);
       setConnectionState(ConnectionState.Connecting);
+      setRoomCode(body.roomCode);
       setMenuState(MENUSTATE.JOIN_WAIT);
     } else {
       if (response?.status === 409) {
         const body = await response.json();
-        alert(`${body.msg}. You are no longer in the game.`);
+        alert(`${body.msg} You are no longer in the game.`);
       } else {
         const body = await response.json();
         alert(`⚠ Error: ${body.msg}`);
