@@ -7,7 +7,7 @@ import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 import { End } from "./end.jsx";
 
-const debug = true;
+const debug = false;
 
 const GAME_STATES = {
   LOBBY: 0,

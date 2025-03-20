@@ -95,7 +95,7 @@ export function Lobby({ setWebSocket, connectionData, email }) {
       );
       if (response?.status === 200) {
         alert(
-          `Success! While we wait for websockets, press "⭐ Fake Websocket ⭐" to continue!`
+          `Success! While we wait for websockets, press [⟳ Ping Server] to continue!`
         );
         return true;
       } else {
@@ -206,7 +206,8 @@ export function Lobby({ setWebSocket, connectionData, email }) {
             <button
               className="lobby-button"
               onClick={handleHostStartGame}
-              disabled={playerCount < maxPlayers}
+              // TODO: Uncomment this line to enable the button only when the player count is equal to the max players
+              //disabled={playerCount < maxPlayers}
             >
               Start Game
             </button>

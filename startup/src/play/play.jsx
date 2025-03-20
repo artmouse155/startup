@@ -83,7 +83,7 @@ export function Play({ userData, setUserData, authState }) {
     });
     if (response?.status === 200) {
       const body = await response.json();
-      console.log("⭐ Got Connection Data: ", body);
+      console.log("⭐ Server Pinged! Connection Data: ", body);
       setConnectionData(body);
       localStorage.setItem("roomCode", body.roomCode);
       setConnectionState(ConnectionState.Connected);
@@ -98,9 +98,7 @@ export function Play({ userData, setUserData, authState }) {
   function DebugButtons() {
     return (
       <div className="debug-buttons">
-        <button onClick={() => getConnectionData()}>
-          ⭐ Fake Websocket ⭐
-        </button>
+        <button onClick={() => getConnectionData()}>⟳ Ping Server</button>
       </div>
     );
   }
