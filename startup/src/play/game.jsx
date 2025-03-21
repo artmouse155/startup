@@ -327,7 +327,7 @@ export function Game({
             {`Turn ${turns + 1} of ${maxTurns}`}
           </h2>
           {leaderboardCardList}
-          <button
+          {/* <button
             onClick={() => {
               // Evaluate random card of current player, using gameData.current_turn_id, gameData.players[gameData.current_turn_id].cards, and evalCard
               const currentPlayerCards = players[current_turn_id].cards;
@@ -342,7 +342,7 @@ export function Game({
           >
             Simulate Next Turn
           </button>
-          <button onClick={() => endGame()}>Finish Game</button>
+          <button onClick={() => endGame()}>Finish Game</button> */}
           <button onClick={handleExit}>Exit Game</button>
         </div>
       );
@@ -353,7 +353,7 @@ export function Game({
 
   if (gameState == GAME_STATES.PLAY) {
     return (
-      <main>
+      <div className="play-main">
         <div className="all-play-sections">
           <div className="text-and-inv-and-header">
             <h3 className="centered-header" id="adventure-title">
@@ -452,12 +452,13 @@ export function Game({
             </button>
           </div>
         ) : null}
-      </main>
+      </div>
     );
   } else if (gameState == GAME_STATES.END) {
     return (
       <End
         userData={userData}
+        myPlayerId={myPlayerId}
         setUserData={setUserData}
         gameData={gameData}
         heroData={heroData}

@@ -6,16 +6,18 @@ import "./end.css";
 
 export function End({
   userData,
+  myPlayerId,
   setUserData,
   handleExit,
   getStandings,
   gameData,
   heroData,
 }) {
-  const [trophyDiff, setTrophyDiff] = React.useState(0);
   React.useEffect(() => {
     handleGetTrophies();
   }, []);
+
+  const myTrophies = gameData.players[myPlayerId].trophiesEarned;
 
   let players = gameData.players.map((player, index) => {
     return {
@@ -36,7 +38,6 @@ export function End({
     });
     if (response?.status === 200) {
       const body = await response.json();
-      setTrophyDiff(body.trophies - userData.trophies);
       setUserData((d) => {
         let temp = { ...d };
         temp.trophies = body.trophies;
@@ -54,7 +55,7 @@ export function End({
 
   return (
     <div className="end-container">
-      <h1 className="end-title">{`Results of ${heroData.heroName}'s Quest`}</h1>
+      <h1 className="end-title">{`Results of ${heroData.name}'s Quest`}</h1>
       <div className="standings">
         {players.map((player, index) => (
           <div key={index} className="standing">
@@ -67,7 +68,7 @@ export function End({
       </div>
       <div className="trophies">
         <p>
-          <b>{`You won ${trophyDiff} trophies!`}</b>
+          <b>{`You won ${myTrophies ? myTrophies : `?`} trophies!`}</b>
         </p>
       </div>
       <div className="end-actions">

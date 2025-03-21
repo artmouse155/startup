@@ -44,6 +44,7 @@ const GameData = () => {
         email: String,
         aspect: String,
         cards: [Number],
+        trophiesEarned: Number, // Only present at game end
       }, // Attr different on client side
     ],
     inventory: [String], // Attr different on client side. ="" or ="item-id-here!"
@@ -106,6 +107,7 @@ const ClientGameData = () => {
         name: String,
         aspect: String,
         cards: [Number],
+        trophiesEarned: Number, // Only present at game end
       }, // Attr different on server side
     ],
     inventory: [{ id: String, name: String, icon: String }], // Attr different on server side

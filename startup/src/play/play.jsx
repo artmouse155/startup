@@ -115,7 +115,7 @@ export function Play({ userData, setUserData, authState }) {
           // If connectionData && connectionData.gameState == GAME_STATES.PLAY, then we are in the game
           if (connectionData && connectionData.gameState != GAME_STATES.LOBBY) {
             return (
-              <div className="play-main">
+              <div className="login-main">
                 <DebugButtons />
                 <Game
                   userData={userData}
