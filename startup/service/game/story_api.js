@@ -1,3 +1,14 @@
+const heroes = [
+  {
+    name: "Elrond",
+    gender: "male",
+  },
+  {
+    name: "Jamie",
+    gender: "female",
+  },
+];
+
 const wowLongQuotes = [
   "This doesn't look like Kansas anymore!",
   "I've never seen anything like it in my life!",
@@ -85,7 +96,7 @@ function getRandom(array) {
   return array[getRandomInt(array.length)];
 }
 
-export async function apiCall(call) {
+async function apiCallSegment(call) {
   switch (call) {
     case "$wow-long-quote$":
       return getRandom(wowLongQuotes);
@@ -124,6 +135,89 @@ export async function apiCall(call) {
     case "$clothing-item$":
       return getRandom(clothingItems);
     default:
-      return `<🛑undefined API call: "${call}"🛑>`;
+      return `[⚠️ undefined API call: "${call}" ⚠️]`;
   }
+}
+
+module.exports = { apiCall, getRandomHero };
+
+// Put in a string
+async function apiCall(
+  s,
+  { name = "undefined", gender = "undefined" } = herodata
+) {
+  if (!s) return null;
+
+  //console.log("apiCall", s);
+  const insertRegex = /\$([^$]*)\$/g;
+  const matches = s.match(insertRegex);
+  //console.log("matches", matches);
+  if (matches) {
+    const pronouns = {
+      They: {
+        male: "He",
+        female: "She",
+        other: "They",
+      },
+      Their: {
+        male: "His",
+        female: "Her",
+        other: "Their",
+      },
+      Theirs: {
+        male: "His",
+        female: "Hers",
+        other: "Theirs",
+      },
+      Them: {
+        male: "Him",
+        female: "Her",
+        other: "Them",
+      },
+      they: {
+        male: "he",
+        female: "she",
+        other: "they",
+      },
+      their: {
+        male: "his",
+        female: "her",
+        other: "their",
+      },
+      theirs: {
+        male: "his",
+        female: "hers",
+        other: "theirs",
+      },
+      them: {
+        male: "him",
+        female: "her",
+        other: "them",
+      },
+    };
+    for (let j = 0; j < matches.length; j++) {
+      const m = matches[j].substring(1, matches[j].length - 1);
+      //console.log("m", m);
+      let r = "DEFAULT REPLACE";
+      if (pronouns[m]) {
+        r = pronouns[m][gender];
+      } else {
+        switch (m) {
+          case "n":
+            r = name;
+            break;
+          default:
+            r = await apiCallSegment(`$${m}$`);
+            break;
+        }
+      }
+      s = s.replace(`$${m}$`, r);
+    }
+  }
+  //console.log("apiCall return", s);
+  return s;
+}
+
+function getRandomHero() {
+  return getRandom(heroes);
 }

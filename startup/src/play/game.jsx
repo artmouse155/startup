@@ -3,177 +3,106 @@ import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
-import {
-  nextTurn,
-  setTurnEndFunc,
-  createGame,
-  getPlayerCards,
-  getItemData,
-  evalCard,
-  NUM_PLAYERS,
-  NUM_CARDS,
-  NUM_ITEM_SLOTS,
-} from "./server/server.jsx";
 import { TextBox } from "./textbox/textbox.jsx";
 import { Aspects } from "./aspects.jsx";
 import { End } from "./end.jsx";
 
 const debug = false;
-const defaultGameData = {
-  aspects: {
-    MAGIC: 0,
-    STRENGTH: 0,
-    INTELLIGENCE: 0,
-    CHARISMA: 0,
-  },
-  players: [
-    {
-      name: "P1",
-      aspect: "INTELLIGENCE",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-    {
-      name: "P2",
-      aspect: "CHARISMA",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-    {
-      name: "P3",
-      aspect: "MAGIC",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-    {
-      name: "P4",
-      aspect: "STRENGTH",
-      cards: Array(NUM_CARDS).fill(1),
-    },
-  ],
-  inventory: Array(NUM_ITEM_SLOTS).fill(""),
-  current_turn_id: 0,
-  turns: 0,
+
+const GAME_STATES = {
+  LOBBY: 0,
+  PLAY: 1,
+  END: 2,
 };
 
-export function Game({ userName, userData, setUserData, returnToLobby }) {
-  const GAME_STATES = {
-    PLAY: 0,
-    END: 1,
-  };
+export function Game({
+  userData,
+  setUserData,
+  connectionData,
+  handleExit,
+  pingServer,
+}) {
+  const {
+    roomCode,
+    gameState,
+    host,
+    myPlayerId,
+    players = connectionDataPlayers,
+    constants,
+    myCards,
+    heroData,
+    gameData,
+    story,
+    tempStory,
+  } = connectionData;
+
   const ItemType = { CARD_TYPE: "card" };
-  const [gameState, setGameState] = React.useState(GAME_STATES.PLAY);
-  const [myCards, setMyCards] = React.useState([]);
-  const [gameData, setGameData] = React.useState(defaultGameData);
-  const [myPlayerId, setMyPlayerID] = React.useState(-1);
 
-  setTurnEndFunc((_gameData) => {
-    console.log("Turn ended hook started! Updating player data.", _gameData);
-    setGameData({ ..._gameData }); // Create a shallow copy to ensure state update
-  });
-
-  function getPlayerID() {
-    console.log("Accessed player ID!");
-    return myPlayerId;
-  }
-  const [heroData, setHeroData] = React.useState({
-    heroName: "<Null Name>",
-    heroGender: "unknown",
-  });
-  const [isSetupComplete, setIsSetupComplete] = React.useState(false);
-
-  React.useEffect(() => (isSetupComplete ? () => {} : gameSetup()));
-  React.useEffect(() => {
-    console.log("game Data updated!", gameData);
-    if (gameData.turns >= NUM_PLAYERS * NUM_CARDS) {
-      endGame();
-    }
-  }, [gameData]);
-
-  function gameSetup() {
-    console.log("Setting up!");
-    const _myPlayerId = 0;
-    setMyPlayerID(_myPlayerId);
-    const { _gameData, _heroData } = createGame(userName);
-
-    setGameData(_gameData);
-    setHeroData(_heroData);
-    setMyCards(getPlayerCards(_myPlayerId));
-    setGameState(GAME_STATES.PLAY);
-    setIsSetupComplete(true);
-    console.log("Setup complete!");
-  }
-
-  function endGame() {
-    setGameState(GAME_STATES.END);
-  }
-
-  function getAdventureTitle() {
-    return `${heroData.heroName}'s Quest`;
-  }
-
-  // Code from https://react-dnd.github.io/react-dnd/about
-  function getItemStyles(initialOffset, currentOffset) {
-    if (!initialOffset || !currentOffset) {
-      return {
-        display: "none",
-      };
-    }
-    let {
-      x = currentOffset.x - initialOffset.x,
-      y = currentOffset.y - initialOffset.y - 150,
-    } = {};
-    const transform = `translate(${x}px, ${y}px)`;
-    return {
-      pointerEvents: "none", // Add this line
-      zIndex: 100,
-      transform,
-      WebkitTransform: transform,
-      mouse: "grab",
-      //filter: "drop-shadow(#00000055 .5rem .5rem 5px)",
-    };
-  }
-
-  function CardDragLayer() {
-    const { item, initialOffset, currentOffset, isDragging } = useDragLayer(
-      (monitor) => ({
-        item: monitor.getItem() || {
-          desc: "CardDragLayer",
-          effects: [{ amt: 500, type: Aspects.UNKNOWN }],
-        },
-        itemType: monitor.getItemType(),
-        initialOffset: monitor.getInitialSourceClientOffset(),
-        currentOffset: monitor.getSourceClientOffset(),
-        isDragging: monitor.isDragging(),
-      })
-    );
-
-    //console.log("dragInitialOffset ", initialOffset);
-    const { desc, effects } = item;
-    const effect_html = [];
-    for (let i = 0; i < effects.length; i++) {
-      let effect = effects[i];
-      let effectData = Aspects[effect.type];
-      let classNameTemp = `card-outcome-text ${effectData.name}`;
-      effect_html.push(
-        <p className={classNameTemp} key={i}>
-          <b>
-            + {effect.amt} {effectData.text}
-          </b>
-        </p>
+  function CardBox({ isMyTurn, cards }) {
+    // console.log("Rendering player cards!", cards);
+    function CardDragLayer() {
+      // Code from https://react-dnd.github.io/react-dnd/about
+      function getItemStyles(initialOffset, currentOffset) {
+        if (!initialOffset || !currentOffset) {
+          return {
+            display: "none",
+          };
+        }
+        let {
+          x = currentOffset.x - initialOffset.x,
+          y = currentOffset.y - initialOffset.y - 150,
+        } = {};
+        const transform = `translate(${x}px, ${y}px)`;
+        return {
+          pointerEvents: "none", // Add this line
+          zIndex: 100,
+          transform,
+          WebkitTransform: transform,
+          mouse: "grab",
+          //filter: "drop-shadow(#00000055 .5rem .5rem 5px)",
+        };
+      }
+      const { item, initialOffset, currentOffset, isDragging } = useDragLayer(
+        (monitor) => ({
+          item: monitor.getItem() || {
+            desc: "CardDragLayer",
+            effects: [{ amt: 500, type: Aspects.UNKNOWN }],
+          },
+          itemType: monitor.getItemType(),
+          initialOffset: monitor.getInitialSourceClientOffset(),
+          currentOffset: monitor.getSourceClientOffset(),
+          isDragging: monitor.isDragging(),
+        })
       );
+
+      //console.log("dragInitialOffset ", initialOffset);
+      const { desc, effects } = item;
+      const effect_html = [];
+      for (let i = 0; i < effects.length; i++) {
+        let effect = effects[i];
+        let effectData = Aspects[effect.type];
+        let classNameTemp = `card-outcome-text ${effectData.name}`;
+        effect_html.push(
+          <p className={classNameTemp} key={i}>
+            <b>
+              + {effect.amt} {effectData.text}
+            </b>
+          </p>
+        );
+      }
+
+      let card = (
+        <div
+          className="card-drag-layer shadow-5"
+          style={getItemStyles(initialOffset, currentOffset)}
+        >
+          <p className="card-body-text">{desc}</p>
+          {effect_html}
+        </div>
+      );
+      return card;
     }
 
-    let card = (
-      <div
-        className="card-drag-layer shadow-5"
-        style={getItemStyles(initialOffset, currentOffset)}
-      >
-        <p className="card-body-text">{desc}</p>
-        {effect_html}
-      </div>
-    );
-    return card;
-  }
-
-  function returnCards(isMyTurn) {
     function Card({
       num_id = "-1",
       id = "null",
@@ -226,37 +155,43 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
     }
 
     let cardArray = [];
-    if (myPlayerId != -1) {
-      console.log("Rendered player cards!");
-      for (let index = 0; index < myCards.length; index++) {
-        if (gameData.players[myPlayerId].cards[index] == 1) {
-          const { num_id, id, desc, effects = [] } = myCards[index];
-          cardArray.push(
-            <Card
-              num_id={num_id}
-              id={id}
-              desc={desc}
-              effects={effects}
-              key={index}
-            />
-          );
-        }
-      }
+    // console.log("Rendered player cards!");
+    for (let index = 0; index < cards.length; index++) {
+      const { num_id, id, desc, effects = [] } = cards[index];
+      cardArray.push(
+        <Card
+          num_id={num_id}
+          id={id}
+          desc={desc}
+          effects={effects}
+          key={index}
+        />
+      );
     }
     return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
   }
 
-  function useCard(card) {
+  function endGame() {}
+
+  async function useCard(card) {
     let card_num_id = card.num_id;
     if (gameData.players[gameData.current_turn_id].cards[card_num_id] == 1) {
-      // console.log("Making Game Data copy.");
-      // console.log("current_turn_id:", gameData.current_turn_id);
-      // let gameDataCopy = { ...gameData };
-      // console.log("copied current_turn_id:", gameDataCopy.current_turn_id);
-      // gameDataCopy.players[_playerID].cards[card_num_id] = 0;
-      // setGameData({ ...gameDataCopy });
-      evalCard(card_num_id);
-      return true;
+      const response = await fetch(
+        `api/game/server/${roomCode}/card/${card.num_id}/use`,
+        {
+          method: "post",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      );
+      if (response?.status === 200) {
+        pingServer();
+        return true;
+      } else {
+        const body = await response.json();
+        alert(`⚠ Error: ${body.msg}`);
+      }
     }
     console.log("Card not found in player's hand.");
     return false;
@@ -274,32 +209,17 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
   //   setGameData(gameDataCopy);
   // }
 
-  function getTextbox() {
-    if (isSetupComplete) {
-      //console.log("Rendering textbox! Player ID is", _playerID);
-      return (
-        <DndProvider backend={HTML5Backend}>
-          <TextBox
-            dragItemType={ItemType.CARD_TYPE}
-            heroData={heroData}
-            initialPlayerName={gameData.players[gameData.current_turn_id].name}
-            useCard={useCard}
-          />
-        </DndProvider>
-      );
-    } else {
-      return null;
-    }
-  }
-
   function InventoryContainer({ inventory }) {
     let itemBoxes = [];
-    for (let i = 0; i < NUM_ITEM_SLOTS; i++) {
-      const itemData = getItemData(inventory[i]);
+    for (let i = 0; i < constants.num_item_slots; i++) {
+      // console.log("Trying to get item data!", inventory[i]);
       itemBoxes.push(
         <div className="item-box" key={i}>
-          <p className="item-box-text" title={itemData.name}>
-            {inventory[i] == "" ? i + 1 : itemData.icon}
+          <p
+            className="item-box-text"
+            title={inventory[i] ? inventory[i].name : `Empty Slot`}
+          >
+            {inventory[i] ? inventory[i].icon : i + 1}
           </p>
         </div>
       );
@@ -312,28 +232,38 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
     );
   }
 
-  // I forgot to put props around it.
-  function Leaderboard({ aspects, players, currentTurn, numTurns, maxTurns }) {
-    if (aspects && players) {
-      // PlayerID, Standing
-      let standings = Array(NUM_PLAYERS);
-      for (let i = 0; i < NUM_PLAYERS; i++) {
-        standings[i] = 0;
-        for (let j = 0; j < NUM_PLAYERS; j++) {
-          if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
-            standings[i]++;
-          }
+  function getStandings(aspects, players, player_count) {
+    // PlayerID, Standing
+    let standings = Array(player_count);
+    // This needs to equal the true number of players, not just the capacity.
+    for (let i = 0; i < player_count; i++) {
+      standings[i] = 0;
+      for (let j = 0; j < player_count; j++) {
+        // console.log("Comparing", players[i].aspect, players[j].aspect);
+        if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
+          standings[i]++;
         }
       }
+    }
+    return standings;
+  }
 
-      console.log(
-        "Rendering Leaderboard! Standings:",
-        standings,
-        "aspects",
-        aspects,
-        "players",
-        players
-      );
+  // I forgot to put props around it.
+  function Leaderboard({ gameData, constants }) {
+    const { aspects, players, current_turn_id, turns } = gameData;
+    const maxTurns = players.length * constants.num_cards;
+    const player_count = players ? players.length : 0;
+    if (aspects && players) {
+      const standings = getStandings(aspects, players, player_count);
+
+      // console.log(
+      //   "Rendering Leaderboard! Standings:",
+      //   standings,
+      //   "aspects",
+      //   aspects,
+      //   "players",
+      //   players
+      // );
       function LeaderboardCard({ id, data }) {
         const emoji = Aspects[data.aspect].emoji;
 
@@ -378,33 +308,29 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
           </div>
         );
       }
-      console.log("current turn", currentTurn);
+      // console.log("current turn", current_turn_id);
+
+      let leaderboardCardList = [];
+      for (let i = 0; i < player_count; i++) {
+        leaderboardCardList.push(
+          <LeaderboardCard
+            id={current_turn_id == i ? "current-turn" : ""}
+            data={{ standing: standings[i], ...players[i] }}
+            key={i}
+          />
+        );
+      }
+
       return (
         <div className="players-boxes-container">
           <h2 className="centered-header">
-            {`Turn ${numTurns + 1} of ${maxTurns}`}
+            {`Turn ${turns + 1} of ${maxTurns}`}
           </h2>
-          <LeaderboardCard
-            id={currentTurn == 0 ? "current-turn" : ""}
-            data={{ standing: standings[0], ...players[0] }}
-          />
-          <LeaderboardCard
-            id={currentTurn == 1 ? "current-turn" : ""}
-            data={{ standing: standings[1], ...players[1] }}
-          />
-          <LeaderboardCard
-            id={currentTurn == 2 ? "current-turn" : ""}
-            data={{ standing: standings[2], ...players[2] }}
-          />
-          <LeaderboardCard
-            id={currentTurn == 3 ? "current-turn" : ""}
-            data={{ standing: standings[3], ...players[3] }}
-          />
-          <button
+          {leaderboardCardList}
+          {/* <button
             onClick={() => {
               // Evaluate random card of current player, using gameData.current_turn_id, gameData.players[gameData.current_turn_id].cards, and evalCard
-              const currentPlayerCards =
-                gameData.players[gameData.current_turn_id].cards;
+              const currentPlayerCards = players[current_turn_id].cards;
               const randomCardIndex = currentPlayerCards.findIndex(
                 (card) => card == 1
               );
@@ -416,7 +342,8 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
           >
             Simulate Next Turn
           </button>
-          <button onClick={() => endGame()}>End Game</button>
+          <button onClick={() => endGame()}>Finish Game</button> */}
+          <button onClick={handleExit}>Exit Game</button>
         </div>
       );
     } else {
@@ -426,11 +353,11 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
 
   if (gameState == GAME_STATES.PLAY) {
     return (
-      <main>
+      <div className="play-main">
         <div className="all-play-sections">
           <div className="text-and-inv-and-header">
             <h3 className="centered-header" id="adventure-title">
-              {getAdventureTitle()}
+              {`${heroData.name}'s Quest`}
             </h3>
             <div className="text-and-inv-section">
               <div className="right-align-container">
@@ -463,7 +390,14 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
                   </div>
                 </div>
               </div>
-              {getTextbox()}
+              <DndProvider backend={HTML5Backend}>
+                <TextBox
+                  dragItemType={ItemType.CARD_TYPE}
+                  story={story}
+                  tempStory={tempStory}
+                  useCard={useCard}
+                />
+              </DndProvider>
               <div className="left-align-container">
                 <InventoryContainer inventory={gameData.inventory} />
               </div>
@@ -482,29 +416,33 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
               </div>
               <div className="all-card-sections">
                 <div className="card-section">
-                  {returnCards(gameData.current_turn_id == myPlayerId)}
+                  <CardBox
+                    isMyTurn={gameData.current_turn_id == myPlayerId}
+                    // cards={myCards.filter(
+                    //   (card, index) =>
+                    //     gameData.players[myPlayerId].cards[index] == 1
+                    // )}
+                    cards={myCards.filter(
+                      (card, index) =>
+                        gameData.players[myPlayerId].cards[index] == 1
+                    )}
+                  />
                   <h2 className="my-turn">My Turn</h2>
                 </div>
               </div>
             </div>
           </div>
-          <Leaderboard
-            aspects={gameData.aspects}
-            players={gameData.players}
-            currentTurn={gameData.current_turn_id}
-            numTurns={gameData.turns}
-            maxTurns={NUM_PLAYERS * NUM_CARDS}
-          />
+          <Leaderboard gameData={gameData} constants={constants} />
         </div>
 
         {debug ? (
           <div>
             <button onClick={() => console.log(myCards)}>Print cards</button>
             <button onClick={() => console.log(myPlayerId)}>
-              Print My Player ID
+              Print My Player Turn #
             </button>
             <button onClick={() => console.log(gameData.current_turn_id)}>
-              Print Turn Id
+              Print Current Player Turn #
             </button>
             <button onClick={() => console.log(heroData)}>
               Print Hero Data
@@ -514,16 +452,24 @@ export function Game({ userName, userData, setUserData, returnToLobby }) {
             </button>
           </div>
         ) : null}
-      </main>
+      </div>
     );
   } else if (gameState == GAME_STATES.END) {
     return (
       <End
         userData={userData}
+        myPlayerId={myPlayerId}
         setUserData={setUserData}
         gameData={gameData}
         heroData={heroData}
-        returnToLobby={returnToLobby}
+        getStandings={() =>
+          getStandings(
+            gameData.aspects,
+            gameData.players,
+            gameData.players.length
+          )
+        }
+        handleExit={handleExit}
       />
     );
   }
