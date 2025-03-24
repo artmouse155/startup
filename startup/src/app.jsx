@@ -55,12 +55,15 @@ export default function App() {
       <Navbar expand="lg" className=" ml-auto header">
         <Container>
           <Navbar.Brand href="/">
-            <img src="header_icon.png" width="50px" />
+            <img src="header_icon.png" width="50px" className="header_img" />
           </Navbar.Brand>
+
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              {" "}
+              <Navbar.Text className="header-title">
+                Text Adventure Showdown
+              </Navbar.Text>
               <Nav.Link className="header-text header-menu-link" href="/">
                 Home
               </Nav.Link>
