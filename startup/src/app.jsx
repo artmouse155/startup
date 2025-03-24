@@ -5,6 +5,14 @@ import "./app.css";
 import "./header.css";
 import "./shadow.css"; // From https://www.cssscript.com/elegant-box-shadows
 import { AuthState } from "./login/authState.js";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Button from "react-bootstrap/Button";
+
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import Offcanvas from "react-bootstrap/Offcanvas";
 
 import {
   BrowserRouter,
@@ -44,63 +52,55 @@ export default function App() {
 
   return (
     <div className="body">
-      <header>
-        <NavLink className="header-title" to="">
-          <img src="header_icon.png" width="30px" />
-        </NavLink>
-
-        <nav>
-          <menu>
-            <li className="header-menu">
-              <NavLink to="" className="header-menu-link header-text">
+      <Navbar expand="lg" className=" ml-auto header">
+        <Container>
+          <Navbar.Brand href="/">
+            <img src="header_icon.png" width="50px" />
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              {" "}
+              <Nav.Link className="header-text header-menu-link" href="/">
                 Home
-              </NavLink>
-            </li>
-            <li className="header-menu">
-              {authState == AuthState.Authenticated ? (
-                <NavLink to="play" className="header-menu-link header-text">
-                  Play
-                </NavLink>
-              ) : (
-                <p className="disabled header-text">Sign in to Play</p>
-              )}
-            </li>
-            <li className="header-menu">
-              <NavLink
-                to="leaderboard"
-                className="header-menu-link header-text"
+              </Nav.Link>
+              <Nav.Link
+                className="header-text header-menu-link"
+                href="play"
+                disabled={authState == AuthState.Authenticated ? false : true}
+              >
+                Play
+              </Nav.Link>
+              <Nav.Link
+                className="header-text header-menu-link"
+                href="leaderboard"
               >
                 Leaderboard
-              </NavLink>
-            </li>
-          </menu>
-        </nav>
-        {authState == AuthState.Authenticated ? (
-          <div className="header-right">
-            <div className="trophy-section header-text">
-              <b>{`🏆 ${userData.trophies}`}</b>
-            </div>
-            <form method="get">
-              <NavLink
-                type="submit"
-                className="log-out-button"
-                onClick={logOut}
-                to="/"
-              >
-                Log Out
-              </NavLink>
-            </form>
-            <p className="header-text">{userName.split("@")[0]}</p>
-            <img
-              src="account_circle.png"
-              width="30px"
-              className="account_circle"
-            />
-          </div>
-        ) : (
-          <div></div>
-        )}
-      </header>
+              </Nav.Link>
+            </Nav>
+
+            {authState == AuthState.Authenticated ? (
+              <Nav className="mr-auto">
+                <Navbar.Text className="trophy-section header-text">
+                  <b>{`🏆 ${userData.trophies}`}</b>
+                </Navbar.Text>
+                <Button
+                  variant="secondary"
+                  onClick={logOut}
+                  // className="log-out-button"
+                >
+                  Log Out
+                </Button>
+                <Navbar.Text className="header-text">{`Signed in as: ${
+                  userName.split("@")[0]
+                }`}</Navbar.Text>{" "}
+              </Nav>
+            ) : (
+              <div></div>
+            )}
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
       <Routes>
         <Route

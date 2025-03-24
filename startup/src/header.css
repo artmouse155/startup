@@ -1,21 +1,10 @@
-header {
+.header {
   background-color: #3e70a7;
-  display: flex;
-  flex-direction: row;
+  flex: none;
+  /* display: flex;
+  flex-direction: row; */
   padding: 0px 10px;
-  min-height: 60px;
-}
-
-nav {
-  flex: 1;
-  display: flex;
-}
-
-menu {
-  flex: 1;
-  display: flex;
-  margin: 0px;
-  padding-left: 10px;
+  min-height: 4em;
 }
 
 .header-title {
@@ -23,12 +12,6 @@ menu {
   color: whitesmoke;
   margin: 0px;
   padding: 0px 10px;
-}
-
-li.header-menu {
-  display: flex;
-  list-style-type: none;
-  text-decoration: none;
 }
 
 .header-text {
@@ -41,6 +24,7 @@ li.header-menu {
   padding-left: 20px;
   padding-right: 20px;
   margin: 0px;
+  min-height: 4em;
 }
 
 .disabled {
@@ -54,7 +38,8 @@ li.header-menu {
 }
 
 .header-menu-link:hover {
-  background-color: #ffffff22;
+  color: rgb(255, 255, 255);
+  background-color: #00000022;
 }
 
 .header-right {

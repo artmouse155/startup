@@ -110,22 +110,27 @@ async function apiCallSegment(call) {
       return getRandom(roomConditions);
     case "$inspirational-quote$":
       let quote = {};
-      const response = await fetch("http://api.quotable.io/quotes/random", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-      if (response?.status === 200) {
-        const body = await response.json();
-        const quote = body[0];
-        return `"${quote.content}" — ${quote.author}`; //This is an external API call. Source: https://github.com/lukePeavey/quotable?tab=readme-ov-file
-      } else {
+      try {
+        const response = await fetch("http://api.quotable.io/quotes/random", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+        if (response?.status === 200) {
+          const body = await response.json();
+          const quote = body[0];
+          return `"${quote.content}" — ${quote.author}`; //This is an external API call. Source: https://github.com/lukePeavey/quotable?tab=readme-ov-file
+        } else {
+          const quote = getRandom(inspirationalQuotes);
+          return `*Error: External API Call failed. Using local quote falback.*\n*"${quote.text}" — ${quote.speaker}`; //This is a stub for an external API call.
+          // const body = await response.json();
+          // alert(`⚠ Error: ${body.msg}`);
+        }
+      } catch (error) {
         const quote = getRandom(inspirationalQuotes);
-        return `*Error: External API Call failed. Using local quote falback.*\n*"${quote.text}" — ${quote.speaker}`; //This is a stub for an external API call.
-        // const body = await response.json();
-        // alert(`⚠ Error: ${body.msg}`);
+        return `*Error: External API Call failed. Using local quote falback.*\n*"${quote.text}" — ${quote.speaker}`; //This is a stub for an external API call
       }
 
     case "$feeling$":
