@@ -11,7 +11,6 @@
   overflow-x: hidden;
   overflow-y: scroll;
   height: 250px;
-  width: 500px;
   font-size: 0.8em;
   padding: 20px;
 
@@ -54,7 +53,6 @@
   top: -250px;
 
   height: 250px;
-  width: 500px;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -115,7 +115,7 @@ export function Play({ userData, setUserData, authState }) {
           // If connectionData && connectionData.gameState == GAME_STATES.PLAY, then we are in the game
           if (connectionData && connectionData.gameState != GAME_STATES.LOBBY) {
             return (
-              <div className="fullsize flex-column">
+              <div className="fullsize flex-column align-items-stretch">
                 <DebugButtons />
                 <Game
                   userData={userData}

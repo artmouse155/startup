@@ -136,7 +136,7 @@ export function Game({
       }
 
       let cardPreview = (
-        <div>
+        <div className="card-relative-pos">
           <div className="transparent-card draggable" ref={preview}></div>
           <CardDragLayer />
         </div>
@@ -144,7 +144,9 @@ export function Game({
 
       let card = (
         <div
-          className={`card ${isMyTurn ? "draggable" : ""}`}
+          className={`card ${
+            isMyTurn ? "draggable" : ""
+          } card-relative-pos shadow-5`}
           ref={isMyTurn ? drag : null}
         >
           <p className="card-body-text">{desc}</p>
@@ -159,13 +161,9 @@ export function Game({
     for (let index = 0; index < cards.length; index++) {
       const { num_id, id, desc, effects = [] } = cards[index];
       cardArray.push(
-        <Card
-          num_id={num_id}
-          id={id}
-          desc={desc}
-          effects={effects}
-          key={index}
-        />
+        <div className="individual-card-container" key={index}>
+          <Card num_id={num_id} id={id} desc={desc} effects={effects} />
+        </div>
       );
     }
     return <DndProvider backend={HTML5Backend}>{cardArray}</DndProvider>;
@@ -197,18 +195,6 @@ export function Game({
     return false;
   }
 
-  // function fakeNextTurn() {
-  //   console.log("Next Turn");
-  //   // Make game data copy
-  //   let gameDataCopy = { ...gameData };
-
-  //   // Use a random card
-
-  //   // Give next player a turn to go
-  //   gameDataCopy.current_turn_id = (gameData.current_turn_id + 1) % 4;
-  //   setGameData(gameDataCopy);
-  // }
-
   function InventoryContainer({ inventory }) {
     let itemBoxes = [];
     for (let i = 0; i < constants.num_item_slots; i++) {
@@ -225,9 +211,9 @@ export function Game({
       );
     }
     return (
-      <div className="items-container">
+      <div>
         <h3 className="centered-header">Inventory</h3>
-        {itemBoxes}
+        <div className="items-container">{itemBoxes}</div>
       </div>
     );
   }
@@ -353,81 +339,77 @@ export function Game({
 
   if (gameState == GAME_STATES.PLAY) {
     return (
-      <div className="fullsize">
-        <div className="game-container">
-          <div id="aspect-boxes-container">
-            <div className="aspect-box data-box" id="MAGIC">
-              <p className="aspect-box-text magic">✨ Magic</p>
-              <p className="aspect-box-text aspect-box-score" id="amt">
-                {gameData.aspects.MAGIC}
-              </p>
-            </div>
-            <div className="aspect-box data-box" id="STRENGTH">
-              <p className="aspect-box-text strength">🦾 Strength</p>
-              <p className="aspect-box-text aspect-box-score" id="amt">
-                {gameData.aspects.STRENGTH}
-              </p>
-            </div>
-            <div className="aspect-box data-box" id="INTELLIGENCE">
-              <p className="aspect-box-text intelligence">📖 Intelligence</p>
-              <p className="aspect-box-text aspect-box-score" id="amt">
-                {gameData.aspects.INTELLIGENCE}
-              </p>
-            </div>
-            <div className="aspect-box data-box" id="CHARISMA">
-              <p className="aspect-box-text charisma">💄 Charisma</p>
-              <p className="aspect-box-text aspect-box-score" id="amt">
-                {gameData.aspects.CHARISMA}
-              </p>
-            </div>
+      <div className="game-container">
+        <div className="aspect-boxes-container">
+          <div className="aspect-box data-box" id="MAGIC">
+            <p className="aspect-box-text magic">✨ Magic</p>
+            <p className="aspect-box-text aspect-box-score" id="amt">
+              {gameData.aspects.MAGIC}
+            </p>
           </div>
-          <div id="my-cards-and-textbox" className="flex-column">
-            <h3 className="centered-header" id="adventure-title">
-              {`${heroData.name}'s Quest`}
-            </h3>
-            <div>
-              <DndProvider backend={HTML5Backend}>
-                <TextBox
-                  dragItemType={ItemType.CARD_TYPE}
-                  story={story}
-                  tempStory={tempStory}
-                  useCard={useCard}
-                />
-              </DndProvider>
-              <div className="card-section">
-                <CardBox
-                  isMyTurn={gameData.current_turn_id == myPlayerId}
-                  // cards={myCards.filter(
-                  //   (card, index) =>
-                  //     gameData.players[myPlayerId].cards[index] == 1
-                  // )}
-                  cards={myCards.filter(
-                    (card, index) =>
-                      gameData.players[myPlayerId].cards[index] == 1
-                  )}
-                />
-                <h2 className="my-turn">My Turn</h2>
-              </div>
-              <div className="whose-turn-container">
-                <div className="whose-turn">
-                  <h3>
-                    {gameData.current_turn_id == -1
-                      ? "Loading..."
-                      : gameData.current_turn_id == myPlayerId
-                      ? "Your Turn"
-                      : `${
-                          gameData.players[gameData.current_turn_id].name
-                        }'s Turn`}
-                  </h3>
-                </div>
-                <div className="all-card-sections"></div>
-              </div>
-            </div>
+          <div className="aspect-box data-box" id="STRENGTH">
+            <p className="aspect-box-text strength">🦾 Strength</p>
+            <p className="aspect-box-text aspect-box-score" id="amt">
+              {gameData.aspects.STRENGTH}
+            </p>
           </div>
-          <InventoryContainer inventory={gameData.inventory} />
-          <Leaderboard gameData={gameData} constants={constants} />
+          <div className="aspect-box data-box" id="INTELLIGENCE">
+            <p className="aspect-box-text intelligence">📖 Intelligence</p>
+            <p className="aspect-box-text aspect-box-score" id="amt">
+              {gameData.aspects.INTELLIGENCE}
+            </p>
+          </div>
+          <div className="aspect-box data-box" id="CHARISMA">
+            <p className="aspect-box-text charisma">💄 Charisma</p>
+            <p className="aspect-box-text aspect-box-score" id="amt">
+              {gameData.aspects.CHARISMA}
+            </p>
+          </div>
         </div>
-
+        <div id="my-cards-and-textbox" className="flex-column">
+          <h3 className="centered-header" id="adventure-title">
+            {`${heroData.name}'s Quest`}
+          </h3>
+          <div className="center-section">
+            <DndProvider backend={HTML5Backend}>
+              <TextBox
+                dragItemType={ItemType.CARD_TYPE}
+                story={story}
+                tempStory={tempStory}
+                useCard={useCard}
+              />
+            </DndProvider>
+            <div className="whose-turn-container">
+              <div className="whose-turn">
+                <h3>
+                  {gameData.current_turn_id == -1
+                    ? "Loading..."
+                    : gameData.current_turn_id == myPlayerId
+                    ? "Your Turn"
+                    : `${
+                        gameData.players[gameData.current_turn_id].name
+                      }'s Turn`}
+                </h3>
+              </div>
+              <div className="all-card-sections"></div>
+            </div>
+            <div className="card-section">
+              <CardBox
+                isMyTurn={gameData.current_turn_id == myPlayerId}
+                // cards={myCards.filter(
+                //   (card, index) =>
+                //     gameData.players[myPlayerId].cards[index] == 1
+                // )}
+                cards={myCards.filter(
+                  (card, index) =>
+                    gameData.players[myPlayerId].cards[index] == 1
+                )}
+              />
+            </div>
+          </div>
+        </div>
+        <InventoryContainer inventory={gameData.inventory} />
+        <Leaderboard gameData={gameData} constants={constants} />
         {debug ? (
           <div>
             <button onClick={() => console.log(myCards)}>Print cards</button>

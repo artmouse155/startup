@@ -592,6 +592,11 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
 }
 
 async function pushOutcome(roomCode, outcome) {
+  // Verify game exists
+  if (!games[roomCode]) {
+    console.log(`[${roomCode}]`, "Game not found");
+    return;
+  }
   const heroData = games[roomCode].heroData;
   //console.log("Parsing outcome", outcome);
   updatedText = [...outcome.text];
