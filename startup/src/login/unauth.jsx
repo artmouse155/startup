@@ -80,7 +80,6 @@ export function UnAuth({
           <div className="button-div">
             <Button
               type="submit"
-              variant="secondary"
               className="login-screen-button"
               onClick={handleLogin}
             >
@@ -88,7 +87,7 @@ export function UnAuth({
             </Button>
             <Button
               type="submit"
-              variant="outline"
+              variant="outline-primary"
               className="login-screen-button"
               onClick={handleRegister}
             >

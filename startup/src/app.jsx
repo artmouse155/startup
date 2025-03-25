@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.css";
+import "./bootstrap_overrides.css";
 import "./app.css";
 import "./header.css";
 import "./shadow.css"; // From https://www.cssscript.com/elegant-box-shadows
 import { AuthState } from "./login/authState.js";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
 
 import Container from "react-bootstrap/Container";
