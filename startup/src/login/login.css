@@ -47,15 +47,19 @@
 .login-screen-button {
   flex: 1;
 }
+/* 
+.input-group-text {
+  width: 7em;
+} */
 
-.input-box {
+/* .input-box {
   background-color: gainsboro;
   padding: 0.5em;
   width: 250px;
   margin-top: 5px;
   border: 0px;
   border-radius: 5px;
-}
+} */
 
 .login-button {
   background-color: #a53e42;

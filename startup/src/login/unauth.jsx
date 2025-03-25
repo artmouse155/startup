@@ -2,6 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthState } from "./authState";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 
 export function UnAuth({
   userName,
@@ -26,6 +28,7 @@ export function UnAuth({
       alert("⚠ Please enter a username and password.");
       return;
     }
+    console.log("loginOrCreate", endpoint, userName, password);
     const response = await fetch(endpoint, {
       method: "post",
       body: JSON.stringify({ email: userName, password: password }),
@@ -52,31 +55,31 @@ export function UnAuth({
           Sign up or log in.
         </p>
         <div className="login-body">
-          <form className="login-form">
-            <label htmlFor="username">Email</label>
-            <input
-              className="input-box"
-              type="email"
-              id="username"
-              autoComplete="username"
-              placeholder=""
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              required
-            />
-            <br />
-            <label htmlFor="current-password">Password</label>
-            <input
-              className="input-box"
-              type="password"
-              id="current-password"
-              autoComplete="current-password"
-              placeholder=""
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <br />
-          </form>
+          <Form>
+            <InputGroup className="mb-3">
+              <InputGroup.Text className="input-group-text">
+                Email
+              </InputGroup.Text>
+              <Form.Control
+                type="email"
+                autoComplete="username"
+                placeholder=""
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>Password</InputGroup.Text>
+              <Form.Control
+                type="password"
+                autoComplete="current-password"
+                placeholder=""
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </InputGroup>
+          </Form>
           <div className="button-div">
             <Button
               type="submit"
