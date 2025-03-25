@@ -1,6 +1,8 @@
 import React from "react";
 import "./lobby.css";
-import { ConnectionState } from "./connectionState";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 export function Lobby({
   setWebSocket,
@@ -154,20 +156,20 @@ export function Lobby({
 
   function Root({ setMenuState }) {
     return (
-      <div className="lobby-container">
-        <h1 className="lobby-title">Welcome to the Lobby!</h1>
+      <Card.Body>
+        <Card.Title>Lobby</Card.Title>
         <div className="lobby-actions">
-          <button className="lobby-button" onClick={() => handleHostGame()}>
-            Host Game
-          </button>
-          <button
+          <Button className="lobby-button" onClick={() => handleHostGame()}>
+            Host
+          </Button>
+          <Button
             className="lobby-button"
             onClick={() => setMenuState(MENUSTATE.JOIN)}
           >
-            Join Game
-          </button>
+            Join
+          </Button>
         </div>
-      </div>
+      </Card.Body>
     );
   }
 
@@ -178,44 +180,45 @@ export function Lobby({
       : 0;
     const roomCode = connectionData ? connectionData.roomCode : null;
     return (
-      <div className="lobby-container">
-        <h1 className="lobby-title">Host Game</h1>
-        <h1 className="room-code">
+      <Card.Body>
+        <Card.Title>Host Game</Card.Title>
+        <Card.Title className="room-code">
           {connectionData
             ? `Room Code: ${connectionData.roomCode}`
             : `Disconnected`}
-        </h1>
+        </Card.Title>
         <h4 className="num-connected">{`${playerCount}/${maxPlayers} players connected.\nWaiting for host to start game`}</h4>
         {connectionData ? <ConnectedPlayerList /> : null}
         <Spinner />
         <div className="lobby-actions">
           {connectionData ? (
-            <button
+            <Button
               className="lobby-button"
               onClick={handleHostStartGame}
               // TODO: Uncomment this line to enable the button only when the player count is equal to the max players
               //disabled={playerCount < maxPlayers}
             >
               Start Game
-            </button>
+            </Button>
           ) : null}
-          <button
-            className="lobby-cancel-button"
+          <Button
+            className="lobby-button"
+            variant="secondary"
             onClick={() => handleExit(MENUSTATE.ROOT)}
           >
             Cancel
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card.Body>
     );
   }
 
   function Join({ setMenuState, roomCodeInput }) {
     return (
-      <div className="lobby-container">
-        <h1 className="lobby-title">Join Game</h1>
-        <form className="room-code-form">
-          <input
+      <Card.Body>
+        <Card.Title>Join Game</Card.Title>
+        <Form className="mb-3">
+          <Form.Control
             className="room-code-input"
             type="text"
             placeholder="Room Code"
@@ -223,42 +226,44 @@ export function Lobby({
             onChange={(e) => handleSetRoomCodeInput(e)}
             ref={inputRef}
           />
-        </form>
+        </Form>
         <div className="lobby-actions">
-          <button
+          <Button
             className="lobby-button"
             onClick={() => handleJoinGame(roomCodeInput)}
             disabled={roomCodeInput.length != 5}
           >
-            Join Game
-          </button>
-          <button
-            className="lobby-cancel-button"
+            Join
+          </Button>
+          <Button
+            className="lobby-button"
+            variant="secondary"
             onClick={() => setMenuState(MENUSTATE.ROOT)}
           >
             Cancel
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card.Body>
     );
   }
 
   function JoinWait() {
     return (
-      <div className="lobby-container">
-        <h1 className="lobby-title">Waiting for Players</h1>
+      <Card.Body>
+        <Card.Title>Waiting for Players</Card.Title>
         <h4 className="num-connected">{`${connectionData.players.length}/${connectionData.constants.num_players} players connected.\nWaiting for host to start game`}</h4>
         <ConnectedPlayerList />
         <Spinner />
         <div className="lobby-actions">
-          <button
-            className="lobby-cancel-button"
+          <Button
+            className="lobby-button"
+            variant="secondary"
             onClick={() => handleExit(MENUSTATE.JOIN)}
           >
             Cancel
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card.Body>
     );
   }
 
@@ -280,10 +285,11 @@ export function Lobby({
   }
 
   return (
-    <div className="login-main">
-      <div className="login-screen">
+    <div className="login-center">
+      <Card>
+        <Card.Header>Hi</Card.Header>
         <Menu menuState={menuState} />
-      </div>
+      </Card>
     </div>
   );
 }

@@ -116,7 +116,7 @@ export function Play({ userData, setUserData, authState }) {
           if (connectionData && connectionData.gameState != GAME_STATES.LOBBY) {
             return (
               <div className="fullsize flex-column align-items-stretch">
-                <DebugButtons />
+                {/* <DebugButtons /> */}
                 <Game
                   userData={userData}
                   setUserData={setUserData}
@@ -130,7 +130,7 @@ export function Play({ userData, setUserData, authState }) {
         case ConnectionState.Disconnected:
           return (
             <div className="fullsize">
-              <DebugButtons />
+              {/* <DebugButtons /> */}
               <Lobby
                 setWebSocket={setWebSocket}
                 pingServer={pingServer}

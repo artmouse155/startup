@@ -23,34 +23,9 @@
 }
 
 .lobby-button {
-  padding: 10px 20px;
-  font-size: 1em;
-  color: #fff;
-  background-color: #3e70a7;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  flex: 1;
 }
 
-.lobby-button:hover {
-  background-color: #244364;
-}
-
-.lobby-cancel-button {
-  padding: 10px 20px;
-  font-size: 1em;
-  color: #fff;
-  background-color: #a53e42;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.lobby-cancel-button:hover {
-  background-color: #6f292b;
-}
 .spinner {
   width: 40px;
   height: 40px;
@@ -85,11 +60,11 @@
   }
 }
 
-.room-code-input {
+/* .room-code-input {
   font-size: 2.5em;
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
   text-align: center;
   width: 250px;
-}
+} */
