@@ -4,6 +4,7 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
+import InputGroup from "react-bootstrap/InputGroup";
 
 export function Lobby({
   setWebSocket,
@@ -196,13 +197,27 @@ export function Lobby({
     const roomCode = connectionData ? connectionData.roomCode : null;
     return (
       <Card.Body>
-        <Card.Title>Host Game</Card.Title>
-        <Card.Title className="room-code">
-          {connectionData
-            ? `Room Code: ${connectionData.roomCode}`
-            : `Disconnected`}
-        </Card.Title>
         <Card.Body>
+          <Card>
+            <InputGroup>
+              <InputGroup.Text>Room Code</InputGroup.Text>
+              <Form.Control
+                type="text"
+                placeholder="Room Code"
+                readOnly
+                value={connectionData ? `${connectionData.roomCode}` : ``}
+              />
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  navigator.clipboard.writeText(connectionData.roomCode)
+                }
+              >
+                <img src="copy.png" width="20px"></img>
+              </Button>
+            </InputGroup>
+          </Card>
+          <br />
           {connectionData ? (
             <ConnectedPlayerList
               playerCount={playerCount}
@@ -270,8 +285,34 @@ export function Lobby({
     return (
       <Card.Body>
         <Card.Title>Waiting for Players</Card.Title>
-        <h4 className="num-connected">{`${connectionData.players.length}/${connectionData.constants.num_players} players connected.\nWaiting for host to start game`}</h4>
-        <ConnectedPlayerList />
+        <Card.Body>
+          <Card>
+            <InputGroup>
+              <InputGroup.Text>Room Code</InputGroup.Text>
+              <Form.Control
+                type="text"
+                placeholder="Room Code"
+                readOnly
+                value={connectionData ? `${connectionData.roomCode}` : ``}
+              />
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  navigator.clipboard.writeText(connectionData.roomCode)
+                }
+              >
+                <img src="copy.png" width="20px"></img>
+              </Button>
+            </InputGroup>
+          </Card>
+          <br />
+          {connectionData ? (
+            <ConnectedPlayerList
+              playerCount={playerCount}
+              maxPlayers={maxPlayers}
+            />
+          ) : null}
+        </Card.Body>
         <div className="lobby-actions">
           <Button
             className="lobby-button"
@@ -305,8 +346,8 @@ export function Lobby({
   return (
     <div className="login-center">
       <Card>
-        <Card.Header>Hi</Card.Header>
-        <Menu menuState={menuState} />
+        <Card.Header>🟢 Connected</Card.Header>
+        <Menu menuState={menuState} disableButtons={!connectionData} />
       </Card>
     </div>
   );
