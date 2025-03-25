@@ -3,6 +3,7 @@ import "./lobby.css";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import ListGroup from "react-bootstrap/ListGroup";
 
 export function Lobby({
   setWebSocket,
@@ -140,24 +141,38 @@ export function Lobby({
     );
   }
 
-  function ConnectedPlayerList() {
+  function ConnectedPlayerList({ playerCount, maxPlayers }) {
     let connectedList = [];
-    for (let i = 0; i < connectionData.players.length; i++) {
+    for (let i = 0; i < playerCount; i++) {
       connectedList.push(
-        <p key={i}>{`${connectionData.players[i]} connected ${
-          i == 0 ? ` (host)` : ``
-        }`}</p>
+        <ListGroup.Item className="players-list-item" key={i}>
+          <p className="players-list-text">{`${connectionData.players[i]} ${
+            i == 0 ? ` (host)` : ``
+          }`}</p>
+        </ListGroup.Item>
+      );
+    }
+    // For the rest, just push a spinner
+    for (let i = playerCount; i < maxPlayers; i++) {
+      connectedList.push(
+        <ListGroup.Item className="players-list-item" key={i}>
+          <Spinner />
+        </ListGroup.Item>
       );
     }
 
-    return <div>{connectedList}</div>;
+    return (
+      <Card>
+        <Card.Header>{`${playerCount}/${maxPlayers} players connected`}</Card.Header>
+        <ListGroup variant="flush">{connectedList}</ListGroup>
+      </Card>
+    );
     // Returns a component that displays the list of connected players. Taken from connection state
   }
 
   function Root({ setMenuState }) {
     return (
       <Card.Body>
-        <Card.Title>Lobby</Card.Title>
         <div className="lobby-actions">
           <Button className="lobby-button" onClick={() => handleHostGame()}>
             Host
@@ -187,9 +202,14 @@ export function Lobby({
             ? `Room Code: ${connectionData.roomCode}`
             : `Disconnected`}
         </Card.Title>
-        <h4 className="num-connected">{`${playerCount}/${maxPlayers} players connected.\nWaiting for host to start game`}</h4>
-        {connectionData ? <ConnectedPlayerList /> : null}
-        <Spinner />
+        <Card.Body>
+          {connectionData ? (
+            <ConnectedPlayerList
+              playerCount={playerCount}
+              maxPlayers={maxPlayers}
+            />
+          ) : null}
+        </Card.Body>
         <div className="lobby-actions">
           {connectionData ? (
             <Button
@@ -216,7 +236,6 @@ export function Lobby({
   function Join({ setMenuState, roomCodeInput }) {
     return (
       <Card.Body>
-        <Card.Title>Join Game</Card.Title>
         <Form className="mb-3">
           <Form.Control
             className="room-code-input"
@@ -253,7 +272,6 @@ export function Lobby({
         <Card.Title>Waiting for Players</Card.Title>
         <h4 className="num-connected">{`${connectionData.players.length}/${connectionData.constants.num_players} players connected.\nWaiting for host to start game`}</h4>
         <ConnectedPlayerList />
-        <Spinner />
         <div className="lobby-actions">
           <Button
             className="lobby-button"

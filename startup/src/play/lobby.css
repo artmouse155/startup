@@ -26,11 +26,25 @@
   flex: 1;
 }
 
+.players-list-item {
+  height: 60px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+/* .players-list-text {
+  margin: 0px;
+  height: 20px;
+} */
+
 .spinner {
   width: 40px;
   height: 40px;
   position: relative;
-  margin: 100px auto;
+  display: flex;
+  justify-self: center;
+  /* margin: 100px auto; */
 }
 
 .double-bounce1,
