@@ -47,57 +47,71 @@ export function UnAuth({
 
   return (
     <div className="login-main">
-      <div className="login-screen">
-        <h3 className="login-header">Welcome!</h3>
-        <p>
-          Ready for adventure? ⚔️
-          <br />
-          Sign up or log in.
-        </p>
-        <div className="login-body">
-          <Form>
-            <InputGroup className="mb-3">
-              <InputGroup.Text className="input-group-text">
-                Email
-              </InputGroup.Text>
-              <Form.Control
-                type="email"
-                autoComplete="username"
-                placeholder=""
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                required
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text>Password</InputGroup.Text>
-              <Form.Control
-                type="password"
-                autoComplete="current-password"
-                placeholder=""
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </InputGroup>
-          </Form>
-          <div className="button-div">
-            <Button
-              type="submit"
-              className="login-screen-button"
-              onClick={handleLogin}
-            >
-              Login
-            </Button>
-            <Button
-              type="submit"
-              variant="outline-primary"
-              className="login-screen-button"
-              onClick={handleRegister}
-            >
-              Sign Up
-            </Button>
+      <div className="login-center">
+        <div className="login-card">
+          <h3 className="login-header">Ready for adventure?</h3>
+          <p>Sign up or log in.</p>
+          <div className="login-body">
+            <Form>
+              <InputGroup className="mb-3">
+                <InputGroup.Text className="input-group-text">
+                  Email
+                </InputGroup.Text>
+                <Form.Control
+                  type="email"
+                  autoComplete="username"
+                  placeholder=""
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                />
+              </InputGroup>
+              <InputGroup className="mb-3">
+                <InputGroup.Text>Password</InputGroup.Text>
+                <Form.Control
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder=""
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </InputGroup>
+            </Form>
+            <div className="button-div">
+              <Button
+                type="submit"
+                className="login-screen-button"
+                onClick={handleLogin}
+              >
+                Login
+              </Button>
+              <Button
+                type="submit"
+                variant="outline-primary"
+                className="login-screen-button"
+                onClick={handleRegister}
+              >
+                Sign Up
+              </Button>
+            </div>
           </div>
         </div>
+      </div>
+      <div className="login-card">
+        {"Photo by "}
+        <a
+          className="footer-item"
+          href="https://unsplash.com/@aaronkongsebastian?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+        >
+          Aaron Sebastian
+        </a>
+        {" on "}
+        <a
+          className="footer-item"
+          href="https://unsplash.com/photos/landscape-photography-of-river-between-hills-bfgEYpS0Znk?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+        >
+          {" Unsplash"}
+        </a>
       </div>
     </div>
   );

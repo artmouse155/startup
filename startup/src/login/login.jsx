@@ -6,10 +6,10 @@ import "./login.css";
 export function Login({ userName, setUserName, authState, onAuthChange }) {
   switch (authState) {
     case AuthState.Unknown:
-      return <p className="login-main">{"Unknown Auth State."}</p>;
+      return <p className="login-center">{"Unknown Auth State."}</p>;
     case AuthState.Authenticated:
       return (
-        <p className="login-main">
+        <p className="login-center">
           {'Login Succesful!\nPlease press the "Play" tab.'}
         </p>
       );
