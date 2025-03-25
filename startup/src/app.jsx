@@ -25,6 +25,7 @@ import {
 import { Login } from "./login/login.jsx";
 import { Play } from "./play/play";
 import { Leaderboard } from "./leaderboard/leaderboard";
+import { Icons } from "./icons/icons";
 
 export default function App() {
   // console.log(localStorage);
@@ -139,6 +140,7 @@ export default function App() {
           }
         />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/icons" element={<Icons />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 
