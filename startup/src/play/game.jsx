@@ -93,7 +93,7 @@ export function Game({
 
       let card = (
         <div
-          className="card-drag-layer shadow-5"
+          className="card drag-layer shadow-5"
           style={getItemStyles(initialOffset, currentOffset)}
         >
           <p className="card-body-text">{desc}</p>
@@ -353,43 +353,39 @@ export function Game({
 
   if (gameState == GAME_STATES.PLAY) {
     return (
-      <div className="play-main">
-        <div className="all-play-sections">
-          <div className="text-and-inv-and-header">
+      <div className="fullsize">
+        <div className="game-container">
+          <div id="aspect-boxes-container">
+            <div className="aspect-box data-box" id="MAGIC">
+              <p className="aspect-box-text magic">✨ Magic</p>
+              <p className="aspect-box-text aspect-box-score" id="amt">
+                {gameData.aspects.MAGIC}
+              </p>
+            </div>
+            <div className="aspect-box data-box" id="STRENGTH">
+              <p className="aspect-box-text strength">🦾 Strength</p>
+              <p className="aspect-box-text aspect-box-score" id="amt">
+                {gameData.aspects.STRENGTH}
+              </p>
+            </div>
+            <div className="aspect-box data-box" id="INTELLIGENCE">
+              <p className="aspect-box-text intelligence">📖 Intelligence</p>
+              <p className="aspect-box-text aspect-box-score" id="amt">
+                {gameData.aspects.INTELLIGENCE}
+              </p>
+            </div>
+            <div className="aspect-box data-box" id="CHARISMA">
+              <p className="aspect-box-text charisma">💄 Charisma</p>
+              <p className="aspect-box-text aspect-box-score" id="amt">
+                {gameData.aspects.CHARISMA}
+              </p>
+            </div>
+          </div>
+          <div id="my-cards-and-textbox" className="flex-column">
             <h3 className="centered-header" id="adventure-title">
               {`${heroData.name}'s Quest`}
             </h3>
-            <div className="text-and-inv-section">
-              <div className="right-align-container">
-                <div className="aspect-boxes-container">
-                  <div className="aspect-box data-box" id="MAGIC">
-                    <p className="aspect-box-text magic">✨ Magic</p>
-                    <p className="aspect-box-text aspect-box-score" id="amt">
-                      {gameData.aspects.MAGIC}
-                    </p>
-                  </div>
-                  <div className="aspect-box data-box" id="STRENGTH">
-                    <p className="aspect-box-text strength">🦾 Strength</p>
-                    <p className="aspect-box-text aspect-box-score" id="amt">
-                      {gameData.aspects.STRENGTH}
-                    </p>
-                  </div>
-                  <div className="aspect-box data-box" id="INTELLIGENCE">
-                    <p className="aspect-box-text intelligence">
-                      📖 Intelligence
-                    </p>
-                    <p className="aspect-box-text aspect-box-score" id="amt">
-                      {gameData.aspects.INTELLIGENCE}
-                    </p>
-                  </div>
-                  <div className="aspect-box data-box" id="CHARISMA">
-                    <p className="aspect-box-text charisma">💄 Charisma</p>
-                    <p className="aspect-box-text aspect-box-score" id="amt">
-                      {gameData.aspects.CHARISMA}
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <div>
               <DndProvider backend={HTML5Backend}>
                 <TextBox
                   dragItemType={ItemType.CARD_TYPE}
@@ -398,40 +394,37 @@ export function Game({
                   useCard={useCard}
                 />
               </DndProvider>
-              <div className="left-align-container">
-                <InventoryContainer inventory={gameData.inventory} />
+              <div className="card-section">
+                <CardBox
+                  isMyTurn={gameData.current_turn_id == myPlayerId}
+                  // cards={myCards.filter(
+                  //   (card, index) =>
+                  //     gameData.players[myPlayerId].cards[index] == 1
+                  // )}
+                  cards={myCards.filter(
+                    (card, index) =>
+                      gameData.players[myPlayerId].cards[index] == 1
+                  )}
+                />
+                <h2 className="my-turn">My Turn</h2>
               </div>
-            </div>
-            <div className="whose-turn-and-all-card-sections">
-              <div className="whose-turn">
-                <h3>
-                  {gameData.current_turn_id == -1
-                    ? "Loading..."
-                    : gameData.current_turn_id == myPlayerId
-                    ? "Your Turn"
-                    : `${
-                        gameData.players[gameData.current_turn_id].name
-                      }'s Turn`}
-                </h3>
-              </div>
-              <div className="all-card-sections">
-                <div className="card-section">
-                  <CardBox
-                    isMyTurn={gameData.current_turn_id == myPlayerId}
-                    // cards={myCards.filter(
-                    //   (card, index) =>
-                    //     gameData.players[myPlayerId].cards[index] == 1
-                    // )}
-                    cards={myCards.filter(
-                      (card, index) =>
-                        gameData.players[myPlayerId].cards[index] == 1
-                    )}
-                  />
-                  <h2 className="my-turn">My Turn</h2>
+              <div className="whose-turn-container">
+                <div className="whose-turn">
+                  <h3>
+                    {gameData.current_turn_id == -1
+                      ? "Loading..."
+                      : gameData.current_turn_id == myPlayerId
+                      ? "Your Turn"
+                      : `${
+                          gameData.players[gameData.current_turn_id].name
+                        }'s Turn`}
+                  </h3>
                 </div>
+                <div className="all-card-sections"></div>
               </div>
             </div>
           </div>
+          <InventoryContainer inventory={gameData.inventory} />
           <Leaderboard gameData={gameData} constants={constants} />
         </div>
 

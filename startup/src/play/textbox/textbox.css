@@ -1,7 +1,6 @@
 .text-adventure-container {
-  flex: 1;
-  align-self: flex-start;
-  height: 200px;
+  height: 250px;
+  justify-self: center;
 }
 
 .text-adventure {

@@ -5,6 +5,19 @@
   outline: 2px dashed red !important;
 }
 
+.fullsize {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  flex: 1;
+}
+
+.flex {
+  display: flex;
+  flex: 1;
+}
+
 #root {
   height: 100%;
 }

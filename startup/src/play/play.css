@@ -4,6 +4,33 @@ main {
   flex: 1;
 }
 
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: row;
+}
+
+@media screen and (max-width: 1400px) {
+  .game-container {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .game-container {
+    scale: 0.7;
+  }
+}
+
 .all-play-sections {
   flex: 1;
   display: flex;
@@ -40,7 +67,6 @@ main {
 
 .aspect-box {
   width: 150px;
-  justify-self: right;
 }
 
 .aspect-box-text {
@@ -207,7 +233,7 @@ main {
   font-size: 2em;
 }
 
-.whose-turn-and-all-card-sections {
+.whose-turn-container {
   flex: 1;
   justify-content: center;
   display: flex;
@@ -229,6 +255,7 @@ main {
 .card-section {
   display: flex;
   align-self: center;
+  justify-content: center;
   gap: 20px;
   padding: 10px;
 }
@@ -247,19 +274,8 @@ main {
   justify-content: flex-end;
 }
 
-.card-drag-layer {
+.drag-layer {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  background-color: #c2cedb;
-  box-sizing: border-box;
-  border: 10px solid #c2cedb;
-  border-radius: 5px;
-  padding: 0px;
-  height: 150px;
-  width: 100px;
-  text-align: center;
-  justify-content: flex-end;
 }
 
 .transparent-card {
@@ -267,21 +283,6 @@ main {
   flex-direction: column;
   height: 150px;
   width: 100px;
-}
-
-.drag-here-card {
-  align-self: center;
-  border: 5px dashed #a7a7a7;
-  background-color: #ffffff00;
-  display: flex;
-  justify-content: center;
-}
-
-.drag-here-card-text {
-  font-size: 0.8em;
-  margin: 10px;
-  font-style: italic;
-  color: rgb(167, 167, 167);
 }
 
 .card-body-text {

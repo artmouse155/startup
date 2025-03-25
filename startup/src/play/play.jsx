@@ -115,7 +115,7 @@ export function Play({ userData, setUserData, authState }) {
           // If connectionData && connectionData.gameState == GAME_STATES.PLAY, then we are in the game
           if (connectionData && connectionData.gameState != GAME_STATES.LOBBY) {
             return (
-              <div className="login-main">
+              <div className="fullsize flex-column">
                 <DebugButtons />
                 <Game
                   userData={userData}
@@ -129,7 +129,7 @@ export function Play({ userData, setUserData, authState }) {
           }
         case ConnectionState.Disconnected:
           return (
-            <div className="login-main">
+            <div className="fullsize">
               <DebugButtons />
               <Lobby
                 setWebSocket={setWebSocket}
@@ -141,13 +141,13 @@ export function Play({ userData, setUserData, authState }) {
           );
 
         case ConnectionState.Connecting:
-          return <p className="login-main">Connecting to server...</p>;
+          return <p className="fullsize">Connecting to server...</p>;
         default:
-          return <p className="login-main">Error: Unknown Connection State!</p>;
+          return <p className="fullsize">Error: Unknown Connection State!</p>;
       }
     case AuthState.Unauthenticated:
-      return <p className="login-main">Sign in to play!</p>;
+      return <p className="fullsize">Sign in to play!</p>;
     default:
-      return <p className="login-main">Error: Unknown Auth State!</p>;
+      return <p className="fullsize">Error: Unknown Auth State!</p>;
   }
 }
