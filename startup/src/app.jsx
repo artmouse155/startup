@@ -89,6 +89,7 @@ export default function App() {
                 </Navbar.Text>
                 <Button
                   variant="secondary"
+                  className="log-out-button"
                   onClick={logOut}
                   // className="log-out-button"
                 >

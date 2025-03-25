@@ -3,7 +3,7 @@
   flex: none;
   /* display: flex;
   flex-direction: row; */
-  padding: 0px 10px;
+  padding: 0px;
   min-height: 4em;
 }
 
@@ -48,17 +48,7 @@
 }
 
 .log-out-button {
-  background-color: #a53e42;
-  border-radius: 5px;
-  border: 2px solid whitesmoke;
-  padding: 0.3em 0.7em;
-  font-weight: bold;
-  color: whitesmoke;
-  text-decoration: none;
-}
-
-.log-out-button:hover {
-  background-color: #cc4f55;
+  align-self: center;
 }
 
 .account_circle {

@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthState } from "./authState";
+import Button from "react-bootstrap/Button";
 
 export function UnAuth({
   userName,
@@ -21,6 +22,10 @@ export function UnAuth({
   }
 
   async function loginOrCreate(endpoint) {
+    if (!userName || !password) {
+      alert("⚠ Please enter a username and password.");
+      return;
+    }
     const response = await fetch(endpoint, {
       method: "post",
       body: JSON.stringify({ email: userName, password: password }),
@@ -73,22 +78,22 @@ export function UnAuth({
             <br />
           </form>
           <div className="button-div">
-            <button
+            <Button
               type="submit"
-              className="login-screen-button login-button"
-              disabled={!(userName && password)}
+              variant="secondary"
+              className="login-screen-button"
               onClick={handleLogin}
             >
               Login
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="login-screen-button signup-button"
-              disabled={!(userName && password)}
+              variant="outline"
+              className="login-screen-button"
               onClick={handleRegister}
             >
               Sign Up
-            </button>
+            </Button>
           </div>
         </div>
       </div>

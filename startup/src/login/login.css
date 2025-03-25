@@ -46,12 +46,6 @@
 
 .login-screen-button {
   flex: 1;
-  border-radius: 5px;
-  border: 2px solid whitesmoke;
-  padding: 0.7em 0.7em;
-  font-weight: bold;
-  color: whitesmoke;
-  transition: background-color 0.3s;
 }
 
 .input-box {
@@ -71,10 +65,11 @@
   background-color: #6f292b;
 }
 
-.signup-button {
+.full-login-button {
   background-color: #3e70a7;
 }
 
-.signup-button:hover {
+.full-login-button:hover {
   background-color: #244364;
+  outline-color: black;
 }
