@@ -247,7 +247,7 @@ main {
   left: -50px;
 }
 
-.card {
+.game-card {
   display: flex;
   flex-direction: column;
   background-color: #c2cedb;

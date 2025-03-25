@@ -114,6 +114,8 @@ export default function App() {
               userName={userName}
               setUserName={setUserName}
               authState={authState}
+              navigate={navigate}
+              logOut={logOut}
               onAuthChange={(userData, authState) => {
                 setAuthState(authState);
                 setUserName(userData.email);

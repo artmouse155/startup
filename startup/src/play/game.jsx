@@ -93,7 +93,7 @@ export function Game({
 
       let card = (
         <div
-          className="card drag-layer shadow-5"
+          className="game-card drag-layer shadow-5"
           style={getItemStyles(initialOffset, currentOffset)}
         >
           <p className="card-body-text">{desc}</p>
@@ -144,7 +144,7 @@ export function Game({
 
       let card = (
         <div
-          className={`card ${
+          className={`game-card ${
             isMyTurn ? "draggable" : ""
           } card-relative-pos shadow-5`}
           ref={isMyTurn ? drag : null}
