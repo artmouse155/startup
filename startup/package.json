@@ -21,6 +21,7 @@
     "express": "^4.21.2",
     "html-react-parser": "^5.2.2",
     "marked": "^15.0.7",
+    "mongodb": "^6.15.0",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dnd": "^16.0.1",

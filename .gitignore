@@ -4,3 +4,4 @@ simon-react-p1/
 simon-react/
 simon-service/
 /startup/node_modules
+startup/service/dbConfig.json

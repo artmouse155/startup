@@ -10,10 +10,11 @@ const express = require("express");
 const uuid = require("uuid");
 const app = express();
 
+const DB = require("./database.js");
+
 const authCookieName = "token";
 
 let users = [];
-let games = {};
 
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
@@ -102,15 +103,6 @@ apiRouter.get("/trophies", (req, res) => {
   res.send(trophies);
 });
 
-// apiRouter.get("/items/:itemId", (req, res) => {
-//   const item = items.find((item) => item.id == req.params.itemId);
-//   if (item) {
-//     res.send(item);
-//   } else {
-//     res.status(404).send({ msg: `Item "${req.params.itemID}" not found` });
-//   }
-// });
-
 var gameRouter = express.Router(); // Must be authenticated to use
 apiRouter.use(`/game`, gameRouter);
 
@@ -123,7 +115,8 @@ const GAME_STATES = {
 };
 
 const verifyRoomCode = async (req, res, next) => {
-  if (games[req.roomCode]) {
+  req.game = getGame(req.roomCode);
+  if (req.game) {
     next();
   } else {
     res
@@ -138,7 +131,7 @@ const verifyCurrentPlayer = async (req, res, next) => {
   const userData = await getUserData(req);
 
   // verify that it is the sender's turn
-  const game = games[roomCode];
+  const game = getGame(roomCode);
   const currentTurnId = game.gameData.current_turn_id;
   const currentPlayerEmail = game.gameData.players[currentTurnId].email;
   if (currentPlayerEmail) {
@@ -165,7 +158,7 @@ gameRouter.post("/host", async (req, res) => {
       .status(409)
       .send({ msg: `Already in game. Room code: ${roomCode}.` });
   }
-  let usedCodes = Object.keys(games);
+  let usedCodes = Object.keys(getAllGames());
   do {
     // Generate room code
     roomCode = "";
@@ -215,7 +208,7 @@ gameRouter.post("/host", async (req, res) => {
     // turnIndex: Number, Create when we call start
     // cards: [Card], Create when we call start
   };
-  games[roomCode] = newGame;
+  setGame(roomCode, newGame);
   console.log(`[${roomCode}]`, email, "created new game");
   res.status(200).send({ roomCode: roomCode });
 });
@@ -231,24 +224,25 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
   const userData = await getUserData(req);
   const email = userData.email;
   const roomCode = req.params.roomCode;
-  if (games[roomCode]) {
-    if (games[roomCode].gameState != GAME_STATES.LOBBY) {
+  const game = getGame(roomCode);
+  if (game) {
+    if (game.gameState != GAME_STATES.LOBBY) {
       return res.status(409).send({ msg: "Game already started or ended" });
     }
-    if (
-      games[roomCode].players.length >= games[roomCode].constants.num_players
-    ) {
+    if (game.players.length >= game.constants.num_players) {
       return res.status(403).send({ msg: "Game full" });
     }
-    for (let j = 0; j < games[roomCode].players.length; j++) {
-      if (games[roomCode].players[j].email == email) {
+    for (let j = 0; j < game.players.length; j++) {
+      if (game.players[j].email == email) {
         removePlayerFromGame(email);
         return res.status(409).send({
           msg: `Already in game. Room code: ${roomCode}.`,
         });
       }
     }
-    games[roomCode].players[email] = { email: email };
+    let game = getGame(roomCode);
+    game.players[email] = { email: email };
+    setGame(roomCode, game);
     console.log(`[${roomCode}]`, email, "joined");
     res.status(200).send(await getConnectionData(roomCode, email));
   } else {
@@ -284,78 +278,81 @@ gameServerRouter.post("/start", async (req, res) => {
   const userData = await getUserData(req);
   // If the user is the host, start the game
   console.log(`[${roomCode}]`, "Game start requested by", userData.email);
-  if (games[roomCode].host == userData.email) {
+  if (req.game.host == userData.email) {
     // If the game state is already play, we don't need to set up. Instead, we return an error.
-    if (games[roomCode].gameState == GAME_STATES.PLAY) {
+    if (req.game.gameState == GAME_STATES.PLAY) {
       res.status(409).send({ msg: "Game already started" });
     } else {
       // Set up the game
       // Assign a random order to the players, then assign random aspects.
-      const num_players = Object.entries(games[roomCode].players).length;
+      const num_players = Object.entries(req.game.players).length;
       let order = Array.from({ length: num_players }, (_, i) => i); // From https://dev.to/ycmjason/how-to-create-range-in-javascript-539i
       const orderShuffled = shuffler.shuffled(order);
 
       let aspects = ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"];
       const aspectsShuffled = shuffler.shuffled(aspects);
-      // First, assign each player in games[roomCode].players a random turnIndex
+      // First, assign each player in req.game.players a random turnIndex
       let i = 0;
       let gameDataPlayers = [];
-      for (const [email, player] of Object.entries(games[roomCode].players)) {
-        games[roomCode].players[email].turnIndex = orderShuffled[i];
+      for (const [email, player] of Object.entries(req.game.players)) {
+        req.game.players[email].turnIndex = orderShuffled[i];
         gameDataPlayers.push({
           email: email,
           aspect: aspectsShuffled[i],
-          cards: Array(games[roomCode].constants.num_cards).fill(1),
+          cards: Array(req.game.constants.num_cards).fill(1),
         });
         i++;
       }
       // sortgameDataPlayers by game[roomCode].players[email].turnIndex
       gameDataPlayers.sort((a, b) => {
         return (
-          games[roomCode].players[a.email].turnIndex -
-          games[roomCode].players[b.email].turnIndex
+          req.game.players[a.email].turnIndex -
+          req.game.players[b.email].turnIndex
         );
       });
-      games[roomCode].gameData.players = gameDataPlayers;
+      req.game.gameData.players = gameDataPlayers;
       // Set the gameState to PLAY
-      games[roomCode].gameState = GAME_STATES.PLAY;
+      req.game.gameState = GAME_STATES.PLAY;
       // Set the heroData to the heroName and heroGender from the request body
-      games[roomCode].heroData = storyApi.getRandomHero();
+      req.game.heroData = storyApi.getRandomHero();
 
-      for (let i = 0; i < games[roomCode].gameData.players.length; i++) {
-        const email = games[roomCode].gameData.players[i].email;
+      for (let i = 0; i < req.game.gameData.players.length; i++) {
+        const email = req.game.gameData.players[i].email;
         //console.log("email:", email);
         // Generate 5 random cards for each player
         // PLACEHOLDER: Variation based on the current aspect of the player
         let cardsExport = [];
-        for (let j = 0; j < games[roomCode].constants.num_cards; j++) {
+        for (let j = 0; j < req.game.constants.num_cards; j++) {
           let { outcomes, ...cardWithoutOutcomes } = shuffler.getRandom(cards);
           let n = { num_id: j, ...cardWithoutOutcomes };
           cardsExport.push(n);
         }
-        games[roomCode].players[email].cards = cardsExport;
+        req.game.players[email].cards = cardsExport;
       }
       // Set an empty inventory
-      games[roomCode].gameData.inventory = Array(
-        games[roomCode].constants.num_item_slots
+      req.game.gameData.inventory = Array(
+        req.game.constants.num_item_slots
       ).fill("");
       // Set the story to the introJSON
-      games[roomCode].story = [];
+      req.game.story = [];
+
+      // Set the tempStory to something random
+      req.game.tempStory = {
+        text: [],
+        type: "turn",
+        playerTurnName: usernameFromEmail(req.game.gameData.players[0].email),
+      };
+
+      // Set the game with MongoDB
+      setGame(roomCode, req.game);
+
       const intro_outcome = shuffler.getRandom(introJSON.sections);
 
       // Push the intro story, using storyAPI.apiCall to replace $stuff$.
       await pushOutcome(roomCode, intro_outcome);
 
-      // Set the tempStory to something random
-      games[roomCode].tempStory = {
-        text: [],
-        type: "turn",
-        playerTurnName: usernameFromEmail(
-          games[roomCode].gameData.players[0].email
-        ),
-      };
       // PLACEHOLDER: Respond with the connection data
-      for (const player in games[roomCode].players) {
+      for (const player in req.game.players) {
         console.log(
           `[${roomCode}]`,
           "Sending connection data to",
@@ -394,7 +391,7 @@ gameServerRouter.post("/connection/get", async (req, res) => {
 });
 
 async function getConnectionData(roomCode, email) {
-  const game = games[roomCode];
+  const game = getGame(roomCode);
   const player = game.players[email];
   const clientGameData = { ...game.gameData };
   clientGameData.players = clientGameData.players.map((p) => {
@@ -430,20 +427,21 @@ async function removePlayerFromGame(email) {
   if (!roomCode) {
     return false;
   }
-  //console.log(`[${roomCode}]`, `removing ${email} from game`, games[roomCode]);
-  const players = games[roomCode].players;
-  if (games[roomCode].players[email]) {
+  //console.log(`[${roomCode}]`, `removing ${email} from game`, getGame(roomCode));
+  const game = getGame(roomCode);
+  const players = game.players;
+  if (game.players[email]) {
     console.log(`[${roomCode}]`, email, "left the game");
-    delete games[roomCode].players[email];
+    delete game.players[email];
     // If (game in progress) or (email was host) or (no players left), delete game
     if (
-      games[roomCode].gameState == GAME_STATES.PLAY ||
+      game.gameState == GAME_STATES.PLAY ||
       Object.keys(players).length == 0 ||
-      games[roomCode].host == email
+      game.host == email
     ) {
       // TODO Placeholder WebSocket: Tell clients the host has left, or tell other players the game has ended
       console.log("Game", roomCode, "deleted");
-      delete games[roomCode];
+      deleteGame(roomCode);
     }
     return true;
   }
@@ -451,9 +449,9 @@ async function removePlayerFromGame(email) {
 
 async function findRoomCodeByPlayerEmail(email) {
   if (!email) return false;
-  for (const roomCode of Object.keys(games)) {
-    //console.log("Checking room", roomCode, Object.keys(games));
-    const game = games[roomCode];
+  for (const roomCode of Object.keys(getAllGames())) {
+    //console.log("Checking room", roomCode, Object.keys(getAllGames()));
+    const game = getGame(roomCode);
     for (const playerEmail of Object.keys(game.players)) {
       if (playerEmail == email) return game.roomCode;
     }
@@ -464,7 +462,8 @@ async function findRoomCodeByPlayerEmail(email) {
 async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
-  let gameData = games[roomCode].gameData;
+  let game = getGame(roomCode);
+  let gameData = game.gameData;
   const current_turn_id = gameData.current_turn_id;
 
   console.log(
@@ -472,7 +471,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   );
 
   // If this card has already been played, something crazy is going on!
-  const card_id = games[roomCode].players[email].cards[card_num_id].id;
+  const card_id = game.players[email].cards[card_num_id].id;
   const card = cards.find((card) => card.id == card_id);
   if (!card) {
     console.log(`[${roomCode}]`, "No card found for card", card_num_id);
@@ -486,7 +485,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   }
 
   // This card is no longer playable.
-  games[roomCode].gameData.players[current_turn_id].cards[card_num_id] = 0;
+  game.gameData.players[current_turn_id].cards[card_num_id] = 0;
 
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];
@@ -519,9 +518,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
           const result = results[j];
 
           if (result.type == "aspect-points") {
-            games[roomCode].gameData.aspects[result.aspect] += parseInt(
-              result.amt
-            );
+            game.gameData.aspects[result.aspect] += parseInt(result.amt);
           }
 
           if (result.type == "item-obtained") {
@@ -529,18 +526,14 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
             // If there isn't an item in the slot, the value of the slot is "".
             // You always have NUM_ITEM_SLOTS slots in your inventory.
             // If you try to add an item to a full inventory, the oldest item disappears.
-            if (!games[roomCode].gameData.inventory.includes("")) {
-              games[roomCode].gameData.inventory.shift(); // Remove the oldest item
-              games[roomCode].gameData.inventory.push(result.item);
+            if (!game.gameData.inventory.includes("")) {
+              game.gameData.inventory.shift(); // Remove the oldest item
+              game.gameData.inventory.push(result.item);
               outcome.text.push(`_Not enough room. Oldest item removed._`);
             } else {
-              for (
-                let k = 0;
-                k < games[roomCode].gameData.inventory.length;
-                k++
-              ) {
-                if (games[roomCode].gameData.inventory[k] == "") {
-                  games[roomCode].gameData.inventory[k] = result.item;
+              for (let k = 0; k < game.gameData.inventory.length; k++) {
+                if (game.gameData.inventory[k] == "") {
+                  game.gameData.inventory[k] = result.item;
                   break;
                 }
               }
@@ -569,14 +562,17 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
       }
 
       // Set tempStory
-      games[roomCode].tempStory = {
+      game.tempStory = {
         type: "turn",
         playerTurnName: getCardUserName(),
         text: [],
       };
 
+      // Set the game with MongoDB
+      setGame(roomCode, game);
+
       // PLACEHOLDER for websocket
-      for (const player in games[roomCode]) {
+      for (const player in game) {
         // textboxPushFunc({
         //   ...outcome,
         //   type: "turn",
@@ -593,11 +589,12 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
 
 async function pushOutcome(roomCode, outcome) {
   // Verify game exists
-  if (!games[roomCode]) {
+  let game = getGame(roomCode);
+  if (!game) {
     console.log(`[${roomCode}]`, "Game not found");
     return;
   }
-  const heroData = games[roomCode].heroData;
+  const heroData = game.heroData;
   //console.log("Parsing outcome", outcome);
   updatedText = [...outcome.text];
   for (let i = 0; i < updatedText.length; i++) {
@@ -605,7 +602,7 @@ async function pushOutcome(roomCode, outcome) {
   }
   const updatedOutcome = { ...outcome, text: updatedText };
   console.log(`[${roomCode}]`, "Pushed new outcome", updatedOutcome);
-  games[roomCode].story.push(updatedOutcome);
+  pushStory(roomCode, updatedOutcome);
 }
 
 function getItemData(item_id) {
@@ -626,38 +623,37 @@ function getItemData(item_id) {
 }
 
 function nextTurn(roomCode) {
-  games[roomCode].gameData.current_turn_id++;
-  if (
-    games[roomCode].gameData.current_turn_id >=
-    games[roomCode].gameData.players.length
-  ) {
-    games[roomCode].gameData.current_turn_id = 0;
-    games[roomCode].gameData.turns++;
+  let game = getGame(roomCode);
+  game.gameData.current_turn_id++;
+  if (game.gameData.current_turn_id >= game.gameData.players.length) {
+    game.gameData.current_turn_id = 0;
+    game.gameData.turns++;
   }
   if (
-    games[roomCode].gameData.turns >=
-    games[roomCode].constants.num_cards *
-      Object.keys(games[roomCode].players).length
+    game.gameData.turns >=
+    game.constants.num_cards * Object.keys(game.players).length
   ) {
     finishGame(roomCode);
   }
 }
 
 function finishGame(roomCode) {
-  if (games[roomCode].gameState != GAME_STATES.END) {
-    games[roomCode].gameState = GAME_STATES.END;
+  let game = getGame(roomCode);
+  if (game.gameState != GAME_STATES.END) {
+    game.gameState = GAME_STATES.END;
     // PLACEHOLDER: Tell clients the game has ended
     // PLACEHOLDER: Give each client 5 trophies
-    for (let i = 0; i < Object.keys(games[roomCode].players).length; i++) {
-      const player = games[roomCode].gameData.players[i];
+    for (let i = 0; i < Object.keys(gameplayers).length; i++) {
+      const player = game.gameData.players[i];
       const trophiesEarned = 5;
       const email = player.email;
-      games[roomCode].gameData.players[i] = {
+      game.gameData.players[i] = {
         trophiesEarned: trophiesEarned,
         ...player,
       };
       addTrophies({ email: email, trophies: trophiesEarned });
     }
+    setGame(roomCode, game);
     console.log(`[${roomCode}]`, "Game ended");
   }
 }

@@ -1339,3 +1339,7 @@ app.use(function (err, req, res, next) {
 ### node.js
 
 We are going to be moving the dist directory's contents into service/public so that we only have to run the backend and then everything works!
+
+## Database
+
+You can use Mailinator to use a fake email address.
