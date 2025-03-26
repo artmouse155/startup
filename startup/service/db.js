@@ -44,8 +44,14 @@ async function updateUser(user) {
   await userCollection.updateOne({ email: user.email }, { $set: user });
 }
 
-async function getGame(roomCode) {
+function getGame(roomCode) {
   return gameCollection.findOne({ roomCode: roomCode });
+}
+
+function getGameByPlayerEmail(email) {
+  let match = { players: { $elemMatch: { email: email } } };
+  console.log(match);
+  return gameCollection.findOne(match);
 }
 
 async function setGame(roomCode, game) {
@@ -93,6 +99,7 @@ module.exports = {
   addUser,
   updateUser,
   getGame,
+  getGameByPlayerEmail,
   setGame,
   deleteGame,
   getAllGames,

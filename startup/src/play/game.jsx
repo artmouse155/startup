@@ -27,7 +27,6 @@ export function Game({
     gameState,
     host,
     myPlayerId,
-    players = connectionDataPlayers,
     constants,
     myCards,
     heroData,

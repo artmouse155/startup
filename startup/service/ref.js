@@ -59,7 +59,7 @@ const Games = () => {
       roomCode: String,
       gameState: String, // LOBBY = 0, PLAY = 1, END = 2
       host: String, // Attr is different on client side; this is the email of the host. On client side, is just username
-      players: { _email: { email: String, turnIndex: Number, cards: [Card] } }, // Attr different on client side
+      players: [{ email: String, turnIndex: Number, cards: [Card] }], // Attr different on client side
       constants: {
         num_cards: Number,
         num_players: Number, // Max number of players. May be greater than actual number of players.
