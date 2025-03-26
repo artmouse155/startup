@@ -47,6 +47,7 @@ apiRouter.post("/auth/login", async (req, res) => {
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
+      DB.updateUser(user);
       setAuthCookie(res, user.token);
       res.send({ email: user.email, trophies: user.trophies });
       return;
@@ -67,7 +68,9 @@ apiRouter.delete("/auth/logout", async (req, res) => {
 
 // Check if the user is authorized
 const verifyAuth = async (req, res, next) => {
+  // console.log("Verifying Auth!", req.cookies[authCookieName]);
   const user = await DB.getUserByToken(req.cookies[authCookieName]);
+  // console.log("User:", user);
   if (user) {
     next();
   } else {
@@ -76,6 +79,7 @@ const verifyAuth = async (req, res, next) => {
 };
 
 async function getUserData(req) {
+  console.log("Getting user data", req.cookies[authCookieName]);
   const user = await DB.getUserByToken(req.cookies[authCookieName]);
   if (user) {
     return { email: user.email, trophies: user.trophies };
@@ -86,7 +90,7 @@ async function getUserData(req) {
 
 // Get the number of trophies the user has
 apiRouter.get("/trophy", verifyAuth, async (req, res) => {
-  const userData = await DB.getUserData(req);
+  const userData = await getUserData(req);
   res.send({ trophies: userData.trophies });
 });
 
@@ -113,7 +117,7 @@ const GAME_STATES = {
 };
 
 const verifyRoomCode = async (req, res, next) => {
-  req.game = getGame(req.roomCode);
+  req.game = await DB.getGame(req.roomCode);
   if (req.game) {
     next();
   } else {
@@ -126,10 +130,10 @@ const verifyRoomCode = async (req, res, next) => {
 const verifyCurrentPlayer = async (req, res, next) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
-  const userData = await DB.getUserData(req);
+  const userData = await getUserData(req);
 
   // verify that it is the sender's turn
-  const game = getGame(roomCode);
+  const game = DB.getGame(roomCode);
   const currentTurnId = game.gameData.current_turn_id;
   const currentPlayerEmail = game.gameData.players[currentTurnId].email;
   if (currentPlayerEmail) {
@@ -146,7 +150,8 @@ gameRouter.post("/host", async (req, res) => {
   // Create new roomCode that isn't in use
   // Create list of all room codes
   // Codes are 5 letters long
-  const userData = await DB.getUserData(req);
+
+  const userData = await getUserData(req);
   const email = userData.email;
   let roomCode = await findRoomCodeByPlayerEmail(email);
   // console.log(roomCode);
@@ -156,7 +161,7 @@ gameRouter.post("/host", async (req, res) => {
       .status(409)
       .send({ msg: `Already in game. Room code: ${roomCode}.` });
   }
-  let usedCodes = Object.keys(getAllGames());
+  let usedCodes = Object.keys(DB.getAllGames());
   do {
     // Generate room code
     roomCode = "";
@@ -206,7 +211,7 @@ gameRouter.post("/host", async (req, res) => {
     // turnIndex: Number, Create when we call start
     // cards: [Card], Create when we call start
   };
-  setGame(roomCode, newGame);
+  DB.setGame(roomCode, newGame);
   console.log(`[${roomCode}]`, email, "created new game");
   res.status(200).send({ roomCode: roomCode });
 });
@@ -219,10 +224,10 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
   // Otherwise, add the player to the game and respond with a message saying they joined the game
   // If the room code is not in the active games list, respond with a message saying the game does not exist
 
-  const userData = await DB.getUserData(req);
+  const userData = await getUserData(req);
   const email = userData.email;
   const roomCode = req.params.roomCode;
-  const game = getGame(roomCode);
+  const game = DB.getGame(roomCode);
   if (game) {
     if (game.gameState != GAME_STATES.LOBBY) {
       return res.status(409).send({ msg: "Game already started or ended" });
@@ -238,9 +243,9 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
         });
       }
     }
-    let game = getGame(roomCode);
+    let game = DB.getGame(roomCode);
     game.players[email] = { email: email };
-    setGame(roomCode, game);
+    DB.setGame(roomCode, game);
     console.log(`[${roomCode}]`, email, "joined");
     res.status(200).send(await getConnectionData(roomCode, email));
   } else {
@@ -252,7 +257,7 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
 
 gameRouter.delete("/leave", async (req, res) => {
   // Remove user from current game
-  const userData = await DB.getUserData(req);
+  const userData = await getUserData(req);
   const email = userData.email;
   removePlayerFromGame(email);
   res.status(204).end();
@@ -273,7 +278,7 @@ gameServerRouter.use(verifyRoomCode);
 gameServerRouter.post("/start", async (req, res) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
-  const userData = await DB.getUserData(req);
+  const userData = await getUserData(req);
   // If the user is the host, start the game
   console.log(`[${roomCode}]`, "Game start requested by", userData.email);
   if (req.game.host == userData.email) {
@@ -342,7 +347,7 @@ gameServerRouter.post("/start", async (req, res) => {
       };
 
       // Set the game with MongoDB
-      setGame(roomCode, req.game);
+      DB.setGame(roomCode, req.game);
 
       const intro_outcome = shuffler.getRandom(introJSON.sections);
 
@@ -370,7 +375,7 @@ gameServerRouter.post(
   async (req, res) => {
     const roomCode = req.roomCode;
     // get user email based on their auth token
-    const userData = await DB.getUserData(req);
+    const userData = await getUserData(req);
     const email = userData.email;
     // Apply aspect changes, item changes, and story changes. Switch turn AND take away the card.
     if (await evalCard(roomCode, email, req.params.cardIndex)) {
@@ -384,12 +389,12 @@ gameServerRouter.post(
 gameServerRouter.post("/connection/get", async (req, res) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
-  const userData = await DB.getUserData(req);
+  const userData = await getUserData(req);
   res.status(200).send(await getConnectionData(roomCode, userData.email));
 });
 
 async function getConnectionData(roomCode, email) {
-  const game = getGame(roomCode);
+  const game = await DB.getGame(roomCode);
   const player = game.players[email];
   const clientGameData = { ...game.gameData };
   clientGameData.players = clientGameData.players.map((p) => {
@@ -426,7 +431,7 @@ async function removePlayerFromGame(email) {
     return false;
   }
   //console.log(`[${roomCode}]`, `removing ${email} from game`, getGame(roomCode));
-  const game = getGame(roomCode);
+  const game = DB.getGame(roomCode);
   const players = game.players;
   if (game.players[email]) {
     console.log(`[${roomCode}]`, email, "left the game");
@@ -447,9 +452,9 @@ async function removePlayerFromGame(email) {
 
 async function findRoomCodeByPlayerEmail(email) {
   if (!email) return false;
-  for (const roomCode of Object.keys(getAllGames())) {
+  for (const roomCode of Object.keys(DB.getAllGames())) {
     //console.log("Checking room", roomCode, Object.keys(getAllGames()));
-    const game = getGame(roomCode);
+    const game = DB.getGame(roomCode);
     for (const playerEmail of Object.keys(game.players)) {
       if (playerEmail == email) return game.roomCode;
     }
@@ -460,7 +465,7 @@ async function findRoomCodeByPlayerEmail(email) {
 async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
-  let game = getGame(roomCode);
+  let game = DB.getGame(roomCode);
   let gameData = game.gameData;
   const current_turn_id = gameData.current_turn_id;
 
@@ -567,7 +572,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
       };
 
       // Set the game with MongoDB
-      setGame(roomCode, game);
+      DB.setGame(roomCode, game);
 
       // PLACEHOLDER for websocket
       for (const player in game) {
@@ -587,7 +592,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
 
 async function pushOutcome(roomCode, outcome) {
   // Verify game exists
-  let game = getGame(roomCode);
+  let game = DB.getGame(roomCode);
   if (!game) {
     console.log(`[${roomCode}]`, "Game not found");
     return;
@@ -621,7 +626,7 @@ function getItemData(item_id) {
 }
 
 function nextTurn(roomCode) {
-  let game = getGame(roomCode);
+  let game = DB.getGame(roomCode);
   game.gameData.current_turn_id++;
   if (game.gameData.current_turn_id >= game.gameData.players.length) {
     game.gameData.current_turn_id = 0;
@@ -636,7 +641,7 @@ function nextTurn(roomCode) {
 }
 
 async function finishGame(roomCode) {
-  let game = getGame(roomCode);
+  let game = DB.getGame(roomCode);
   if (game.gameState != GAME_STATES.END) {
     game.gameState = GAME_STATES.END;
     // PLACEHOLDER: Tell clients the game has ended
@@ -651,7 +656,7 @@ async function finishGame(roomCode) {
       };
       await addTrophies({ email: email, trophies: trophiesEarned });
     }
-    setGame(roomCode, game);
+    DB.setGame(roomCode, game);
     console.log(`[${roomCode}]`, "Game ended");
   }
 }
