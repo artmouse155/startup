@@ -20,64 +20,76 @@ const gameCollection = db.collection("game");
   }
 })();
 
-let games = {};
-
-async function getUser(uid) {
-  return { uid, name: "John Doe" };
-  return db.collection("users").doc(uid).get();
+function getUser(email) {
+  return userCollection.findOne({ email: email });
 }
 
-async function getUserByToken(token) {
-  return { uid: "123", name: "John Doe" };
-  return db.collection("users").where("token", "==", token).get();
+function getUserByToken(token) {
+  return userCollection.findOne({ token: token });
+}
+
+// update trophies updates the number of trophies the user has.
+async function addTrophies({ email, trophies } = newTrophyData) {
+  await userCollection.updateOne(
+    { email: email },
+    { $inc: { trophies: trophies } }
+  );
 }
 
 async function addUser(user) {
-  return;
-  return db.collection("users").doc(user.uid).set(user);
+  await userCollection.insertOne(user);
 }
 
 async function updateUser(user) {
-  return;
-  return db.collection("users").doc(user.uid).update(user);
+  await userCollection.updateOne({ email: user.email }, { $set: user });
 }
 
 async function getGame(roomCode) {
-  return games[roomCode];
-  return db.collection("games").doc(roomCode).get();
+  return gameCollection.findOne({ roomCode: roomCode });
 }
 
 async function setGame(roomCode, game) {
-  games[roomCode] = game;
-  return;
-  return db.collection("games").doc(roomCode).set(game);
+  await gameCollection.updateOne(
+    { roomCode: roomCode },
+    { $set: game },
+    { upsert: true }
+  );
 }
 
 async function deleteGame(roomCode) {
-  delete games[roomCode];
-  return;
-  return db.collection("games").doc(roomCode).delete();
+  await gameCollection.deleteOne({ roomCode: roomCode });
 }
 
 async function getAllGames() {
-  return games;
-  return db.collection("games").get();
+  const query = { roomCode: { $exists: true } };
+  const options = {
+    limit: 50,
+  };
+  const cursor = gameCollection.find(query, options);
+  return cursor.toArray();
 }
 
 async function pushStory(roomCode, story) {
-  games[roomCode].stories.push(story);
-  return;
-  return db
-    .collection("games")
-    .doc(roomCode)
-    .update({
-      stories: firebase.firestore.FieldValue.arrayUnion(story),
-    });
+  await gameCollection.updateOne(
+    { roomCode: roomCode },
+    { $push: { stories: story } }
+  );
+}
+
+function getHighScores() {
+  const query = { trophies: { $gt: 0, $lt: 900 } };
+  const options = {
+    sort: { trophies: -1 },
+    limit: 10,
+  };
+  const cursor = userCollection.find(query, options);
+  return cursor.toArray();
 }
 
 module.exports = {
   getUser,
   getUserByToken,
+  addTrophies,
   addUser,
   updateUser,
   getGame,
@@ -85,4 +97,5 @@ module.exports = {
   deleteGame,
   getAllGames,
   pushStory,
+  getHighScores,
 };

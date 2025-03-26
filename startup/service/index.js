@@ -10,11 +10,9 @@ const express = require("express");
 const uuid = require("uuid");
 const app = express();
 
-const DB = require("./database.js");
+const DB = require("./db.js");
 
 const authCookieName = "token";
-
-let users = [];
 
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
@@ -31,7 +29,7 @@ app.use(`/api`, apiRouter);
 // create new user
 apiRouter.post("/auth/create", async (req, res) => {
   // has email and password
-  if (await findUser("email", req.body.email)) {
+  if (await DB.getUser(req.body.email)) {
     res.status(409).send({ msg: "Existing user" });
   } else {
     const user = await createUser(req.body.email, req.body.password);
@@ -45,7 +43,7 @@ apiRouter.post("/auth/create", async (req, res) => {
 
 // log in a user
 apiRouter.post("/auth/login", async (req, res) => {
-  const user = await findUser("email", req.body.email);
+  const user = await DB.getUser(req.body.email);
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
@@ -59,7 +57,7 @@ apiRouter.post("/auth/login", async (req, res) => {
 
 // logout a user
 apiRouter.delete("/auth/logout", async (req, res) => {
-  const user = await findUser("token", req.cookies[authCookieName]);
+  const user = await DB.getUserByToken(req.cookies[authCookieName]);
   if (user) {
     delete user.token;
   }
@@ -69,7 +67,7 @@ apiRouter.delete("/auth/logout", async (req, res) => {
 
 // Check if the user is authorized
 const verifyAuth = async (req, res, next) => {
-  const user = await findUser("token", req.cookies[authCookieName]);
+  const user = await DB.getUserByToken(req.cookies[authCookieName]);
   if (user) {
     next();
   } else {
@@ -78,7 +76,7 @@ const verifyAuth = async (req, res, next) => {
 };
 
 async function getUserData(req) {
-  const user = await findUser("token", req.cookies[authCookieName]);
+  const user = await DB.getUserByToken(req.cookies[authCookieName]);
   if (user) {
     return { email: user.email, trophies: user.trophies };
   } else {
@@ -88,7 +86,7 @@ async function getUserData(req) {
 
 // Get the number of trophies the user has
 apiRouter.get("/trophy", verifyAuth, async (req, res) => {
-  const userData = await getUserData(req);
+  const userData = await DB.getUserData(req);
   res.send({ trophies: userData.trophies });
 });
 
@@ -96,10 +94,10 @@ apiRouter.get("/trophy", verifyAuth, async (req, res) => {
 apiRouter.get("/trophies", (req, res) => {
   // only send the email and number of trophies for each user
   // only return everything before the @ symbol of the email
-  const trophies = users.map((u) => ({
-    userName: u.email.split("@")[0],
-    trophies: u.trophies,
-  }));
+  const trophies = DB.getHighScores().map((user) => {
+    return { email: user.email.split("@")[0], trophies: user.trophies };
+  });
+  console.log(trophies);
   res.send(trophies);
 });
 
@@ -128,7 +126,7 @@ const verifyRoomCode = async (req, res, next) => {
 const verifyCurrentPlayer = async (req, res, next) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
-  const userData = await getUserData(req);
+  const userData = await DB.getUserData(req);
 
   // verify that it is the sender's turn
   const game = getGame(roomCode);
@@ -148,7 +146,7 @@ gameRouter.post("/host", async (req, res) => {
   // Create new roomCode that isn't in use
   // Create list of all room codes
   // Codes are 5 letters long
-  const userData = await getUserData(req);
+  const userData = await DB.getUserData(req);
   const email = userData.email;
   let roomCode = await findRoomCodeByPlayerEmail(email);
   // console.log(roomCode);
@@ -221,7 +219,7 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
   // Otherwise, add the player to the game and respond with a message saying they joined the game
   // If the room code is not in the active games list, respond with a message saying the game does not exist
 
-  const userData = await getUserData(req);
+  const userData = await DB.getUserData(req);
   const email = userData.email;
   const roomCode = req.params.roomCode;
   const game = getGame(roomCode);
@@ -254,7 +252,7 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
 
 gameRouter.delete("/leave", async (req, res) => {
   // Remove user from current game
-  const userData = await getUserData(req);
+  const userData = await DB.getUserData(req);
   const email = userData.email;
   removePlayerFromGame(email);
   res.status(204).end();
@@ -275,7 +273,7 @@ gameServerRouter.use(verifyRoomCode);
 gameServerRouter.post("/start", async (req, res) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
-  const userData = await getUserData(req);
+  const userData = await DB.getUserData(req);
   // If the user is the host, start the game
   console.log(`[${roomCode}]`, "Game start requested by", userData.email);
   if (req.game.host == userData.email) {
@@ -372,7 +370,7 @@ gameServerRouter.post(
   async (req, res) => {
     const roomCode = req.roomCode;
     // get user email based on their auth token
-    const userData = await getUserData(req);
+    const userData = await DB.getUserData(req);
     const email = userData.email;
     // Apply aspect changes, item changes, and story changes. Switch turn AND take away the card.
     if (await evalCard(roomCode, email, req.params.cardIndex)) {
@@ -386,7 +384,7 @@ gameServerRouter.post(
 gameServerRouter.post("/connection/get", async (req, res) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
-  const userData = await getUserData(req);
+  const userData = await DB.getUserData(req);
   res.status(200).send(await getConnectionData(roomCode, userData.email));
 });
 
@@ -637,7 +635,7 @@ function nextTurn(roomCode) {
   }
 }
 
-function finishGame(roomCode) {
+async function finishGame(roomCode) {
   let game = getGame(roomCode);
   if (game.gameState != GAME_STATES.END) {
     game.gameState = GAME_STATES.END;
@@ -651,7 +649,7 @@ function finishGame(roomCode) {
         trophiesEarned: trophiesEarned,
         ...player,
       };
-      addTrophies({ email: email, trophies: trophiesEarned });
+      await addTrophies({ email: email, trophies: trophiesEarned });
     }
     setGame(roomCode, game);
     console.log(`[${roomCode}]`, "Game ended");
@@ -670,18 +668,6 @@ app.use((_req, res) => {
   res.sendFile("index.html", { root: "public" });
 });
 
-// update trophies updates the number of trophies the user has.
-function addTrophies({ email, trophies } = newTrophyData) {
-  for (let i = 0; i < users.length; i++) {
-    if (users[i].email == email) {
-      users[i].trophies += parseInt(trophies);
-      return true;
-    }
-  }
-
-  return false;
-}
-
 // Creates a new user
 async function createUser(email, password) {
   const passwordHash = await bcrypt.hash(password, 10);
@@ -692,17 +678,17 @@ async function createUser(email, password) {
     token: uuid.v4(),
     trophies: 0,
   };
-  users.push(user);
+  DB.addUser(user);
 
   return user;
 }
 
 // Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
-async function findUser(field, value) {
-  if (!value) return null;
+// async function findUser(field, value) {
+//   if (!value) return null;
 
-  return users.find((u) => u[field] === value);
-}
+//   return users.find((u) => u[field] === value);
+// }
 
 // setAuthCookie in the HTTP response
 function setAuthCookie(res, authToken) {
