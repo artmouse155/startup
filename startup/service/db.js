@@ -20,11 +20,11 @@ const gameCollection = db.collection("game");
   }
 })();
 
-function getUser(email) {
+async function getUser(email) {
   return userCollection.findOne({ email: email });
 }
 
-function getUserByToken(token) {
+async function getUserByToken(token) {
   return userCollection.findOne({ token: token });
 }
 
@@ -44,7 +44,7 @@ async function updateUser(user) {
   await userCollection.updateOne({ email: user.email }, { $set: user });
 }
 
-function getGame(roomCode) {
+async function getGame(roomCode) {
   return gameCollection.findOne({ roomCode: roomCode });
 }
 
@@ -82,7 +82,7 @@ async function pushStory(roomCode, story) {
   );
 }
 
-function getHighScores() {
+async function getHighScores() {
   const query = { trophies: { $gt: 0, $lt: 900 } };
   const options = {
     sort: { trophies: -1 },
