@@ -345,13 +345,13 @@ gameServerRouter.post("/start", async (req, res) => {
         playerTurnName: usernameFromEmail(req.game.gameData.players[0].email),
       };
 
-      // Set the game with MongoDB
-      await DB.setGame(roomCode, req.game);
-
       const intro_outcome = shuffler.getRandom(introJSON.sections);
 
       // Push the intro story, using storyAPI.apiCall to replace $stuff$.
-      await pushOutcome(roomCode, intro_outcome, req.game.heroData);
+      await pushOutcome(req.game, intro_outcome, req.game.heroData);
+
+      // Set the game with MongoDB
+      await DB.setGame(roomCode, req.game);
 
       // PLACEHOLDER: Respond with the connection data
       for (const player of req.game.players) {
@@ -556,7 +556,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
 
       // Push outcome to story
       await pushOutcome(
-        roomCode,
+        game,
         {
           type: "turn",
           playerTurnName: getCardUserName(),
@@ -622,11 +622,11 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   return false;
 }
 
-async function pushOutcome(roomCode, outcome, heroData) {
+// IMPORTANT: Uses pass by REFERENCE
+async function pushOutcome(game, outcome, heroData) {
   // Verify game exists
-  let game = await DB.getGame(roomCode);
   if (!game) {
-    console.log(`[${roomCode}]`, "Game not found");
+    console.log("Game not found");
     return;
   }
   console.log("Parsing outcome", outcome);
@@ -635,9 +635,8 @@ async function pushOutcome(roomCode, outcome, heroData) {
     updatedText[i] = await storyApi.apiCall(updatedText[i], heroData);
   }
   const updatedOutcome = { ...outcome, text: updatedText };
-  console.log(`[${roomCode}]`, "Pushed new outcome", updatedOutcome);
+  console.log(`[${game.roomCode}]`, "Pushed new outcome", updatedOutcome);
   game.story.push(updatedOutcome);
-  await DB.setGame(roomCode, game);
 }
 
 function getItemData(item_id) {
