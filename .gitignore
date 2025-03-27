@@ -6,3 +6,4 @@ simon-service/
 /startup/node_modules
 startup/service/dbConfig.json
 /startup/service/node_modules
+simon-db/
