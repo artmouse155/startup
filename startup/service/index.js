@@ -102,7 +102,7 @@ apiRouter.get("/trophies", async (req, res) => {
   // only send the email and number of trophies for each user
   // only return everything before the @ symbol of the email
   const trophies = (await DB.getHighScores()).map((user) => {
-    return { userName: user.email, trophies: user.trophies };
+    return { userName: displayName(user.email), trophies: user.trophies };
   });
   console.log(trophies);
   res.send(trophies);
@@ -335,7 +335,7 @@ gameServerRouter.post("/start", async (req, res) => {
       req.game.tempStory = {
         text: [],
         type: "turn",
-        playerTurnName: usernameFromEmail(req.game.gameData.players[0].email),
+        playerTurnName: displayName(req.game.gameData.players[0].email),
       };
 
       const intro_outcome = shuffler.getRandom(introJSON.sections);
@@ -392,7 +392,7 @@ async function getConnectionData(roomCode, email) {
   const clientGameData = { ...game.gameData };
   clientGameData.players = clientGameData.players.map((p) => {
     return {
-      name: usernameFromEmail(p.email),
+      name: displayName(p.email),
       aspect: p.aspect,
       cards: p.cards,
       trophiesEarned: p.trophiesEarned,
@@ -405,9 +405,9 @@ async function getConnectionData(roomCode, email) {
     roomCode: roomCode,
     gameState: game.gameState,
     amHost: game.host == email,
-    host: usernameFromEmail(game.host),
+    host: displayName(game.host),
     myPlayerId: player.turnIndex,
-    players: game.players.map((p) => usernameFromEmail(p.email)),
+    players: game.players.map((p) => displayName(p.email)),
     myCards: player.cards,
     constants: game.constants,
     heroData: game.heroData,
@@ -542,9 +542,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
         }
       }
       const getCardUserName = () => {
-        return usernameFromEmail(
-          gameData.players[gameData.current_turn_id].email
-        );
+        return displayName(gameData.players[gameData.current_turn_id].email);
       };
 
       // Push outcome to story
@@ -734,6 +732,10 @@ app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
 
-function usernameFromEmail(email) {
-  return email.split("@")[0];
+function displayName(email) {
+  // Check if the userName has an '@' in it, if so, use the first part of the email as the display name
+  if (email.includes("@")) {
+    return email.split("@")[0];
+  }
+  return email;
 }

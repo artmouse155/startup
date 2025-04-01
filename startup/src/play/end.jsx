@@ -60,8 +60,9 @@ export function End({
     let s = players.sort((a, b) => b.score - a.score);
     let rows = [];
     for (let i = 0; i < s.length; i++) {
+      const isMe = s[i].aspect == gameData.players[myPlayerId].aspect;
       rows.push(
-        <tr key={i}>
+        <tr key={i} id={isMe ? "selected" : ""}>
           <td>{i + 1}</td>
           <td>{s[i].name}</td>
           <td>{Aspects[s[i].aspect].text}</td>

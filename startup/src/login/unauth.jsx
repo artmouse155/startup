@@ -27,7 +27,6 @@ export function UnAuth({
   }
 
   async function loginOrCreate(endpoint) {
-    console.log("loginOrCreate", endpoint, myUserName, password);
     if (!myUserName || !password) {
       alert("⚠ Please enter a username and password.");
       return;
@@ -88,12 +87,12 @@ export function UnAuth({
               <Button
                 type="submit"
                 className="login-screen-button"
-                onClick={handleLogin}
+                // onClick={handleLogin}
               >
                 Login
               </Button>
               <Button
-                type="submit"
+                type="button"
                 variant="outline-primary"
                 className="login-screen-button"
                 onClick={handleRegister}

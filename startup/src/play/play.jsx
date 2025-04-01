@@ -4,6 +4,8 @@ import { Game } from "./game.jsx";
 import { Lobby } from "./lobby.jsx";
 import { ConnectionState } from "./connectionState";
 
+const debug = false;
+
 const GAME_STATES = {
   LOBBY: 0,
   PLAY: 1,
@@ -84,7 +86,9 @@ export function Play({ userData, setUserData, authState }) {
     });
     if (response?.status === 200) {
       const body = await response.json();
-      console.log("⭐ Server Pinged! Connection Data: ", body);
+      if (debug) {
+        console.log("⭐ Server Pinged! Connection Data: ", body);
+      }
       setConnectionData(body);
       localStorage.setItem("roomCode", body.roomCode);
       setConnectionState(ConnectionState.Connected);
@@ -123,6 +127,7 @@ export function Play({ userData, setUserData, authState }) {
                   connectionData={connectionData}
                   handleExit={handleExit}
                   pingServer={pingServer}
+                  debug={debug}
                 />
               </div>
             );

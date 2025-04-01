@@ -24,6 +24,11 @@ tr:nth-child(even) {
   background-color: #c2cedb;
 }
 
+/* If tr and has ID selected, then apply the following styles */
+tr#selected {
+  background-color: #fdffc2;
+}
+
 tr:first-child th:first-child {
   border-top-left-radius: 10px;
 }

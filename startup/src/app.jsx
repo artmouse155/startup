@@ -29,7 +29,6 @@ import { Leaderboard } from "./leaderboard/leaderboard";
 import { Icons } from "./icons/icons";
 
 export default function App() {
-  // console.log(localStorage);
   const [userData, setUserData] = React.useState(
     JSON.parse(localStorage.getItem("userData")) || ""
   );
@@ -121,7 +120,6 @@ export default function App() {
               onAuthChange={(userData, authState) => {
                 setAuthState(authState);
                 setUserName(userData.email);
-                console.log("Logging in as " + userData.email);
                 localStorage.setItem("userData", JSON.stringify(userData));
                 setUserData(userData);
                 //navigate("/play");

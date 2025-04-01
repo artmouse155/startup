@@ -7,8 +7,6 @@ import { TextBox } from "./textbox/textbox.jsx";
 import Aspects from "./aspects.json";
 import { End } from "./end.jsx";
 
-const debug = false;
-
 const GAME_STATES = {
   LOBBY: 0,
   PLAY: 1,
@@ -21,6 +19,7 @@ export function Game({
   connectionData,
   handleExit,
   pingServer,
+  debug = false,
 }) {
   const {
     roomCode,
