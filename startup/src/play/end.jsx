@@ -26,6 +26,7 @@ export function End({
       name: player.name,
       score: gameData.aspects[player.aspect],
       aspect: player.aspect,
+      trophiesEarned: player.trophiesEarned,
     };
   });
 
@@ -65,7 +66,7 @@ export function End({
           <td>{s[i].name}</td>
           <td>{Aspects[s[i].aspect].text}</td>
           <td>{s[i].score}</td>
-          <td>{5}</td>
+          <td>{s[i].trophiesEarned || `?`}</td>
         </tr>
       );
     }

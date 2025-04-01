@@ -39,6 +39,7 @@ apiRouter.post("/auth/create", async (req, res) => {
     setAuthCookie(res, user.token);
     // respond with only the email
     // console.log(users);
+
     res.send({ email: user.email, trophies: user.trophies });
   }
 });
@@ -578,9 +579,40 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
             await pushOutcome(game, ending_outcome, game.heroData);
             // PLACEHOLDER: Tell clients the game has ended
             // PLACEHOLDER: Give each client 5 trophies
+            function getStandings(aspects, players, player_count) {
+              // PlayerID, Standing
+              let standings = Array(player_count);
+              // This needs to equal the true number of players, not just the capacity.
+              for (let i = 0; i < player_count; i++) {
+                standings[i] = 0;
+                for (let j = 0; j < player_count; j++) {
+                  // console.log("Comparing", players[i].aspect, players[j].aspect);
+                  if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
+                    standings[i]++;
+                  }
+                }
+              }
+              return standings;
+            }
+
+            const standings = getStandings(
+              game.gameData.aspects,
+              game.gameData.players,
+              game.gameData.players.length
+            );
+
+            const trophy_counts =
+              gameConstants.TROPHY_COUNTS[game.gameData.players.length];
+            // console.log("Standings", standings);
+            // console.log("Trophy Counts:", trophy_counts);
+            // console.log("Trophy Counts at 1:", trophy_counts[1]);
+
             for (let i = 0; i < game.players.length; i++) {
               const player = game.gameData.players[i];
-              const trophiesEarned = 5;
+              const trophiesEarned = trophy_counts
+                ? trophy_counts[standings[i] + 1] ||
+                  gameConstants.TROPHY_COUNT_FALLBACK
+                : gameConstants.TROPHY_COUNT_FALLBACK;
               const email = player.email;
               game.gameData.players[i] = {
                 trophiesEarned: trophiesEarned,
