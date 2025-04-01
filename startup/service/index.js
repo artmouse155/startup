@@ -386,7 +386,12 @@ gameServerRouter.post("/connection/get", async (req, res) => {
 
 async function getConnectionData(roomCode, email) {
   const game = await DB.getGame(roomCode);
-  const player = game.players.find((item) => item.email == email);
+  const playerIndex = game.players.findIndex((item) => item.email == email);
+  if (playerIndex == -1) {
+    console.log(`[${roomCode}]`, "Player not found", email);
+    return false;
+  }
+  const player = game.players[playerIndex];
   console.log(`[${roomCode}]`, "Sending connection data to", email);
   const clientGameData = { ...game.gameData };
   clientGameData.players = clientGameData.players.map((p) => {
@@ -427,19 +432,20 @@ async function removePlayerFromGame(email) {
   const players = game.players;
   const playerIndex = players.findIndex((item) => item.email == email);
   if (playerIndex != -1) {
-    console.log(`[${roomCode}]`, email, "left the game");
-    game.players = game.players.splice(playerIndex, 1);
-    // Actually remove player from game
-    await DB.setGame(roomCode, game);
     // If (game in progress) or (email was host) or (no players left), delete game
     if (
       game.gameState == gameConstants.GAME_STATES.PLAY ||
-      players.length == 0 ||
+      players.length <= 1 ||
       game.host == email
     ) {
       // TODO Placeholder WebSocket: Tell clients the host has left, or tell other players the game has ended
       console.log(`[${roomCode}]`, "was deleted");
       await DB.deleteGame(roomCode);
+    } else {
+      console.log(`[${roomCode}]`, email, "left the game");
+      game.players.splice(playerIndex, 1);
+      // Actually remove player from game
+      await DB.setGame(roomCode, game);
     }
     return true;
   }
