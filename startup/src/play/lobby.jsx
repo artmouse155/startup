@@ -11,7 +11,7 @@ export function Lobby({
   connectionData,
   handleExit,
   pingServer,
-  debug = false,
+  debug = true,
 }) {
   const MENUSTATE = {
     ROOT: 0,

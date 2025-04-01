@@ -232,7 +232,6 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
         });
       }
     }
-    let game = await DB.getGame(roomCode);
     game.players.push({ email: email });
     await DB.setGame(roomCode, game);
     console.log(`[${roomCode}]`, email, "joined");
@@ -562,8 +561,8 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
         game.gameData.current_turn_id++;
         if (game.gameData.current_turn_id >= game.players.length) {
           game.gameData.current_turn_id = 0;
-          game.gameData.turns++;
         }
+        game.gameData.turns++;
         if (
           game.gameData.turns >=
           game.constants.num_cards * game.players.length
