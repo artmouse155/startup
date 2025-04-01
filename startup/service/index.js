@@ -2,6 +2,7 @@ const cards = require("./game/cards.json");
 const items = require("./game/items.json");
 const introJSON = require("./game/intro.json");
 const endingJSON = require("./game/ending.json");
+const gameConstants = require("./game/constants.json");
 const storyApi = require("./game/story_api.js");
 const shuffler = require("./game/shuffler.js");
 
@@ -111,12 +112,6 @@ apiRouter.use(`/game`, gameRouter);
 
 gameRouter.use(verifyAuth);
 
-const GAME_STATES = {
-  LOBBY: 0,
-  PLAY: 1,
-  END: 2,
-};
-
 const verifyRoomCode = async (req, res, next) => {
   req.game = await DB.getGame(req.roomCode);
   if (req.game) {
@@ -175,10 +170,6 @@ gameRouter.post("/host", async (req, res) => {
     }
   } while (usedCodes.length > 0 && usedCodes.includes(roomCode));
 
-  const NUM_CARDS = 1;
-  const NUM_PLAYERS = 4;
-  const NUM_ITEM_SLOTS = 3;
-
   let gameData = {
     aspects: {
       MAGIC: 0,
@@ -194,13 +185,13 @@ gameRouter.post("/host", async (req, res) => {
 
   let newGame = {
     roomCode: roomCode,
-    gameState: GAME_STATES.LOBBY,
+    gameState: gameConstants.GAME_STATES.LOBBY,
     host: email, // Attr not present on server side; this is the email of the host
     players: [], // Attr not present on client side
     constants: {
-      num_cards: NUM_CARDS,
-      num_players: NUM_PLAYERS,
-      num_item_slots: NUM_ITEM_SLOTS,
+      num_cards: gameConstants.NUM_CARDS,
+      num_players: gameConstants.NUM_PLAYERS,
+      num_item_slots: gameConstants.NUM_ITEM_SLOTS,
     },
     heroData: {}, // Create when we call start
     gameData: gameData,
@@ -226,7 +217,7 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
   const roomCode = req.params.roomCode;
   const game = DB.getGame(roomCode);
   if (game) {
-    if (game.gameState != GAME_STATES.LOBBY) {
+    if (game.gameState != gameConstants.GAME_STATES.LOBBY) {
       return res.status(409).send({ msg: "Game already started or ended" });
     }
     if (game.players.length >= game.constants.num_players) {
@@ -280,7 +271,7 @@ gameServerRouter.post("/start", async (req, res) => {
   console.log(`[${roomCode}]`, "Game start requested by", userData.email);
   if (req.game.host == userData.email) {
     // If the game state is already play, we don't need to set up. Instead, we return an error.
-    if (req.game.gameState == GAME_STATES.PLAY) {
+    if (req.game.gameState == gameConstants.GAME_STATES.PLAY) {
       res.status(409).send({ msg: "Game already started" });
     } else {
       // Set up the game
@@ -314,7 +305,7 @@ gameServerRouter.post("/start", async (req, res) => {
       });
       req.game.gameData.players = gameDataPlayers;
       // Set the gameState to PLAY
-      req.game.gameState = GAME_STATES.PLAY;
+      req.game.gameState = gameConstants.GAME_STATES.PLAY;
       // Set the heroData to the heroName and heroGender from the request body
       req.game.heroData = storyApi.getRandomHero();
 
@@ -440,7 +431,7 @@ async function removePlayerFromGame(email) {
     game.players = game.players.splice(playerIndex, 1);
     // If (game in progress) or (email was host) or (no players left), delete game
     if (
-      game.gameState == GAME_STATES.PLAY ||
+      game.gameState == gameConstants.GAME_STATES.PLAY ||
       players.length == 0 ||
       game.host == email
     ) {
@@ -578,8 +569,8 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
           game.gameData.turns >=
           game.constants.num_cards * game.players.length
         ) {
-          if (game.gameState != GAME_STATES.END) {
-            game.gameState = GAME_STATES.END;
+          if (game.gameState != gameConstants.GAME_STATES.END) {
+            game.gameState = gameConstants.GAME_STATES.END;
 
             const ending_outcome = shuffler.getRandom(endingJSON.sections);
 
@@ -604,7 +595,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
 
       // Set tempStory
       game.tempStory =
-        game.gameState == GAME_STATES.END
+        game.gameState == gameConstants.GAME_STATES.END
           ? { type: "empty" }
           : {
               type: "turn",

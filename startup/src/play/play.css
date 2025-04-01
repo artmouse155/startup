@@ -53,6 +53,7 @@ main {
 
 .aspect-box-text {
   margin: 0px 0px;
+  white-space: nowrap;
 }
 
 .aspect-box-score {
@@ -71,6 +72,7 @@ main {
 }
 .centered-header {
   text-align: center;
+  white-space: nowrap;
   margin: 15px;
 }
 
