@@ -13,8 +13,12 @@
 }
 
 .standings {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
   margin-bottom: 20px;
   text-align: center;
+  max-width: 100%;
 }
 
 .standing {
@@ -55,4 +59,9 @@
 
 .end-button:hover {
   background-color: #244364;
+}
+
+.scrollable {
+  overflow-x: auto;
+  white-space: nowrap;
 }

@@ -92,7 +92,7 @@ export function End({
       <h1 className="end-title">{`Results of ${heroData.name}'s ${
         heroData.adventureName || `Adventure`
       }`}</h1>
-      <div className="standings">
+      <div className="standings scrollable">
         <ResultsTable />
       </div>
       <div className="trophies">
