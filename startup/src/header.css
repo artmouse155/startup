@@ -12,6 +12,7 @@
   color: whitesmoke;
   margin: 0px;
   padding: 0px 10px;
+  white-space: nowrap;
 }
 
 .header-text {
@@ -25,6 +26,7 @@
   padding-right: 20px;
   margin: 0px;
   min-height: 4em;
+  white-space: nowrap;
 }
 
 .disabled {
@@ -49,6 +51,7 @@
 
 .log-out-button {
   align-self: center;
+  white-space: nowrap;
 }
 
 .account_circle {

@@ -50,7 +50,7 @@ async function getGame(roomCode) {
 
 function getGameByPlayerEmail(email) {
   let match = { players: { $elemMatch: { email: email } } };
-  console.log(match);
+  // console.log(match);
   return gameCollection.findOne(match);
 }
 

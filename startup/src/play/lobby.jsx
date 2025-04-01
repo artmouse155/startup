@@ -300,7 +300,9 @@ export function Lobby({
 
   function JoinWait() {
     const playerCount = connectionData ? connectionData.players.length : 0;
-    const maxPlayers = connectionData;
+    const maxPlayers = connectionData
+      ? connectionData.constants.num_players
+      : 0;
     return (
       <Card.Body>
         <Card.Title>Waiting for Players</Card.Title>

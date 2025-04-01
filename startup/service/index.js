@@ -153,7 +153,7 @@ gameRouter.post("/host", async (req, res) => {
   let roomCode = await findRoomCodeByPlayerEmail(email);
   // console.log(roomCode);
   if (roomCode) {
-    removePlayerFromGame(email);
+    await removePlayerFromGame(email);
     return res
       .status(409)
       .send({ msg: `Already in game. Room code: ${roomCode}.` });
@@ -226,7 +226,7 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
     }
     for (let j = 0; j < game.players.length; j++) {
       if (game.players[j].email == email) {
-        removePlayerFromGame(email);
+        await removePlayerFromGame(email);
         return res.status(409).send({
           msg: `Already in game. Room code: ${roomCode}.`,
         });
@@ -247,7 +247,7 @@ gameRouter.delete("/leave", async (req, res) => {
   // Remove user from current game
   const userData = await getUserData(req);
   const email = userData.email;
-  removePlayerFromGame(email);
+  await removePlayerFromGame(email);
   res.status(204).end();
   // Find by room code
 });
@@ -387,7 +387,7 @@ gameServerRouter.post("/connection/get", async (req, res) => {
 async function getConnectionData(roomCode, email) {
   const game = await DB.getGame(roomCode);
   const player = game.players.find((item) => item.email == email);
-  console.log("player:", player);
+  console.log(`[${roomCode}]`, "Sending connection data to", email);
   const clientGameData = { ...game.gameData };
   clientGameData.players = clientGameData.players.map((p) => {
     return {
@@ -429,6 +429,8 @@ async function removePlayerFromGame(email) {
   if (playerIndex != -1) {
     console.log(`[${roomCode}]`, email, "left the game");
     game.players = game.players.splice(playerIndex, 1);
+    // Actually remove player from game
+    await DB.setGame(roomCode, game);
     // If (game in progress) or (email was host) or (no players left), delete game
     if (
       game.gameState == gameConstants.GAME_STATES.PLAY ||
@@ -436,7 +438,7 @@ async function removePlayerFromGame(email) {
       game.host == email
     ) {
       // TODO Placeholder WebSocket: Tell clients the host has left, or tell other players the game has ended
-      console.log("Game", roomCode, "deleted");
+      console.log(`[${roomCode}]`, "was deleted");
       await DB.deleteGame(roomCode);
     }
     return true;
@@ -444,12 +446,11 @@ async function removePlayerFromGame(email) {
 }
 
 async function findRoomCodeByPlayerEmail(email) {
-  console.log("Finding room code for", email);
+  console.log("[] Finding room code for", email);
   if (!email) return false;
-  console.log("Beginning search");
   const game = await DB.getGameByPlayerEmail(email);
-  console.log("Game found", game);
   if (game) {
+    console.log("[] Game found", game.roomCode);
     return game.roomCode;
   }
   return false;
@@ -647,7 +648,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
       return true;
     }
   }
-  console.log("No outcome found for card", card);
+  console.log(`[${roomCode}]`, "No outcome found for card", card);
   return false;
 }
 
@@ -658,13 +659,13 @@ async function pushOutcome(game, outcome, heroData) {
     console.log("Game not found");
     return;
   }
-  console.log("Parsing outcome", outcome);
+  //console.log(`[${game.roomCode}]`, `Parsing outcome`);
   updatedText = [...outcome.text];
   for (let i = 0; i < updatedText.length; i++) {
     updatedText[i] = await storyApi.apiCall(updatedText[i], heroData);
   }
   const updatedOutcome = { ...outcome, text: updatedText };
-  console.log(`[${game.roomCode}]`, "Pushed new outcome", updatedOutcome);
+  console.log(`[${game.roomCode}]`, "Pushed new outcome");
   game.story.push(updatedOutcome);
 }
 
@@ -680,7 +681,7 @@ function getItemData(item_id) {
   if (item) {
     return item;
   } else {
-    console.log("No item found for item_id", item_id);
+    console.log("[] No item found for item_id", item_id);
     return null;
   }
 }
