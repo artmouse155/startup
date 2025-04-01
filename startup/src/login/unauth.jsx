@@ -13,25 +13,29 @@ export function UnAuth({
   logOut,
 }) {
   const [password, setPassword] = React.useState("");
+  const [myUserName, setMyUserName] = React.useState(userName);
   let navigate = useNavigate();
 
   async function handleLogin() {
+    setUserName(myUserName);
     loginOrCreate(`/api/auth/login`);
   }
 
   async function handleRegister() {
+    setUserName(myUserName);
     loginOrCreate(`/api/auth/create`);
   }
 
   async function loginOrCreate(endpoint) {
-    if (!userName || !password) {
+    console.log("loginOrCreate", endpoint, myUserName, password);
+    if (!myUserName || !password) {
       alert("⚠ Please enter a username and password.");
       return;
     }
-    console.log("loginOrCreate", endpoint, userName, password);
+
     const response = await fetch(endpoint, {
       method: "post",
-      body: JSON.stringify({ email: userName, password: password }),
+      body: JSON.stringify({ email: myUserName, password: password }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -51,17 +55,22 @@ export function UnAuth({
         <h3 className="login-header">Ready for adventure?</h3>
         <p>Sign up or log in.</p>
         <div className="login-body">
-          <Form>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }}
+          >
             <InputGroup className="mb-3">
               <InputGroup.Text className="input-group-text">
                 Email
               </InputGroup.Text>
               <Form.Control
-                type="email"
+                // type="email"
                 autoComplete="username"
                 placeholder=""
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                value={myUserName}
+                onChange={(e) => setMyUserName(e.target.value)}
                 required
               />
             </InputGroup>
@@ -75,24 +84,24 @@ export function UnAuth({
                 required
               />
             </InputGroup>
+            <div className="button-div">
+              <Button
+                type="submit"
+                className="login-screen-button"
+                onClick={handleLogin}
+              >
+                Login
+              </Button>
+              <Button
+                type="submit"
+                variant="outline-primary"
+                className="login-screen-button"
+                onClick={handleRegister}
+              >
+                Sign Up
+              </Button>
+            </div>
           </Form>
-          <div className="button-div">
-            <Button
-              type="submit"
-              className="login-screen-button"
-              onClick={handleLogin}
-            >
-              Login
-            </Button>
-            <Button
-              type="submit"
-              variant="outline-primary"
-              className="login-screen-button"
-              onClick={handleRegister}
-            >
-              Sign Up
-            </Button>
-          </div>
         </div>
       </div>
     </div>

@@ -216,7 +216,7 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
   const userData = await getUserData(req);
   const email = userData.email;
   const roomCode = req.params.roomCode;
-  const game = DB.getGame(roomCode);
+  const game = await DB.getGame(roomCode);
   if (game) {
     if (game.gameState != gameConstants.GAME_STATES.LOBBY) {
       return res.status(409).send({ msg: "Game already started or ended" });
@@ -710,7 +710,7 @@ async function createUser(email, password) {
     token: uuid.v4(),
     trophies: 0,
   };
-  DB.addUser(user);
+  await DB.addUser(user);
 
   return user;
 }

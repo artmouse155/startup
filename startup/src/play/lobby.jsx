@@ -251,7 +251,13 @@ export function Lobby({
   function Join({ setMenuState, roomCodeInput }) {
     return (
       <Card.Body>
-        <Form className="mb-3">
+        <Form
+          className="mb-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleJoinGame(roomCodeInput);
+          }}
+        >
           <Form.Control
             className="room-code-input"
             type="text"
