@@ -4,7 +4,7 @@ import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
 import "./play.css";
 import "./aspects.css";
 import { TextBox } from "./textbox/textbox.jsx";
-import { Aspects } from "./aspects.jsx";
+import Aspects from "./aspects.json";
 import { End } from "./end.jsx";
 
 const debug = false;
@@ -36,6 +36,13 @@ export function Game({
   } = connectionData;
 
   const ItemType = { CARD_TYPE: "card" };
+  const [gameLoaded, setGameLoaded] = React.useState(false);
+  React.useEffect(() => {
+    if (gameState == GAME_STATES.PLAY) {
+      // console.log("Game loaded!");
+      setGameLoaded(true);
+    }
+  }, []);
 
   function CardBox({ isMyTurn, cards }) {
     // console.log("Rendering player cards!", cards);
@@ -336,7 +343,7 @@ export function Game({
     }
   }
 
-  if (gameState == GAME_STATES.PLAY) {
+  if (gameState == GAME_STATES.PLAY || gameLoaded) {
     return (
       <div className="game-container">
         <div className="aspect-boxes-container">

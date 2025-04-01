@@ -1,6 +1,7 @@
 const cards = require("./game/cards.json");
 const items = require("./game/items.json");
 const introJSON = require("./game/intro.json");
+const endingJSON = require("./game/ending.json");
 const storyApi = require("./game/story_api.js");
 const shuffler = require("./game/shuffler.js");
 
@@ -174,7 +175,7 @@ gameRouter.post("/host", async (req, res) => {
     }
   } while (usedCodes.length > 0 && usedCodes.includes(roomCode));
 
-  const NUM_CARDS = 5;
+  const NUM_CARDS = 1;
   const NUM_PLAYERS = 4;
   const NUM_ITEM_SLOTS = 3;
 
@@ -579,6 +580,11 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
         ) {
           if (game.gameState != GAME_STATES.END) {
             game.gameState = GAME_STATES.END;
+
+            const ending_outcome = shuffler.getRandom(endingJSON.sections);
+
+            // Push the intro story, using storyAPI.apiCall to replace $stuff$.
+            await pushOutcome(game, ending_outcome, game.heroData);
             // PLACEHOLDER: Tell clients the game has ended
             // PLACEHOLDER: Give each client 5 trophies
             for (let i = 0; i < game.players.length; i++) {
@@ -597,11 +603,14 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
       }
 
       // Set tempStory
-      game.tempStory = {
-        type: "turn",
-        playerTurnName: getCardUserName(),
-        text: [],
-      };
+      game.tempStory =
+        game.gameState == GAME_STATES.END
+          ? { type: "empty" }
+          : {
+              type: "turn",
+              playerTurnName: getCardUserName(),
+              text: [],
+            };
 
       // Set the game with MongoDB
       await DB.setGame(roomCode, game);

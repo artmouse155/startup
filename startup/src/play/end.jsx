@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ConnectionState } from "./connectionState";
+import Button from "react-bootstrap/Button";
+import Aspects from "./aspects.json";
 // import { NUM_PLAYERS } from "./server/server.jsx";
 import "./end.css";
 
@@ -53,18 +55,41 @@ export function End({
   const standings = getStandings();
   let navigate = useNavigate();
 
+  function ResultsTable() {
+    let s = players.sort((a, b) => b.score - a.score);
+    let rows = [];
+    for (let i = 0; i < s.length; i++) {
+      rows.push(
+        <tr key={i}>
+          <td>{i + 1}</td>
+          <td>{s[i].name}</td>
+          <td>{Aspects[s[i].aspect].text}</td>
+          <td>{s[i].score}</td>
+          <td>{5}</td>
+        </tr>
+      );
+    }
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Ranking</th>
+            <th>Name</th>
+            <th>Aspect</th>
+            <th>Score</th>
+            <th>🏆 Trophies Won</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    );
+  }
+
   return (
     <div className="end-container">
       <h1 className="end-title">{`Results of ${heroData.name}'s Quest`}</h1>
       <div className="standings">
-        {players.map((player, index) => (
-          <div key={index} className="standing">
-            <p className="standing-name">{`${standings[index] + 1}. ${
-              player.name
-            }`}</p>
-            <p className="standing-score">{`${player.score} ${player.aspect}`}</p>
-          </div>
-        ))}
+        <ResultsTable />
       </div>
       <div className="trophies">
         <p>
@@ -72,12 +97,10 @@ export function End({
         </p>
       </div>
       <div className="end-actions">
-        <button className="end-button" onClick={handleExit}>
-          Back to Lobby
-        </button>
-        <button className="end-button" onClick={() => navigate("/leaderboard")}>
+        <Button onClick={handleExit}>Back to Lobby</Button>
+        <Button onClick={() => navigate("/leaderboard")}>
           View Leaderboard
-        </button>
+        </Button>
       </div>
     </div>
   );

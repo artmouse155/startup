@@ -1,24 +1,20 @@
 import React from "react";
 import { DndProvider, useDragLayer, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Aspects } from "../aspects.jsx";
+import Aspects from "../aspects.json";
 // import { apiCall } from "../api_stub/api_stub.jsx";
 import { marked, parse } from "marked";
 import Parser from "html-react-parser";
+import Button from "react-bootstrap/Button";
 //import { renderer } from "./md_extension.jsx";
 // import items from "../server/items.json";
 import "./textbox.css";
-// import {
-//   initTextbox,
-//   setTextboxPushFunc,
-//   setTextboxSetCurrentTurnFunc,
-//   getItemData,
-// } from "../server/server.jsx";
 
 export function TextBox({ story, tempStory, dragItemType, useCard }) {
   const [storyMD, setStoryMD] = React.useState("");
   const [tempStoryMD, setTempStoryMD] = React.useState("");
-  const parseMD = async (sections, setFunc) => {
+  const [showResults, setShowResults] = React.useState(false);
+  const parseMD = async (sections, setFunc, setShowResults) => {
     // console.log("Parsing MD", sections);
     // Check if anything in story doesn't have the rendered flag
     if (sections.length == 0) {
@@ -38,8 +34,8 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
       }
       const {
         type,
-        playerTurnName,
-        title,
+        playerTurnName = "",
+        title = "",
         text = [],
         results: resultArr = [],
       } = _story[i];
@@ -49,6 +45,11 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
           break;
         case "turn":
           s += `<h5 class="playerTurn">${playerTurnName}'s Turn</h5>\n\n`;
+          break;
+        case "ending":
+          setShowResults(true);
+          s += `<h3 class="title">${"Ending"}</h3>\n\n`;
+        case "empty":
           break;
       }
       s += `${text.join("\n\n")}\n\n`;
@@ -68,11 +69,11 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
     setFunc(s);
   };
   React.useEffect(() => {
-    parseMD(story, setStoryMD);
+    parseMD(story, setStoryMD, setShowResults);
   }, [story]);
 
   React.useEffect(() => {
-    parseMD([tempStory], setTempStoryMD);
+    parseMD([tempStory], setTempStoryMD, setShowResults);
   }, [tempStory]);
 
   React.useEffect(() => {
@@ -100,15 +101,20 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
   //   parseMD();
   // }, [story]);
 
-  function TextAdvText({ storyMD, tempStoryMD }) {
+  function TextAdvText({ storyMD, tempStoryMD, showResults }) {
     return (
-      <div>
+      <div className="textbox-text-and-button-container">
         <div className="text-adventure-text" id="parsedMD">
           {Parser(marked.parse(storyMD))}
         </div>
         <div className="text-adventure-text" id="parsedMDTemp">
           {Parser(marked.parse(tempStoryMD))}
         </div>
+        {showResults ? (
+          <Button className="textbox-button">Finish Game</Button>
+        ) : (
+          <></>
+        )}
       </div>
     );
   }
@@ -121,7 +127,11 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
         }`}
         id="textScroll"
       >
-        <TextAdvText storyMD={storyMD} tempStoryMD={tempStoryMD} />
+        <TextAdvText
+          storyMD={storyMD}
+          tempStoryMD={tempStoryMD}
+          showResults={showResults}
+        />
       </div>
       {isDragging ? (
         <div className={`drag-drop-overlay ${isOver ? "is-over-grow" : ""}`}>

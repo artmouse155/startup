@@ -5,6 +5,7 @@ import "./bootstrap_overrides.css";
 import "./app.css";
 import "./header.css";
 import "./shadow.css"; // From https://www.cssscript.com/elegant-box-shadows
+import "./table.css";
 import { AuthState } from "./login/authState.js";
 import Button from "react-bootstrap/Button";
 
