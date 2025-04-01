@@ -10,7 +10,13 @@ import Button from "react-bootstrap/Button";
 // import items from "../server/items.json";
 import "./textbox.css";
 
-export function TextBox({ story, tempStory, dragItemType, useCard }) {
+export function TextBox({
+  story,
+  tempStory,
+  dragItemType,
+  useCard,
+  setGameLoaded,
+}) {
   const [storyMD, setStoryMD] = React.useState("");
   const [tempStoryMD, setTempStoryMD] = React.useState("");
   const [showResults, setShowResults] = React.useState(false);
@@ -111,7 +117,12 @@ export function TextBox({ story, tempStory, dragItemType, useCard }) {
           {Parser(marked.parse(tempStoryMD))}
         </div>
         {showResults ? (
-          <Button className="textbox-button">Finish Game</Button>
+          <Button
+            className="textbox-button"
+            onClick={() => setGameLoaded(false)}
+          >
+            Finish Game
+          </Button>
         ) : (
           <></>
         )}

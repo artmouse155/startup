@@ -316,7 +316,9 @@ export function Game({
       return (
         <div className="players-boxes-container">
           <h2 className="centered-header">
-            {`Turn ${turns + 1} of ${maxTurns}`}
+            {gameState == GAME_STATES.END
+              ? `Game Complete`
+              : `Turn ${turns + 1} of ${maxTurns}`}
           </h2>
           {leaderboardCardList}
           {/* <button
@@ -383,6 +385,7 @@ export function Game({
                 story={story}
                 tempStory={tempStory}
                 useCard={useCard}
+                setGameLoaded={setGameLoaded}
               />
             </DndProvider>
             <div className="whose-turn-container">
