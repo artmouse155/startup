@@ -87,7 +87,9 @@ export function End({
 
   return (
     <div className="end-container">
-      <h1 className="end-title">{`Results of ${heroData.name}'s Quest`}</h1>
+      <h1 className="end-title">{`Results of ${heroData.name}'s ${
+        heroData.adventureName || `Adventure`
+      }`}</h1>
       <div className="standings">
         <ResultsTable />
       </div>

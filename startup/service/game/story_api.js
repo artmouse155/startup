@@ -9,6 +9,19 @@ const heroes = [
   },
 ];
 
+const adventureNames = [
+  "Adventure",
+  "Trek",
+  "Saga",
+  "Quest",
+  "Journey",
+  "Expedition",
+  "Odyssey",
+  "Crusade",
+  "Voyage",
+  "Exploration",
+];
+
 const wowLongQuotes = [
   "This doesn't look like Kansas anymore!",
   "I've never seen anything like it in my life!",
@@ -224,5 +237,7 @@ async function apiCall(
 }
 
 function getRandomHero() {
-  return getRandom(heroes);
+  hero = getRandom(heroes);
+  hero.adventureName = getRandom(adventureNames);
+  return hero;
 }

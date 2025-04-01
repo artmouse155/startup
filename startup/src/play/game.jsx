@@ -376,7 +376,7 @@ export function Game({
         </div>
         <div id="my-cards-and-textbox" className="flex-column">
           <h3 className="centered-header" id="adventure-title">
-            {`${heroData.name}'s Quest`}
+            {`${heroData.name}'s ${heroData.adventureName || `Adventure`}`}
           </h3>
           <div className="center-section">
             <DndProvider backend={HTML5Backend}>
