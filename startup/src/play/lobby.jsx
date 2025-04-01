@@ -11,6 +11,7 @@ export function Lobby({
   connectionData,
   handleExit,
   pingServer,
+  debug = false,
 }) {
   const MENUSTATE = {
     ROOT: 0,
@@ -32,11 +33,15 @@ export function Lobby({
   React.useEffect(() => {
     if (connectionData) {
       if (connectionData.amHost) {
-        console.log("Hosting. Connection Data: ", connectionData);
+        if (debug) {
+          console.log("Hosting. Connection Data: ", connectionData);
+        }
         setMenuState(MENUSTATE.HOST);
         return;
       } else {
-        console.log("Joining Wait. Connection Data: ", connectionData);
+        if (debug) {
+          console.log("Joining Wait. Connection Data: ", connectionData);
+        }
         setMenuState(MENUSTATE.JOIN_WAIT);
         return;
       }
@@ -53,7 +58,9 @@ export function Lobby({
   async function handleHostGame() {
     // Handles the host game button click
 
-    console.log("Preparing to host!");
+    if (debug) {
+      console.log("Preparing to host!");
+    }
     const response = await fetch("api/game/host", {
       method: "post",
       headers: {
@@ -99,7 +106,9 @@ export function Lobby({
 
   async function handleJoinGame(roomCode) {
     // Check if the room code is valid
-    console.log("Preparing to join!");
+    if (debug) {
+      console.log("Preparing to join!");
+    }
     const response = await fetch(`api/game/join/${roomCode}`, {
       method: "post",
       headers: {
@@ -117,7 +126,9 @@ export function Lobby({
         alert(`⚠ Error: ${body.msg}`);
       }
     }
-    console.log("Join Game Result");
+    if (debug) {
+      console.log("Join Game Result");
+    }
   }
 
   function handleSetRoomCodeInput(e) {

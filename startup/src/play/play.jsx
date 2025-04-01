@@ -26,10 +26,14 @@ export function Play({ userData, setUserData, authState }) {
       // Check local storage for a roomCode
       const roomCode = localStorage.getItem("roomCode");
       if (roomCode) {
-        console.log("Found room code in local storage: ", roomCode);
+        if (debug) {
+          console.log("Found room code in local storage: ", roomCode);
+        }
         getConnectionData(roomCode);
       } else {
-        console.log("No room code found in local storage");
+        if (debug) {
+          console.log("No room code found in local storage");
+        }
         setConnectionState(ConnectionState.Disconnected);
       }
     } else if (connectionState == ConnectionState.Disconnected) {
@@ -78,7 +82,9 @@ export function Play({ userData, setUserData, authState }) {
         return;
       }
     }
-    console.log("Getting connection data with room code", roomCode);
+    if (debug) {
+      console.log("Getting connection data with room code", roomCode);
+    }
     const response = await fetch(`api/game/server/${roomCode}/connection/get`, {
       method: "post",
       headers: {
@@ -142,6 +148,7 @@ export function Play({ userData, setUserData, authState }) {
                 pingServer={pingServer}
                 connectionData={connectionData}
                 handleExit={handleExit}
+                debug={debug}
               />
             </div>
           );
