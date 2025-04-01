@@ -24,11 +24,11 @@ export function Lobby({
   const [roomCodeInput, setRoomCodeInput] = React.useState("");
   const inputRef = React.useRef(null);
 
-  React.useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [roomCodeInput]);
+  // React.useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current.focus();
+  //   }
+  // }, [roomCodeInput]);
 
   React.useEffect(() => {
     if (connectionData) {
@@ -354,9 +354,10 @@ export function Lobby({
       case MENUSTATE.HOST:
         return <Host />;
       case MENUSTATE.JOIN:
-        return (
-          <Join setMenuState={setMenuState} roomCodeInput={roomCodeInput} />
-        );
+        return Join({
+          setMenuState: setMenuState,
+          roomCodeInput: roomCodeInput,
+        });
       case MENUSTATE.JOIN_WAIT:
         return <JoinWait />;
       default:
@@ -368,7 +369,8 @@ export function Lobby({
     <div className="login-center">
       <Card>
         <Card.Header>🟢 Connected</Card.Header>
-        <Menu menuState={menuState} disableButtons={!connectionData} />
+        {Menu({ menuState: menuState, disableButtons: !connectionData })}
+        {/* <Menu menuState={menuState} disableButtons={!connectionData} /> */}
       </Card>
     </div>
   );
