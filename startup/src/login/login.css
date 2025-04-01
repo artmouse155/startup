@@ -58,6 +58,7 @@
 
 .login-screen-button {
   flex: 1;
+  white-space: nowrap;
 }
 /* 
 .input-group-text {

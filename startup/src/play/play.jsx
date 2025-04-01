@@ -3,6 +3,7 @@ import { AuthState } from "../login/authState";
 import { Game } from "./game.jsx";
 import { Lobby } from "./lobby.jsx";
 import { ConnectionState } from "./connectionState";
+import Spinner from "react-bootstrap/Spinner";
 
 const debug = false;
 
@@ -146,7 +147,12 @@ export function Play({ userData, setUserData, authState }) {
           );
 
         case ConnectionState.Connecting:
-          return <p className="fullsize">Connecting to server...</p>;
+          return (
+            <div className="fullsize">
+              <p>Connecting to server...</p>
+              <Spinner animation="border" />
+            </div>
+          );
         default:
           return <p className="fullsize">Error: Unknown Connection State!</p>;
       }
