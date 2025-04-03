@@ -14,7 +14,6 @@ const authCookieName = "token";
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
 app.use(express.json());
-
 app.use(cookieParser());
 
 // Show static content
@@ -384,13 +383,6 @@ async function createUser(email, password) {
 
   return user;
 }
-
-// Finds the user by the field! Super useful for when we have one piece of info but maybe not the other
-// async function findUser(field, value) {
-//   if (!value) return null;
-
-//   return users.find((u) => u[field] === value);
-// }
 
 // setAuthCookie in the HTTP response
 function setAuthCookie(res, authToken) {
