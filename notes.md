@@ -1343,3 +1343,32 @@ We are going to be moving the dist directory's contents into service/public so t
 ## Database
 
 You can use Mailinator to use a fake email address.
+
+# Websockets
+
+- Websockets were created in 2011 and are **duplexed**. Basically, after an initial connection is made, the connection "Upgrades."
+
+## Intro
+
+How to create a websocket:
+
+```js
+const protocol = window.location.protocol === "http:" ? "ws" : "wss";
+const socket = new WebSocket(`${protocol}://${window.location.host}`);
+```
+
+How to listen with a websocket:
+
+```js
+socket.onmessage = (event) => {
+  console.log("received: ", event.data);
+};
+```
+
+How to send messages:
+
+```js
+socket.send(`I am listening.`);
+```
+
+## Server Websocket

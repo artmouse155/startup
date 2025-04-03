@@ -28,6 +28,8 @@ app.use(express.static("public"));
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
+//#region Auth
+
 // create new user
 apiRouter.post("/auth/create", async (req, res) => {
   // has email and password
@@ -80,7 +82,9 @@ const verifyAuth = async (req, res, next) => {
     res.status(401).send({ msg: "Unauthorized" });
   }
 };
+//#endregion Auth
 
+// Get user data
 async function getUserData(req) {
   // console.log("Getting user data", req.cookies[authCookieName]);
   const user = await DB.getUserByToken(req.cookies[authCookieName]);
@@ -90,7 +94,7 @@ async function getUserData(req) {
     return { email: null, trophies: null };
   }
 }
-
+//#region Trophies
 // Get the number of trophies the user has
 apiRouter.get("/trophy", verifyAuth, async (req, res) => {
   const userData = await getUserData(req);
@@ -107,10 +111,13 @@ apiRouter.get("/trophies", async (req, res) => {
   console.log(trophies);
   res.send(trophies);
 });
+//#endregion Trophies
 
+//#region Game
 var gameRouter = express.Router(); // Must be authenticated to use
 apiRouter.use(`/game`, gameRouter);
 
+//#region gameVerification
 gameRouter.use(verifyAuth);
 
 const verifyRoomCode = async (req, res, next) => {
@@ -141,6 +148,7 @@ const verifyCurrentPlayer = async (req, res, next) => {
     }
   }
 };
+//#endregion gameVerification
 
 gameRouter.post("/host", async (req, res) => {
   // add the game to the active games list
@@ -252,6 +260,7 @@ gameRouter.delete("/leave", async (req, res) => {
   // Find by room code
 });
 
+//#region GameServer
 var gameServerRouter = express.Router();
 gameRouter.use(`/server/:roomCode`, gameServerRouter);
 
@@ -263,6 +272,7 @@ gameRouter.param("roomCode", (req, res, next, roomCode) => {
 
 gameServerRouter.use(verifyRoomCode);
 
+// Client request to start a game
 gameServerRouter.post("/start", async (req, res) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
@@ -360,6 +370,7 @@ gameServerRouter.post("/start", async (req, res) => {
   }
 });
 
+// Client request to use a card
 gameServerRouter.post(
   "/card/:cardIndex/use",
   verifyCurrentPlayer,
@@ -377,6 +388,7 @@ gameServerRouter.post(
   }
 );
 
+// Get the connection data for the player
 gameServerRouter.post("/connection/get", async (req, res) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
@@ -384,6 +396,7 @@ gameServerRouter.post("/connection/get", async (req, res) => {
   res.status(200).send(await getConnectionData(roomCode, userData.email));
 });
 
+// Format the connection data for the client
 async function getConnectionData(roomCode, email) {
   const game = await DB.getGame(roomCode);
   const playerIndex = game.players.findIndex((item) => item.email == email);
@@ -422,6 +435,7 @@ async function getConnectionData(roomCode, email) {
   return connectionData;
 }
 
+// Removes a player from game
 async function removePlayerFromGame(email) {
   const roomCode = await findRoomCodeByPlayerEmail(email);
   if (!roomCode) {
@@ -462,6 +476,7 @@ async function findRoomCodeByPlayerEmail(email) {
   return false;
 }
 
+// Evaluates the card and
 async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
@@ -658,7 +673,7 @@ async function evalCard(roomCode, email, card_num_id, doNextTurn = true) {
   return false;
 }
 
-// IMPORTANT: Uses pass by REFERENCE
+// Pushes outcome to game object provided; doesn't use database. IMPORTANT: Uses pass by REFERENCE
 async function pushOutcome(game, outcome, heroData) {
   // Verify game exists
   if (!game) {
@@ -675,6 +690,7 @@ async function pushOutcome(game, outcome, heroData) {
   game.story.push(updatedOutcome);
 }
 
+// Get item data
 function getItemData(item_id) {
   // If item_id is an object, return item_id
   if (typeof item_id == "object") {
@@ -691,6 +707,8 @@ function getItemData(item_id) {
     return null;
   }
 }
+//#endregion GameServer
+//#endregion Game
 
 // Handle errors
 app.use(function (err, req, res, next) {
