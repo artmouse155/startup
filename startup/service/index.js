@@ -285,7 +285,16 @@ gameServerRouter.post(
     const userData = await getUserData(req);
     const email = userData.email;
     // Apply aspect changes, item changes, and story changes. Switch turn AND take away the card.
-    if (await gameLogic.evalCard(req.game, email, req.params.cardIndex)) {
+    if (
+      await gameLogic.evalCard(
+        req.game,
+        email,
+        req.params.cardIndex,
+        DB.setGame,
+        DB.addTrophies,
+        true
+      )
+    ) {
       res.status(200).end();
     } else {
       res.status(409).send({ msg: "Card not played" });

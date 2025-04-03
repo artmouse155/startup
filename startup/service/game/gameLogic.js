@@ -6,8 +6,6 @@ const gameConstants = require("./constants.json");
 const storyApi = require("./story_api.js");
 const shuffler = require("./shuffler.js");
 
-const DB = require("../db.js");
-
 // Pushes outcome to game object provided; doesn't use database. IMPORTANT: Uses pass by REFERENCE
 async function pushOutcome(game, outcome, heroData) {
   // Verify game exists
@@ -74,7 +72,7 @@ function newGame(roomCode, email) {
     turns: 0, // How many turns have passed
   };
 
-  for (aspect in gameConstants.ASPECTS) {
+  for (aspect of gameConstants.ASPECTS) {
     gameData.aspects[aspect] = 0;
   }
 
@@ -164,10 +162,16 @@ async function setupGame(game) {
 }
 
 // Evaluates the card and updates the game
-async function evalCard(game, email, card_num_id, doNextTurn = true) {
+async function evalCard(
+  game,
+  email,
+  card_num_id,
+  setGame,
+  addTrophies,
+  doNextTurn = true
+) {
   // get result object from card based on checking conditions
   // console.log("Checking card", card_id);
-  //let game = await DB.getGame(roomCode);
   const roomCode = game.roomCode;
   let gameData = game.gameData;
   const current_turn_id = gameData.current_turn_id;
@@ -325,7 +329,7 @@ async function evalCard(game, email, card_num_id, doNextTurn = true) {
                 trophiesEarned: trophiesEarned,
                 ...player,
               };
-              await DB.addTrophies({ email: email, trophies: trophiesEarned });
+              await addTrophies({ email: email, trophies: trophiesEarned });
             }
             console.log(`[${roomCode}]`, "Game ended");
           }
@@ -343,7 +347,7 @@ async function evalCard(game, email, card_num_id, doNextTurn = true) {
             };
 
       // Set the game with MongoDB
-      await DB.setGame(roomCode, game);
+      await setGame(roomCode, game);
 
       // PLACEHOLDER for websocket
       for (const player of game.players) {
@@ -363,7 +367,6 @@ async function evalCard(game, email, card_num_id, doNextTurn = true) {
 
 // Format the connection data for the client
 async function getConnectionData(game, email) {
-  // const game = await DB.getGame(roomCode);
   const roomCode = game.roomCode;
   const playerIndex = game.players.findIndex((item) => item.email == email);
   if (playerIndex == -1) {
