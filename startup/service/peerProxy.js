@@ -42,7 +42,7 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
             socket.send(
               JSON.stringify({
                 type: MsgTypes.gameConnect,
-                value: getConnectionData(socket.email),
+                value: { msg: "connected", roomCode: socket.roomCode },
               })
             );
             break;
@@ -53,10 +53,7 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
             socket.send(
               JSON.stringify({
                 type: MsgTypes.ConnectionData,
-                value: {
-                  msg: "connected",
-                  roomCode: socket.roomCode,
-                },
+                value: await getConnectionData(socket.email),
               })
             );
             break;

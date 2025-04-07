@@ -90,6 +90,12 @@ export function Play({ userData, setUserData, authState }) {
     // }
     console.log("Setting up websocket connection to game server...");
     const cookies = decodeURIComponent(document.cookie);
+    GameNotifier.newConnectionDataHandler = (data) => {
+      console.log("⭐ Got web socket data! Connection Data: ", data);
+      setConnectionData(data);
+      localStorage.setItem("roomCode", data.roomCode);
+      setConnectionState(ConnectionState.Connected);
+    };
     GameNotifier.connectToGame(userData.email, cookies.authToken);
     // FALLBACK: Only if we can't start websocket connection, we will use fetch to get the connection data
     // const response = await fetch(`api/game/server/${roomCode}/connection/get`, {
