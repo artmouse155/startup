@@ -8,6 +8,7 @@ const gameLogic = require("./game/gameLogic.js");
 const gameConstants = require("./game/constants.json");
 
 const DB = require("./db.js");
+const { peerProxy } = require("./peerProxy.js");
 
 const authCookieName = "token";
 
@@ -116,6 +117,8 @@ apiRouter.use(`/game`, gameRouter);
 
 //#region gameVerification
 gameRouter.use(verifyAuth);
+
+let sendEvent = null;
 
 const verifyRoomCode = async (req, res, next) => {
   req.game = await DB.getGame(req.roomCode);
@@ -345,13 +348,13 @@ async function removePlayerFromGame(email) {
 
 async function findRoomCodeByPlayerEmail(email) {
   console.log("[] Finding room code for", email);
-  if (!email) return false;
+  if (!email) return null;
   const game = await DB.getGameByPlayerEmail(email);
   if (game) {
     console.log("[] Game found", game.roomCode);
     return game.roomCode;
   }
-  return false;
+  return null;
 }
 
 //#endregion GameServer
@@ -392,6 +395,14 @@ function setAuthCookie(res, authToken) {
     sameSite: "strict",
   });
 }
-app.listen(port, () => {
+const httpService = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+const proxy = peerProxy(httpService, findRoomCodeByPlayerEmail);
+
+if (proxy.sendEvent) {
+  sendEvent = proxy.sendEvent;
+} else {
+  console.log("No proxy found.");
+}
