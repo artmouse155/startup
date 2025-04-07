@@ -33,19 +33,19 @@ export function Login({
     <div className="login-main" style={{ backgroundImage: "url(bg.jpg)" }}>
       <AuthBody />
       <div className="web-card attribution">
-        {"Photo by "}
+        {"Photo by"}
         <a
           className="footer-item"
           href="https://unsplash.com/@aaronkongsebastian?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
         >
-          Aaron Sebastian
+          {"Aaron Sebastian"}
         </a>
-        {" on "}
+        {"on"}
         <a
           className="footer-item"
           href="https://unsplash.com/photos/landscape-photography-of-river-between-hills-bfgEYpS0Znk?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
         >
-          {" Unsplash"}
+          {"Unsplash"}
         </a>
       </div>
     </div>

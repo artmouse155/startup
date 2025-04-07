@@ -5,6 +5,8 @@ import { Lobby } from "./lobby.jsx";
 import { ConnectionState } from "./connectionState";
 import Spinner from "react-bootstrap/Spinner";
 
+import { MsgTypes, GameNotifier } from "./gameNotifier";
+
 const debug = false;
 
 const GAME_STATES = {
@@ -74,6 +76,7 @@ export function Play({ userData, setUserData, authState }) {
   }
 
   async function getConnectionData(roomCode = null) {
+    console.log("getConnectionData called with roomCode:", roomCode);
     if (!roomCode) {
       if (connectionData && connectionData.roomCode) {
         roomCode = connectionData.roomCode;
@@ -82,28 +85,32 @@ export function Play({ userData, setUserData, authState }) {
         return;
       }
     }
-    if (debug) {
-      console.log("Getting connection data with room code", roomCode);
-    }
-    const response = await fetch(`api/game/server/${roomCode}/connection/get`, {
-      method: "post",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    if (response?.status === 200) {
-      const body = await response.json();
-      if (debug) {
-        console.log("⭐ Server Pinged! Connection Data: ", body);
-      }
-      setConnectionData(body);
-      localStorage.setItem("roomCode", body.roomCode);
-      setConnectionState(ConnectionState.Connected);
-    } else {
-      const body = await response.json();
-      setConnectionState(ConnectionState.Disconnected);
-      alert(`⚠ Error: ${body.msg}`);
-    }
+    // if (debug) {
+    //   console.log("Getting connection data with room code", roomCode);
+    // }
+    console.log("Setting up websocket connection to game server...");
+    const cookies = decodeURIComponent(document.cookie);
+    GameNotifier.connectToGame(userData.email, cookies.authToken);
+    // FALLBACK: Only if we can't start websocket connection, we will use fetch to get the connection data
+    // const response = await fetch(`api/game/server/${roomCode}/connection/get`, {
+    //   method: "post",
+    //   headers: {
+    //     "Content-type": "application/json; charset=UTF-8",
+    //   },
+    // });
+    // if (response?.status === 200) {
+    //   const body = await response.json();
+    //   if (debug) {
+    //     console.log("⭐ Server Pinged! Connection Data: ", body);
+    //   }
+    //   setConnectionData(body);
+    //   localStorage.setItem("roomCode", body.roomCode);
+    //   setConnectionState(ConnectionState.Connected);
+    // } else {
+    //   const body = await response.json();
+    //   setConnectionState(ConnectionState.Disconnected);
+    //   alert(`⚠ Error: ${body.msg}`);
+    // }
   }
 
   // Includes a button to get connection data and a button to start the game. Also a button to end the game

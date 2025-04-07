@@ -1,7 +1,16 @@
 const { WebSocketServer } = require("ws");
 
-function peerProxy(httpServer, roomCodeByEmail) {
+function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
   // Create a websocket object
+  const MsgTypes = {
+    System: "system",
+    ConnectionData: "connectionData",
+    connect: "connect",
+    disconnect: "disconnect",
+    gameConnect: "gameConnect",
+    gameDisconnect: "gameDisconnect",
+  };
+
   const socketServer = new WebSocketServer({ server: httpServer });
 
   // Send event to room code
@@ -18,22 +27,44 @@ function peerProxy(httpServer, roomCodeByEmail) {
 
   socketServer.on("connection", async (socket) => {
     socket.isAlive = true;
-    socket.email = socket.from;
-    socket.roomCode = await roomCodeByEmail(socket.email);
-    console.log(
-      `[${socket.roomCode}] New websocket connection from ${socket.email} `
-    );
 
-    // Forward messages to everyone in room code INCLUDING sender
-    // socket.on("message", function message(data) {
-    //   socketServer.clients.forEach((client) => {
-    //     if (
-    //       client.readyState === WebSocket.OPEN &&
-    //       client.roomCode === socket.roomCode
-    //     ) {
-    //       client.send(data);
-    //     }
-    //   });
+    // Properly set up our client with an email and room code
+    socket.on("message", async function message(data) {
+      const event = JSON.parse(data);
+      if (event.from && event.type && event.value) {
+        switch (event.type) {
+          case MsgTypes.gameConnect:
+            socket.email = event.from;
+            socket.roomCode = await roomCodeByEmail(socket.email);
+            console.log(
+              `[${socket.roomCode}] New websocket connection from ${socket.email}`
+            );
+            socket.send(
+              JSON.stringify({
+                type: MsgTypes.gameConnect,
+                value: getConnectionData(socket.email),
+              })
+            );
+            break;
+          case MsgTypes.ConnectionData:
+            console.log(
+              `[${socket.roomCode}] Websocket connection data request from ${socket.email}`
+            );
+            socket.send(
+              JSON.stringify({
+                type: MsgTypes.ConnectionData,
+                value: {
+                  msg: "connected",
+                  roomCode: socket.roomCode,
+                },
+              })
+            );
+            break;
+        }
+      } else {
+        console.log("Received non-uniform message:", event);
+      }
+    });
     // });
 
     // Respond to pong messages by marking the connection alive
@@ -45,7 +76,12 @@ function peerProxy(httpServer, roomCodeByEmail) {
   // Periodically send out a ping message to make sure clients are alive
   setInterval(() => {
     socketServer.clients.forEach(function each(client) {
-      if (client.isAlive === false) return client.terminate();
+      if (client.isAlive === false) {
+        console.log(
+          `[${socket.roomCode}] Terminated websocket connection from ${socket.email} `
+        );
+        return client.terminate();
+      }
 
       client.isAlive = false;
       client.ping();

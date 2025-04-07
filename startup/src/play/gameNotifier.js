@@ -1,8 +1,10 @@
-const GameEvent = {
+const MsgTypes = {
   System: "system",
   ConnectionData: "connectionData",
-  End: "gameEnd",
-  Start: "gameStart",
+  connect: "connect",
+  disconnect: "disconnect",
+  gameConnect: "gameConnect",
+  gameDisconnect: "gameDisconnect",
 };
 
 class Event {
@@ -14,8 +16,11 @@ class Event {
 }
 
 class GameEventNotifier {
+  email = null;
   newConnectionDataHandler = null;
   newMessageHandler = null;
+  connected = false;
+  gameConnected = false;
 
   constructor() {
     let port = window.location.port;
@@ -25,19 +30,21 @@ class GameEventNotifier {
     );
     this.socket.onopen = (event) => {
       this.receiveEvent(
-        new Event("Self", GameEvent.System, { msg: "connected" })
+        new Event("Self", MsgTypes.connect, { msg: "connected" })
       );
     };
     this.socket.onclose = (event) => {
       this.receiveEvent(
-        new Event("Self", GameEvent.System, { msg: "disconnected" })
+        new Event("Self", MsgTypes.disconnect, { msg: "disconnected" })
       );
     };
     this.socket.onmessage = async (msg) => {
       try {
-        const event = JSON.parse(await msg.data.text());
+        const event = JSON.parse(await msg.data);
         this.receiveEvent(event);
-      } catch {}
+      } catch (err) {
+        console.log("Error parsing message: ", msg.data, "Error: ", err);
+      }
     };
   }
 
@@ -47,11 +54,27 @@ class GameEventNotifier {
   }
 
   receiveEvent(event) {
-    if (event.type === GameEvent.ConnectionData) {
+    console.log("[WS] Received event:", event);
+    if (event.type === MsgTypes.connect) {
+      this.connected = true;
+      console.log("[WS] Connected to server:", event.value.msg);
+    } else if (event.type === MsgTypes.disconnect) {
+      this.connected = false;
+      console.log("[WS] Disconnected from server:", event.value.msg);
+    } else if (event.type === MsgTypes.gameConnect) {
+      console.log("[WS] Game connected: ", event.value.msg);
+      this.gameConnected = true;
+      this.broadcastEvent(this.email, MsgTypes.ConnectionData, {
+        msg: "GET",
+      });
+    } else if (event.type === MsgTypes.gameDisconnect) {
+      console.log("[WS] Game disconnected:", event.value.msg);
+      this.gameConnected = false;
+    } else if (event.type === MsgTypes.ConnectionData) {
       if (this.newConnectionDataHandler) {
         this.newConnectionDataHandler(event.value);
       }
-    } else if (event.type === GameEvent.System) {
+    } else if (event.type === MsgTypes.System) {
       console.log(event.value.msg);
       if (this.newMessageHandler) {
         this.newMessageHandler(event.value.msg);
@@ -60,7 +83,12 @@ class GameEventNotifier {
       console.log(event);
     }
   }
+
+  connectToGame(email, authToken) {
+    this.email = email;
+    this.broadcastEvent(email, MsgTypes.gameConnect, { authToken: authToken });
+  }
 }
 
 const GameNotifier = new GameEventNotifier();
-export { GameEvent, GameNotifier };
+export { MsgTypes, GameNotifier };

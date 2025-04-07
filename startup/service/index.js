@@ -115,10 +115,18 @@ apiRouter.get("/trophies", async (req, res) => {
 var gameRouter = express.Router(); // Must be authenticated to use
 apiRouter.use(`/game`, gameRouter);
 
+let sendEvent = null;
+
+const GameEvent = {
+  System: "system",
+  ConnectionData: "connectionData",
+  End: "gameEnd",
+  Start: "gameStart",
+  gameConnect: "gameConnect",
+};
+
 //#region gameVerification
 gameRouter.use(verifyAuth);
-
-let sendEvent = null;
 
 const verifyRoomCode = async (req, res, next) => {
   req.game = await DB.getGame(req.roomCode);
@@ -399,9 +407,22 @@ const httpService = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
 
-const proxy = peerProxy(httpService, findRoomCodeByPlayerEmail);
+const proxyGetConnectionData = async (email) => {
+  const game = await DB.getGameByPlayerEmail(email);
+  if (game) {
+    return await gameLogic.getConnectionData(game, email);
+  }
+  return null;
+};
 
-if (proxy.sendEvent) {
+const proxy = peerProxy(
+  httpService,
+  findRoomCodeByPlayerEmail,
+  proxyGetConnectionData
+);
+
+if (proxy) {
+  console.log("Connected to Peer Proxy");
   sendEvent = proxy.sendEvent;
 } else {
   console.log("No proxy found.");
