@@ -8,7 +8,7 @@ import Button from "react-bootstrap/Button";
 
 import { MsgTypes, GameEventNotifier } from "./gameNotifier";
 
-const debug = false;
+const debug = true;
 
 const GAME_STATES = {
   LOBBY: 0,

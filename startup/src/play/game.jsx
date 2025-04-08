@@ -203,13 +203,16 @@ export function Game({
     let itemBoxes = [];
     for (let i = 0; i < constants.num_item_slots; i++) {
       // console.log("Trying to get item data!", inventory[i]);
+      let title = `Empty Slot`;
+      let text = `${i + 1}`;
+      if (i < inventory.length && inventory[i]) {
+        title = inventory[i].name;
+        text = inventory[i].icon;
+      }
       itemBoxes.push(
         <div className="item-box" key={i}>
-          <p
-            className="item-box-text"
-            title={inventory[i] ? inventory[i].name : `Empty Slot`}
-          >
-            {inventory[i] ? inventory[i].icon : i + 1}
+          <p className="item-box-text" title={title}>
+            {text}
           </p>
         </div>
       );

@@ -5,9 +5,9 @@
     "END": 2
   },
   "ASPECTS": ["MAGIC", "STRENGTH", "INTELLIGENCE", "CHARISMA"],
-  "NUM_CARDS": 5,
+  "NUM_CARDS": 20,
   "NUM_PLAYERS": 4,
-  "NUM_ITEM_SLOTS": 3,
+  "NUM_ITEM_SLOTS": 5,
   "TROPHY_COUNT_FALLBACK": 6,
   "TROPHY_COUNTS": {
     "1": { "1": 3 },

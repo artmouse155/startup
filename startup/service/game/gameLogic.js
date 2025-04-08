@@ -29,7 +29,7 @@ function getItemData(item_id) {
   if (typeof item_id == "object") {
     return item_id;
   }
-  if (item_id == "") {
+  if (!item_id) {
     return null;
   }
   const item = items.find((item) => item.id == item_id);
@@ -143,8 +143,7 @@ async function setupGame(game) {
     }
     game.players.find((item) => item.email == email).cards = cardsExport;
   }
-  // Set an empty inventory
-  game.gameData.inventory = Array(game.constants.num_item_slots).fill("");
+
   // Set the story to the introJSON
   game.story = [];
 
@@ -229,39 +228,48 @@ async function evalCard(
         const results = outcome.results;
         for (let j = 0; j < results.length; j++) {
           const result = results[j];
+          const resultType = result.type;
+          switch (resultType) {
+            case "aspect-points":
+              game.gameData.aspects[result.aspect] += parseInt(result.amt);
+              break;
 
-          if (result.type == "aspect-points") {
-            game.gameData.aspects[result.aspect] += parseInt(result.amt);
-          }
-
-          if (result.type == "item-obtained") {
-            // Add item to inventory. The inventory is a list of strings that represent the item names.
-            // If there isn't an item in the slot, the value of the slot is "".
-            // You always have NUM_ITEM_SLOTS slots in your inventory.
-            // If you try to add an item to a full inventory, the oldest item disappears.
-            if (!game.gameData.inventory.includes("")) {
-              game.gameData.inventory.shift(); // Remove the oldest item
-              game.gameData.inventory.push(result.item);
-              outcome.text.push(`_Not enough room. Oldest item removed._`);
-            } else {
-              for (let k = 0; k < game.gameData.inventory.length; k++) {
-                if (game.gameData.inventory[k] == "") {
-                  game.gameData.inventory[k] = result.item;
-                  break;
-                }
+            case "item-obtained":
+              // Add item to inventory. The inventory is a list of strings that represent the item names.
+              // If you try to add an item to a full inventory, the oldest item disappears.
+              // If the inventory is full, remove the first item
+              if (
+                game.gameData.inventory.length >= game.constants.num_item_slots
+              ) {
+                const removed = game.gameData.inventory.shift(); // Remove the first item
+                outcome.text.push(
+                  `_Too many items. Discarded ${getItemData(removed)?.name}_` // Optional chaining! WOOHOO
+                );
               }
-            }
-            result.item = getItemData(result.item);
-          }
-          if (result.type == "item-used-firstmost") {
-            // Remove the first item from the inventory
-            const item = game.gameData.inventory[0];
-            if (item != "") {
-              game.gameData.inventory[0] = ""; // Remove the first item
-              result.item = getItemData(item);
-            } else {
-              outcome.text.push(`_No items in inventory._`);
-            }
+              game.gameData.inventory.push(result.item); // Add the new item
+              result.item = getItemData(result.item);
+              break;
+            case "item-used-firstmost":
+              // Remove the first item from the inventory
+              if (game.gameData.inventory.length > 0) {
+                const item = game.gameData.inventory.shift(); // Remove the first item
+                const itemData = getItemData(item);
+                if (itemData) {
+                  outcome.text.push(`_Used ${itemData.name}_`);
+                } else {
+                  outcome.text.push(`**Used an unknown item**`);
+                }
+              } else {
+                outcome.text.push(`_No items to use_`);
+              }
+              break;
+            default:
+              console.log(
+                `[${roomCode}]`,
+                "No result found for type",
+                resultType
+              );
+              break;
           }
         }
       }
@@ -392,7 +400,9 @@ function getConnectionData(game, email) {
   });
   clientGameData.inventory = clientGameData.inventory.map((i) => {
     // Only send id, name and icon fields
-    const { id, name, icon } = getItemData(i);
+    const itemData = getItemData(i);
+    if (!itemData) return null;
+    const { id, name, icon } = itemData;
     return { id, name, icon };
   });
   const connectionData = {
