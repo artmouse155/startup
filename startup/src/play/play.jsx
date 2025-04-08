@@ -44,8 +44,9 @@ export function Play({ userData, setUserData, authState }) {
           else setConnectionState(ConnectionState.Disconnected);
           console.log("Connection state changed to: ", a);
         },
-        gameConnectedGetter: () => connectionData,
-        gameConnectedSetter: (a) => setConnectionData(a),
+        // We don't actually need this for now, but we can use it in the future
+        gameConnectedGetter: () => null,
+        gameConnectedSetter: (a) => {},
       });
       console.log("GameNotifier: ", GameNotifier);
     } else if (connectionState == ConnectionState.Disconnected) {
@@ -71,7 +72,7 @@ export function Play({ userData, setUserData, authState }) {
       },
     });
     if (response?.status === 204) {
-      setWebSocket(null);
+      setConnectionData(null);
     } else {
       const body = await response.json();
       alert(`⚠ Error: ${body.msg}`);
@@ -148,20 +149,22 @@ export function Play({ userData, setUserData, authState }) {
                 />
               </div>
             );
+          } else {
+            return (
+              <div className="fullsize">
+                {/* <DebugButtons /> */}
+                <Lobby
+                  // setWebSocket={setWebSocket}
+                  pingServer={pingServer}
+                  connectionData={connectionData}
+                  handleExit={handleExit}
+                  debug={debug}
+                />
+              </div>
+            );
           }
         case ConnectionState.Disconnected:
-          return (
-            <div className="fullsize">
-              {/* <DebugButtons /> */}
-              <Lobby
-                // setWebSocket={setWebSocket}
-                pingServer={pingServer}
-                connectionData={connectionData}
-                handleExit={handleExit}
-                debug={debug}
-              />
-            </div>
-          );
+          return <p className="fullsize">Disconnected from server</p>;
 
         case ConnectionState.Connecting:
           return (

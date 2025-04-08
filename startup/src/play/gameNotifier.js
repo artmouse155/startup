@@ -17,7 +17,6 @@ class Event {
 
 class GameEventNotifier {
   constructor({
-    email,
     newConnectionDataHandler,
     newMessageHandler,
     connectedGetter,
@@ -25,7 +24,6 @@ class GameEventNotifier {
     gameConnectedGetter,
     gameConnectedSetter,
   }) {
-    this.email = email;
     this.newConnectionDataHandler = newConnectionDataHandler;
     this.newMessageHandler = newMessageHandler;
     this.connectedGetter = connectedGetter;
