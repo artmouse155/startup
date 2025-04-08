@@ -18,7 +18,6 @@ export function Game({
   setUserData,
   connectionData,
   handleExit,
-  pingServer,
   debug = false,
 }) {
   const {

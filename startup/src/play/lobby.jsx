@@ -9,7 +9,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 export function Lobby({
   connectionData,
   handleExit,
-  pingServer,
+  connectToGameServer,
   debug = true,
 }) {
   const MENUSTATE = {
@@ -67,9 +67,9 @@ export function Lobby({
       },
     });
     if (response?.status === 200) {
-      const body = await response.json();
-      //console.log("Host Game Result: ", body);
-      pingServer();
+      // const body = await response.json();
+      connectToGameServer();
+      console.log("Game hosted!");
     } else {
       if (response?.status === 409) {
         const body = await response.json();
@@ -93,7 +93,6 @@ export function Lobby({
         }
       );
       if (response?.status === 200) {
-        // pingServer();
         return true;
       } else {
         const body = await response.json();
@@ -115,7 +114,7 @@ export function Lobby({
       },
     });
     if (response?.status === 200) {
-      // pingServer();
+      connectToGameServer();
     } else {
       if (response?.status === 409) {
         const body = await response.json();

@@ -24,6 +24,14 @@ export function Play({ userData, setUserData, authState }) {
   );
   const [connectionData, setConnectionData] = React.useState(null);
 
+  function connectToGameServer() {
+    console.log("Pinged Game Server");
+    const cookies = decodeURIComponent(document.cookie);
+    if (GameNotifier) {
+      GameNotifier.connectToGameServer(userData.email, cookies.authToken);
+    }
+  }
+
   React.useEffect(() => {
     if (connectionState == ConnectionState.Connecting) {
       console.log("🟡 Connecting to websocket...");
@@ -54,12 +62,10 @@ export function Play({ userData, setUserData, authState }) {
       setConnectionData(null);
     } else if (connectionState == ConnectionState.Connected) {
       console.log("🟢 Connected to websocket");
-      if (GameNotifier) {
-        const cookies = decodeURIComponent(document.cookie);
-        GameNotifier.connectToGameServer(userData.email, cookies.authToken);
-      } else {
-        console.log("GameNotifier is null!");
-      }
+
+      connectToGameServer();
+    } else {
+      console.log("GameNotifier is null!");
     }
   }, [connectionState]);
 
@@ -145,7 +151,6 @@ export function Play({ userData, setUserData, authState }) {
                   setUserData={setUserData}
                   connectionData={connectionData}
                   handleExit={handleExit}
-                  pingServer={pingServer}
                   debug={debug}
                 />
               </div>
@@ -159,6 +164,7 @@ export function Play({ userData, setUserData, authState }) {
                   pingServer={pingServer}
                   connectionData={connectionData}
                   handleExit={handleExit}
+                  connectToGameServer={connectToGameServer}
                   debug={debug}
                 />
               </div>
