@@ -336,16 +336,18 @@ async function removePlayerFromGame(email) {
       console.log(`[${roomCode}]`, "was deleted");
       await DB.deleteGame(roomCode);
       sendRoomAlert(
-        game,
+        roomCode,
         `${gameLogic.displayName(email)} left the game. Game ended.`
       );
+      updateRoomConnection(null, roomCode);
     } else {
       console.log(`[${roomCode}]`, email, "left the game");
       game.players.splice(playerIndex, 1);
       // Actually remove player from game
       await DB.setGame(roomCode, game);
+      updateRoomConnection(game);
     }
-    updateRoomConnection(game);
+
     return true;
   }
 }

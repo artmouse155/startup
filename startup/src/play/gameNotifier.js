@@ -80,7 +80,7 @@ class GameEventNotifier {
         this.newConnectionDataHandler(event.value);
       }
     } else if (event.type === MsgTypes.System) {
-      console.log(event.value.msg);
+      // console.log(event.value.msg);
       if (this.newMessageHandler) {
         this.newMessageHandler(event.value.msg);
       }

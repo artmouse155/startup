@@ -28,13 +28,12 @@ function peerProxy(
     });
   }
 
-  function updateRoomConnection(game) {
-    console.log(
-      `[${game.roomCode}] Updating connection data for all players in the room`
-    );
-    if (!game) return;
+  function updateRoomConnection(game, roomCode = null) {
+    roomCode = roomCode || game.roomCode;
 
-    const roomCode = game.roomCode;
+    console.log(
+      `[${roomCode}] Updating connection data for all players in the room`
+    );
     socketServer.clients.forEach((client) => {
       if (client.roomCode === roomCode) {
         client.send(
@@ -47,11 +46,9 @@ function peerProxy(
     });
   }
 
-  function sendRoomAlert(game, alert) {
-    console.log(`[${game.roomCode}] Sending alert to all players in the room`);
-    if (!game) return;
-
-    const roomCode = game.roomCode;
+  function sendRoomAlert(roomCode, alert) {
+    console.log(`[${roomCode}] Sending alert to all players in the room`);
+    if (!roomCode) return;
     socketServer.clients.forEach((client) => {
       if (client.roomCode === roomCode) {
         client.send(

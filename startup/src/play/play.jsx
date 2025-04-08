@@ -4,6 +4,7 @@ import { Game } from "./game.jsx";
 import { Lobby } from "./lobby.jsx";
 import { ConnectionState } from "./connectionState";
 import Spinner from "react-bootstrap/Spinner";
+import Button from "react-bootstrap/Button";
 
 import { MsgTypes, GameEventNotifier } from "./gameNotifier";
 
@@ -45,6 +46,9 @@ export function Play({ userData, setUserData, authState }) {
             data
           );
           setConnectionData(data);
+        },
+        newMessageHandler: (msg) => {
+          alert(msg);
         },
         connectedGetter: () => connectionState == ConnectionState.Connected,
         connectedSetter: (a) => {
@@ -171,7 +175,19 @@ export function Play({ userData, setUserData, authState }) {
             );
           }
         case ConnectionState.Disconnected:
-          return <p className="fullsize">Couldn't connect to server</p>;
+          return (
+            <div className="fullsize">
+              <p>Disconnected from Server</p>
+              <Button
+                onClick={() => {
+                  location.reload();
+                  return false;
+                }}
+              >
+                Reconnect
+              </Button>
+            </div>
+          );
 
         case ConnectionState.Connecting:
           return (
