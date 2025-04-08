@@ -2,9 +2,9 @@ const { WebSocketServer } = require("ws");
 
 function peerProxy(
   httpServer,
-  roomCodeByEmail,
   getConnectionData,
   getGameByPlayerEmail,
+  getUserByToken,
   removePlayerFromGame
 ) {
   // Create a websocket object
@@ -63,9 +63,49 @@ function peerProxy(
     });
   }
 
-  socketServer.on("connection", async (socket) => {
+  socketServer.on("connection", async (socket, request) => {
     socket.isAlive = true;
-    // console.log(`[     ] New websocket connection`);
+    socket.authenticated = false;
+    if (request.headers.cookie) {
+      // From https://stackoverflow.com/questions/24951159/nodejs-how-to-get-cookie-in-ws-einaros
+
+      //Not working any more
+      //if(client.upgradeReq.headers.cookie) request.headers.cookie.split(';')...
+      //This works
+      var cookies = {};
+      request.headers.cookie.split(";").forEach(function (cookie) {
+        var parts = cookie.match(/(.*?)=(.*)$/);
+        var name = parts[1].trim();
+        var value = (parts[2] || "").trim();
+        cookies[name] = value;
+      });
+
+      // console.log(`[     ] New websocket connection with cookies:`, cookies);
+      if (cookies.token) {
+        const user = await getUserByToken(cookies.token);
+        if (user && user.email) {
+          socket.email = user.email;
+          socket.authenticated = true;
+          console.log(`[     ] WS User authenticated: ${user.email}`);
+          return;
+        }
+      }
+    }
+
+    if (!socket.authenticated) {
+      console.log("[     ] Client not authenticated, ignoring request");
+      socket.send(
+        JSON.stringify({
+          type: MsgTypes.System,
+          value: {
+            msg: "Authentication failed. Please log in again.",
+          },
+        })
+      );
+      socket.close();
+      return;
+    }
+    console.log(`[     ] New websocket connection`);
 
     // Properly set up our client with an email and room code
     socket.on("message", async function message(data) {
@@ -73,7 +113,6 @@ function peerProxy(
       if (event.from && event.type && event.value) {
         switch (event.type) {
           case MsgTypes.gameConnect:
-            socket.email = event.from;
             const game = await getGameByPlayerEmail(socket.email);
             if (game) {
               socket.roomCode = game.roomCode;
@@ -123,6 +162,9 @@ function peerProxy(
 
     // Respond to pong messages by marking the connection alive
     socket.on("pong", () => {
+      console.log(
+        `[${socket.roomCode}] Received pong message from ${socket.email}`
+      );
       socket.isAlive = true;
     });
   });
@@ -132,13 +174,16 @@ function peerProxy(
     socketServer.clients.forEach(function each(client) {
       if (client.isAlive === false) {
         console.log(
-          `[${socket.roomCode}] Terminated unresponsive websocket connection from ${socket.email} `
+          `[${client.roomCode}] Terminated unresponsive websocket connection from ${client.email} `
         );
-        removePlayerFromGame(socket.email);
+        removePlayerFromGame(client.email);
         return client.terminate();
       }
 
       client.isAlive = false;
+      console.log(
+        `[${client.roomCode}] Sending ping message to ${client.email}`
+      );
       client.ping();
     });
   }, 10000);

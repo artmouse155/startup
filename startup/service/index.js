@@ -413,9 +413,9 @@ const httpService = app.listen(port, () => {
 
 const proxy = peerProxy(
   httpService,
-  findRoomCodeByPlayerEmail,
   gameLogic.getConnectionData,
   DB.getGameByPlayerEmail,
+  DB.getUserByToken,
   removePlayerFromGame
 );
 

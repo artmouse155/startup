@@ -319,22 +319,6 @@ export function Game({
               : `Turn ${turns + 1} of ${maxTurns}`}
           </h2>
           {leaderboardCardList}
-          {/* <button
-            onClick={() => {
-              // Evaluate random card of current player, using gameData.current_turn_id, gameData.players[gameData.current_turn_id].cards, and evalCard
-              const currentPlayerCards = players[current_turn_id].cards;
-              const randomCardIndex = currentPlayerCards.findIndex(
-                (card) => card == 1
-              );
-              if (randomCardIndex !== -1) {
-                evalCard(randomCardIndex);
-              }
-            }}
-            //disabled={myPlayerId == gameData.current_turn_id}
-          >
-            Simulate Next Turn
-          </button>
-          <button onClick={() => endGame()}>Finish Game</button> */}
         </div>
       );
     } else {

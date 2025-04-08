@@ -89,9 +89,9 @@ class GameEventNotifier {
     }
   }
 
-  connectToGameServer(email, authToken) {
+  connectToGameServer(email) {
     this.email = email;
-    this.broadcastEvent(email, MsgTypes.gameConnect, { authToken: authToken });
+    this.broadcastEvent(email, MsgTypes.gameConnect, { msg: "GET" });
   }
 
   requestConnectionData() {

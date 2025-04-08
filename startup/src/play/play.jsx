@@ -29,9 +29,8 @@ export function Play({ userData, setUserData, authState }) {
     if (debug) {
       console.log("Pinged Game Server");
     }
-    const cookies = decodeURIComponent(document.cookie);
     if (GameNotifier) {
-      GameNotifier.connectToGameServer(userData.email, cookies.authToken);
+      GameNotifier.connectToGameServer(userData.email);
     }
   }
 
@@ -146,8 +145,6 @@ export function Play({ userData, setUserData, authState }) {
               <div className="fullsize">
                 {/* <DebugButtons /> */}
                 <Lobby
-                  // setWebSocket={setWebSocket}
-                  pingServer={pingServer}
                   connectionData={connectionData}
                   handleExit={handleExit}
                   connectToGameServer={connectToGameServer}
