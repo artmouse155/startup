@@ -12,7 +12,7 @@
       {
         "conditions": [],
         "text": [
-          "You read a magic inscription on the wall. Everyone is very proud of you."
+          "$n$ peered closely and read a magic inscription on the wall. $n$ wasn't sure what it meant, but $they$ felt a surge of *magic energy*..."
         ],
         "results": [
           {
@@ -30,7 +30,7 @@
     "outcomes": [
       {
         "conditions": [],
-        "text": ["You found a Magic Telescope! It's a telescope that's magic."],
+        "text": ["$n$ found a Magic Telescope! It's a telescope that's magic."],
         "results": [
           {
             "type": "item-obtained",
@@ -41,18 +41,17 @@
     ]
   },
   {
-    "id": "use-topmost-item",
-    "desc": "Use topmost item in inventory",
+    "id": "use-firstmost-item",
+    "desc": "Use firstmost item in inventory",
     "outcomes": [
       {
         "conditions": [],
         "text": [
-          "$n$ used the topmost item in $their$ inventory. $They$ felt it was a good choice."
+          "$n$ used the firstmost item in $their$ inventory. $They$ felt it was a good choice."
         ],
         "results": [
           {
-            "type": "item-used",
-            "item": "topmost"
+            "type": "item-used-firstmost"
           }
         ]
       }

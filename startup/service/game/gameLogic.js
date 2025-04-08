@@ -253,6 +253,16 @@ async function evalCard(
             }
             result.item = getItemData(result.item);
           }
+          if (result.type == "item-used-firstmost") {
+            // Remove the first item from the inventory
+            const item = game.gameData.inventory[0];
+            if (item != "") {
+              game.gameData.inventory[0] = ""; // Remove the first item
+              result.item = getItemData(item);
+            } else {
+              outcome.text.push(`_No items in inventory._`);
+            }
+          }
         }
       }
       const getCardUserName = () => {
@@ -380,9 +390,11 @@ function getConnectionData(game, email) {
       trophiesEarned: p.trophiesEarned,
     };
   });
-  clientGameData.inventory = clientGameData.inventory.map((i) =>
-    getItemData(i)
-  );
+  clientGameData.inventory = clientGameData.inventory.map((i) => {
+    // Only send id, name and icon fields
+    const { id, name, icon } = getItemData(i);
+    return { id, name, icon };
+  });
   const connectionData = {
     roomCode: roomCode,
     gameState: game.gameState,
