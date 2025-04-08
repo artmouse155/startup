@@ -166,6 +166,7 @@ async function evalCard(
   game,
   email,
   card_num_id,
+  updateRoomConnection,
   setGame,
   addTrophies,
   doNextTurn = true
@@ -288,8 +289,6 @@ async function evalCard(
 
             // Push the intro story, using storyAPI.apiCall to replace $stuff$.
             await pushOutcome(game, ending_outcome, game.heroData);
-            // PLACEHOLDER: Tell clients the game has ended
-            // PLACEHOLDER: Give each client 5 trophies
             function getStandings(aspects, players, player_count) {
               // PlayerID, Standing
               let standings = Array(player_count);
@@ -349,14 +348,7 @@ async function evalCard(
       // Set the game with MongoDB
       await setGame(roomCode, game);
 
-      // PLACEHOLDER for websocket
-      for (const player of game.players) {
-        // textboxPushFunc({
-        //   ...outcome,
-        //   type: "turn",
-        //   playerTurnName: cardPlayerName,
-        // });
-      }
+      updateRoomConnection(game);
 
       return true;
     }
@@ -366,12 +358,16 @@ async function evalCard(
 }
 
 // Format the connection data for the client
-async function getConnectionData(game, email) {
+function getConnectionData(game, email) {
+  if (!game) {
+    console.log(`[     ] no game found for email`, email);
+    return null;
+  }
   const roomCode = game.roomCode;
   const playerIndex = game.players.findIndex((item) => item.email == email);
   if (playerIndex == -1) {
     console.log(`[${roomCode}]`, "Player not found", email);
-    return false;
+    return null;
   }
   const player = game.players[playerIndex];
   console.log(`[${roomCode}]`, "Sending connection data to", email);

@@ -1,6 +1,11 @@
 const { WebSocketServer } = require("ws");
 
-function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
+function peerProxy(
+  httpServer,
+  roomCodeByEmail,
+  getConnectionData,
+  getGameByPlayerEmail
+) {
   // Create a websocket object
   const MsgTypes = {
     System: "system",
@@ -16,18 +21,34 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
   // Send event to room code
   function sendEvent(roomCode, event) {
     socketServer.clients.forEach((client) => {
-      if (
-        client.readyState === WebSocket.OPEN &&
-        client.roomCode === roomCode
-      ) {
+      if (client.roomCode === roomCode) {
         client.send(JSON.stringify(event));
+      }
+    });
+  }
+
+  function updateRoomConnection(game) {
+    console.log(
+      `[${game.roomCode}] Updating connection data for all players in the room`
+    );
+    if (!game) return;
+
+    const roomCode = game.roomCode;
+    socketServer.clients.forEach((client) => {
+      if (client.roomCode === roomCode) {
+        client.send(
+          JSON.stringify({
+            type: MsgTypes.ConnectionData,
+            value: getConnectionData(game, client.email),
+          })
+        );
       }
     });
   }
 
   socketServer.on("connection", async (socket) => {
     socket.isAlive = true;
-    console.log(`[] New websocket connection`);
+    console.log(`[     ] New websocket connection`);
 
     // Properly set up our client with an email and room code
     socket.on("message", async function message(data) {
@@ -36,16 +57,22 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
         switch (event.type) {
           case MsgTypes.gameConnect:
             socket.email = event.from;
-            socket.roomCode = await roomCodeByEmail(socket.email);
-            console.log(
-              `[${socket.roomCode}] New game websocket connection from ${socket.email}`
-            );
-            socket.send(
-              JSON.stringify({
-                type: MsgTypes.gameConnect,
-                value: { msg: "connected", roomCode: socket.roomCode },
-              })
-            );
+            const game = await getGameByPlayerEmail(socket.email);
+            if (game) {
+              socket.roomCode = game.roomCode;
+              console.log(
+                `[${socket.roomCode}] New game websocket connection from ${socket.email}`
+              );
+              socket.send(
+                JSON.stringify({
+                  type: MsgTypes.gameConnect,
+                  value: {
+                    msg: "connected",
+                    connectionData: getConnectionData(game, socket.email),
+                  },
+                })
+              );
+            }
             break;
           case MsgTypes.ConnectionData:
             console.log(
@@ -54,7 +81,10 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
             socket.send(
               JSON.stringify({
                 type: MsgTypes.ConnectionData,
-                value: await getConnectionData(socket.email),
+                value: await getConnectionData(
+                  await getGameByPlayerEmail(socket.email),
+                  socket.email
+                ),
               })
             );
             break;
@@ -88,6 +118,7 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
 
   return {
     sendEvent: sendEvent,
+    updateRoomConnection: updateRoomConnection,
   };
 }
 

@@ -79,17 +79,18 @@ export function Play({ userData, setUserData, authState }) {
     }
   }
 
-  async function getConnectionData(roomCode = null) {
-    console.log("getConnectionData called with roomCode:", roomCode);
-    if (!roomCode) {
-      if (connectionData && connectionData.roomCode) {
-        roomCode = connectionData.roomCode;
-      } else {
-        alert("No room code specified");
-        return;
-      }
-    }
+  function getConnectionData() {
+    // console.log("getConnectionData called with roomCode:", roomCode);
+    // if (!roomCode) {
+    //   if (connectionData && connectionData.roomCode) {
+    //     roomCode = connectionData.roomCode;
+    //   } else {
+    //     alert("No room code specified");
+    //     return;
+    //   }
+    // }
     if (connectionState == ConnectionState.Connected) {
+      GameNotifier.requestConnectionData();
     }
     // if (debug) {
     //   console.log("Getting connection data with room code", roomCode);
@@ -164,7 +165,7 @@ export function Play({ userData, setUserData, authState }) {
             );
           }
         case ConnectionState.Disconnected:
-          return <p className="fullsize">Disconnected from server</p>;
+          return <p className="fullsize">Couldn't connect to server</p>;
 
         case ConnectionState.Connecting:
           return (

@@ -71,9 +71,7 @@ class GameEventNotifier {
     } else if (event.type === MsgTypes.gameConnect) {
       console.log("[WS] Game connected: ", event.value.msg);
       this.gameConnectedSetter(true);
-      this.broadcastEvent(this.email, MsgTypes.ConnectionData, {
-        msg: "GET",
-      });
+      this.requestConnectionData();
     } else if (event.type === MsgTypes.gameDisconnect) {
       console.log("[WS] Game disconnected:", event.value.msg);
       this.gameConnectedSetter(false);
@@ -94,6 +92,10 @@ class GameEventNotifier {
   connectToGameServer(email, authToken) {
     this.email = email;
     this.broadcastEvent(email, MsgTypes.gameConnect, { authToken: authToken });
+  }
+
+  requestConnectionData() {
+    this.broadcastEvent(this.email, MsgTypes.ConnectionData, { msg: "GET" });
   }
 }
 

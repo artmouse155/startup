@@ -189,7 +189,7 @@ export function Game({
         }
       );
       if (response?.status === 200) {
-        pingServer();
+        // pingServer();
         return true;
       } else {
         const body = await response.json();

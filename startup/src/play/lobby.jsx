@@ -7,7 +7,6 @@ import ListGroup from "react-bootstrap/ListGroup";
 import InputGroup from "react-bootstrap/InputGroup";
 
 export function Lobby({
-  setWebSocket,
   connectionData,
   handleExit,
   pingServer,
@@ -70,7 +69,7 @@ export function Lobby({
     if (response?.status === 200) {
       const body = await response.json();
       //console.log("Host Game Result: ", body);
-      setWebSocket(body.roomCode);
+      pingServer();
     } else {
       if (response?.status === 409) {
         const body = await response.json();
@@ -94,7 +93,7 @@ export function Lobby({
         }
       );
       if (response?.status === 200) {
-        pingServer();
+        // pingServer();
         return true;
       } else {
         const body = await response.json();
@@ -116,7 +115,7 @@ export function Lobby({
       },
     });
     if (response?.status === 200) {
-      setWebSocket(roomCode);
+      // pingServer();
     } else {
       if (response?.status === 409) {
         const body = await response.json();

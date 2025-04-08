@@ -222,8 +222,9 @@ gameRouter.post("/join/:roomCode", async (req, res) => {
     }
     game.players.push({ email: email });
     await DB.setGame(roomCode, game);
+    updateRoomConnection(game);
     console.log(`[${roomCode}]`, email, "joined");
-    res.status(200).send(await gameLogic.getConnectionData(game, email));
+    res.status(200).send({ msg: `Success!` });
   } else {
     res
       .status(403)
@@ -270,16 +271,7 @@ gameServerRouter.post("/start", async (req, res) => {
       // Set the game with MongoDB
       await DB.setGame(roomCode, req.game);
 
-      // PLACEHOLDER: Respond with the connection data
-      for (const player of req.game.players) {
-        console.log(
-          `[${roomCode}]`,
-          "Sending connection data to",
-          player,
-          ":",
-          await gameLogic.getConnectionData(req.game, player.email)
-        );
-      }
+      updateRoomConnection(req.game);
       res.status(200).end();
     }
   }
@@ -300,6 +292,7 @@ gameServerRouter.post(
         req.game,
         email,
         req.params.cardIndex,
+        updateRoomConnection,
         DB.setGame,
         DB.addTrophies,
         true
@@ -317,10 +310,7 @@ gameServerRouter.post("/connection/get", async (req, res) => {
   const roomCode = req.roomCode;
   // get user email based on their auth token
   const userData = await getUserData(req);
-  if (req.game)
-    res
-      .status(200)
-      .send(await gameLogic.getConnectionData(req.game, userData.email));
+  if (req.game) res.status(200).send({ msg: `Success!` });
   else res.status(403).send({ msg: "Game not found" });
 });
 
@@ -341,7 +331,6 @@ async function removePlayerFromGame(email) {
       players.length <= 1 ||
       game.host == email
     ) {
-      // TODO Placeholder WebSocket: Tell clients the host has left, or tell other players the game has ended
       console.log(`[${roomCode}]`, "was deleted");
       await DB.deleteGame(roomCode);
     } else {
@@ -350,16 +339,17 @@ async function removePlayerFromGame(email) {
       // Actually remove player from game
       await DB.setGame(roomCode, game);
     }
+    updateRoomConnection(game);
     return true;
   }
 }
 
 async function findRoomCodeByPlayerEmail(email) {
-  console.log("[] Finding room code for", email);
+  console.log("[     ] Finding room code for", email);
   if (!email) return null;
   const game = await DB.getGameByPlayerEmail(email);
   if (game) {
-    console.log("[] Game found", game.roomCode);
+    console.log("[     ] Game found", game.roomCode);
     return game.roomCode;
   }
   return null;
@@ -407,23 +397,17 @@ const httpService = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
 
-const proxyGetConnectionData = async (email) => {
-  const game = await DB.getGameByPlayerEmail(email);
-  if (game) {
-    return await gameLogic.getConnectionData(game, email);
-  }
-  return null;
-};
-
 const proxy = peerProxy(
   httpService,
   findRoomCodeByPlayerEmail,
-  proxyGetConnectionData
+  gameLogic.getConnectionData,
+  DB.getGameByPlayerEmail
 );
 
 if (proxy) {
   console.log("Connected to Peer Proxy");
   sendEvent = proxy.sendEvent;
+  updateRoomConnection = proxy.updateRoomConnection;
 } else {
   console.log("No proxy found.");
 }
