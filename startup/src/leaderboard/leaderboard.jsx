@@ -13,7 +13,7 @@ export function Leaderboard() {
     fetch("/api/trophies")
       .then((response) => response.json())
       .then((scores) => {
-        console.log("Scores: ", scores);
+        // console.log("Scores: ", scores);
         setScores(scores);
       });
   }, []);

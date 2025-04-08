@@ -26,7 +26,9 @@ export function Play({ userData, setUserData, authState }) {
   const [connectionData, setConnectionData] = React.useState(null);
 
   function connectToGameServer() {
-    console.log("Pinged Game Server");
+    if (debug) {
+      console.log("Pinged Game Server");
+    }
     const cookies = decodeURIComponent(document.cookie);
     if (GameNotifier) {
       GameNotifier.connectToGameServer(userData.email, cookies.authToken);
@@ -35,16 +37,19 @@ export function Play({ userData, setUserData, authState }) {
 
   React.useEffect(() => {
     if (connectionState == ConnectionState.Connecting) {
-      console.log("🟡 Connecting to websocket...");
+      if (debug) {
+        console.log("🟡 Connecting to websocket...");
 
-      console.log("Setting up websocket connection to game server...");
-
+        console.log("Setting up websocket connection to game server...");
+      }
       GameNotifier = new GameEventNotifier({
         newConnectionDataHandler: (data) => {
-          console.log(
-            "⭐ Got web socket connection data! Connection Data: ",
-            data
-          );
+          if (debug) {
+            console.log(
+              "⭐ Got web socket connection data! Connection Data: ",
+              data
+            );
+          }
           setConnectionData(data);
         },
         newMessageHandler: (msg) => {
@@ -54,22 +59,32 @@ export function Play({ userData, setUserData, authState }) {
         connectedSetter: (a) => {
           if (a) setConnectionState(ConnectionState.Connected);
           else setConnectionState(ConnectionState.Disconnected);
-          console.log("Connection state changed to: ", a);
+          if (debug) {
+            console.log("Connection state changed to: ", a);
+          }
         },
         // We don't actually need this for now, but we can use it in the future
         gameConnectedGetter: () => null,
         gameConnectedSetter: (a) => {},
       });
-      console.log("GameNotifier: ", GameNotifier);
+      if (debug) {
+        console.log("GameNotifier: ", GameNotifier);
+      }
     } else if (connectionState == ConnectionState.Disconnected) {
-      console.log("🔴 Disconnected from websocket");
+      if (debug) {
+        console.log("🔴 Disconnected from websocket");
+      }
       setConnectionData(null);
     } else if (connectionState == ConnectionState.Connected) {
-      console.log("🟢 Connected to websocket");
+      if (debug) {
+        console.log("🟢 Connected to websocket");
+      }
 
       connectToGameServer();
     } else {
-      console.log("GameNotifier is null!");
+      if (debug) {
+        console.log("GameNotifier is null!");
+      }
     }
   }, [connectionState]);
 
@@ -90,42 +105,9 @@ export function Play({ userData, setUserData, authState }) {
   }
 
   function getConnectionData() {
-    // console.log("getConnectionData called with roomCode:", roomCode);
-    // if (!roomCode) {
-    //   if (connectionData && connectionData.roomCode) {
-    //     roomCode = connectionData.roomCode;
-    //   } else {
-    //     alert("No room code specified");
-    //     return;
-    //   }
-    // }
     if (connectionState == ConnectionState.Connected) {
       GameNotifier.requestConnectionData();
     }
-    // if (debug) {
-    //   console.log("Getting connection data with room code", roomCode);
-    // }
-
-    // FALLBACK: Only if we can't start websocket connection, we will use fetch to get the connection data
-    // const response = await fetch(`api/game/server/${roomCode}/connection/get`, {
-    //   method: "post",
-    //   headers: {
-    //     "Content-type": "application/json; charset=UTF-8",
-    //   },
-    // });
-    // if (response?.status === 200) {
-    //   const body = await response.json();
-    //   if (debug) {
-    //     console.log("⭐ Server Pinged! Connection Data: ", body);
-    //   }
-    //   setConnectionData(body);
-    //   localStorage.setItem("roomCode", body.roomCode);
-    //   setConnectionState(ConnectionState.Connected);
-    // } else {
-    //   const body = await response.json();
-    //   setConnectionState(ConnectionState.Disconnected);
-    //   alert(`⚠ Error: ${body.msg}`);
-    // }
   }
 
   // Includes a button to get connection data and a button to start the game. Also a button to end the game

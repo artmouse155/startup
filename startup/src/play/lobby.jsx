@@ -23,11 +23,18 @@ export function Lobby({
   const [roomCodeInput, setRoomCodeInput] = React.useState("");
   const inputRef = React.useRef(null);
 
-  // React.useEffect(() => {
-  //   if (inputRef.current) {
-  //     inputRef.current.focus();
-  //   }
-  // }, [roomCodeInput]);
+  function focusInput() {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }
+
+  // If menuState just became JOIN, focus the input field
+  React.useEffect(() => {
+    if (menuState == MENUSTATE.JOIN) {
+      focusInput();
+    }
+  }, [menuState]);
 
   React.useEffect(() => {
     if (connectionData) {

@@ -50,7 +50,7 @@ class GameEventNotifier {
         const event = JSON.parse(await msg.data);
         this.receiveEvent(event);
       } catch (err) {
-        console.log("Error parsing message: ", msg.data, "Error: ", err);
+        console.error("Error parsing message: ", msg.data, "Error: ", err);
       }
     };
   }
@@ -61,19 +61,19 @@ class GameEventNotifier {
   }
 
   receiveEvent(event) {
-    console.log("[WS] Received event:", event);
+    // console.log("[WS] Received event:", event);
     if (event.type === MsgTypes.connect) {
       this.connectedSetter(true);
-      console.log("[WS] Connected to server:", event.value.msg);
+      // console.log("[WS] Connected to server:", event.value.msg);
     } else if (event.type === MsgTypes.disconnect) {
       this.connectedSetter(false);
-      console.log("[WS] Disconnected from server:", event.value.msg);
+      // console.log("[WS] Disconnected from server:", event.value.msg);
     } else if (event.type === MsgTypes.gameConnect) {
-      console.log("[WS] Game connected: ", event.value.msg);
+      // console.log("[WS] Game connected: ", event.value.msg);
       this.gameConnectedSetter(true);
       this.requestConnectionData();
     } else if (event.type === MsgTypes.gameDisconnect) {
-      console.log("[WS] Game disconnected:", event.value.msg);
+      // console.log("[WS] Game disconnected:", event.value.msg);
       this.gameConnectedSetter(false);
     } else if (event.type === MsgTypes.ConnectionData) {
       if (this.newConnectionDataHandler) {
@@ -85,7 +85,7 @@ class GameEventNotifier {
         this.newMessageHandler(event.value.msg);
       }
     } else {
-      console.log(event);
+      // console.log(event);
     }
   }
 

@@ -335,7 +335,6 @@ export function Game({
             Simulate Next Turn
           </button>
           <button onClick={() => endGame()}>Finish Game</button> */}
-          <button onClick={handleExit}>Exit Game</button>
         </div>
       );
     } else {

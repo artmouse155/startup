@@ -154,7 +154,9 @@ const verifyCurrentPlayer = async (req, res, next) => {
     if (userData.email == currentPlayerEmail) {
       next();
     } else {
-      res.status(401).send({ msg: "Nice try, Daniel." });
+      res
+        .status(401)
+        .send({ msg: "Unexpected player error occurred. Please try again." });
     }
   }
 };
