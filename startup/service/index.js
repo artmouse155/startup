@@ -329,16 +329,17 @@ async function removePlayerFromGame(email) {
   if (playerIndex != -1) {
     // If (game in progress) or (email was host) or (no players left), delete game
     if (
-      game.gameState == gameConstants.GAME_STATES.PLAY ||
-      players.length <= 1 ||
-      game.host == email
+      game.gameState != gameConstants.GAME_STATES.END &&
+      (players.length <= 1 || game.host == email)
     ) {
       console.log(`[${roomCode}]`, "was deleted");
       await DB.deleteGame(roomCode);
-      sendRoomAlert(
-        roomCode,
-        `${gameLogic.displayName(email)} left the game. Game ended.`
-      );
+      if (players.length > 1) {
+        sendRoomAlert(
+          roomCode,
+          `${gameLogic.displayName(email)} left the game. Game ended.`
+        );
+      }
       updateRoomConnection(null, roomCode);
     } else {
       console.log(`[${roomCode}]`, email, "left the game");

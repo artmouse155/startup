@@ -180,8 +180,7 @@ export function Play({ userData, setUserData, authState }) {
               <p>Disconnected from Server</p>
               <Button
                 onClick={() => {
-                  location.reload();
-                  return false;
+                  setConnectionState(ConnectionState.Connecting);
                 }}
               >
                 Reconnect
