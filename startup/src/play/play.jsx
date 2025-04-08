@@ -5,7 +5,7 @@ import { Lobby } from "./lobby.jsx";
 import { ConnectionState } from "./connectionState";
 import Spinner from "react-bootstrap/Spinner";
 
-import { MsgTypes, GameNotifier } from "./gameNotifier";
+import { MsgTypes, GameEventNotifier } from "./gameNotifier";
 
 const debug = false;
 
@@ -14,6 +14,8 @@ const GAME_STATES = {
   PLAY: 1,
   END: 2,
 };
+
+let GameNotifier = null;
 
 export function Play({ userData, setUserData, authState }) {
   // This is our websocket connection state
@@ -24,40 +26,41 @@ export function Play({ userData, setUserData, authState }) {
 
   React.useEffect(() => {
     if (connectionState == ConnectionState.Connecting) {
-      console.log("🟡 Trying to connect to game server...");
-      // Check local storage for a roomCode
-      const roomCode = localStorage.getItem("roomCode");
-      if (roomCode) {
-        if (debug) {
-          console.log("Found room code in local storage: ", roomCode);
-        }
-        getConnectionData(roomCode);
-      } else {
-        if (debug) {
-          console.log("No room code found in local storage");
-        }
-        setConnectionState(ConnectionState.Disconnected);
-      }
+      console.log("🟡 Connecting to websocket...");
+
+      console.log("Setting up websocket connection to game server...");
+
+      GameNotifier = new GameEventNotifier({
+        newConnectionDataHandler: (data) => {
+          console.log(
+            "⭐ Got web socket connection data! Connection Data: ",
+            data
+          );
+          setConnectionData(data);
+        },
+        connectedGetter: () => connectionState == ConnectionState.Connected,
+        connectedSetter: (a) => {
+          if (a) setConnectionState(ConnectionState.Connected);
+          else setConnectionState(ConnectionState.Disconnected);
+          console.log("Connection state changed to: ", a);
+        },
+        gameConnectedGetter: () => connectionData,
+        gameConnectedSetter: (a) => setConnectionData(a),
+      });
+      console.log("GameNotifier: ", GameNotifier);
     } else if (connectionState == ConnectionState.Disconnected) {
-      console.log("🔴 Disconnected from game server");
+      console.log("🔴 Disconnected from websocket");
       setConnectionData(null);
-      localStorage.removeItem("roomCode");
     } else if (connectionState == ConnectionState.Connected) {
-      console.log("🟢 Connected to game server");
+      console.log("🟢 Connected to websocket");
+      if (GameNotifier) {
+        const cookies = decodeURIComponent(document.cookie);
+        GameNotifier.connectToGameServer(userData.email, cookies.authToken);
+      } else {
+        console.log("GameNotifier is null!");
+      }
     }
   }, [connectionState]);
-  // console.log("Auth State: ", authState);
-  // console.log("Connection State: ", connectionState);
-  // console.log("User Data: ", userData);
-  function setWebSocket(roomCode) {
-    if (roomCode) {
-      localStorage.setItem("roomCode", roomCode);
-      setConnectionState(ConnectionState.Connecting);
-    } else {
-      //alert("Closing WebSocket Connection");
-      setConnectionState(ConnectionState.Disconnected);
-    }
-  }
 
   async function handleExit() {
     // Handles canceling as either a host or a person joining
@@ -85,18 +88,12 @@ export function Play({ userData, setUserData, authState }) {
         return;
       }
     }
+    if (connectionState == ConnectionState.Connected) {
+    }
     // if (debug) {
     //   console.log("Getting connection data with room code", roomCode);
     // }
-    console.log("Setting up websocket connection to game server...");
-    const cookies = decodeURIComponent(document.cookie);
-    GameNotifier.newConnectionDataHandler = (data) => {
-      console.log("⭐ Got web socket data! Connection Data: ", data);
-      setConnectionData(data);
-      localStorage.setItem("roomCode", data.roomCode);
-      setConnectionState(ConnectionState.Connected);
-    };
-    GameNotifier.connectToGame(userData.email, cookies.authToken);
+
     // FALLBACK: Only if we can't start websocket connection, we will use fetch to get the connection data
     // const response = await fetch(`api/game/server/${roomCode}/connection/get`, {
     //   method: "post",
@@ -157,7 +154,7 @@ export function Play({ userData, setUserData, authState }) {
             <div className="fullsize">
               {/* <DebugButtons /> */}
               <Lobby
-                setWebSocket={setWebSocket}
+                // setWebSocket={setWebSocket}
                 pingServer={pingServer}
                 connectionData={connectionData}
                 handleExit={handleExit}

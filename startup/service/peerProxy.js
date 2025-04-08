@@ -27,6 +27,7 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
 
   socketServer.on("connection", async (socket) => {
     socket.isAlive = true;
+    console.log(`[] New websocket connection`);
 
     // Properly set up our client with an email and room code
     socket.on("message", async function message(data) {
@@ -37,7 +38,7 @@ function peerProxy(httpServer, roomCodeByEmail, getConnectionData) {
             socket.email = event.from;
             socket.roomCode = await roomCodeByEmail(socket.email);
             console.log(
-              `[${socket.roomCode}] New websocket connection from ${socket.email}`
+              `[${socket.roomCode}] New game websocket connection from ${socket.email}`
             );
             socket.send(
               JSON.stringify({

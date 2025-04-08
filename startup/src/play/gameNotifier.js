@@ -16,13 +16,22 @@ class Event {
 }
 
 class GameEventNotifier {
-  email = null;
-  newConnectionDataHandler = null;
-  newMessageHandler = null;
-  connected = false;
-  gameConnected = false;
-
-  constructor() {
+  constructor({
+    email,
+    newConnectionDataHandler,
+    newMessageHandler,
+    connectedGetter,
+    connectedSetter,
+    gameConnectedGetter,
+    gameConnectedSetter,
+  }) {
+    this.email = email;
+    this.newConnectionDataHandler = newConnectionDataHandler;
+    this.newMessageHandler = newMessageHandler;
+    this.connectedGetter = connectedGetter;
+    this.connectedSetter = connectedSetter;
+    this.gameConnectedGetter = gameConnectedGetter;
+    this.gameConnectedSetter = gameConnectedSetter;
     let port = window.location.port;
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
     this.socket = new WebSocket(
@@ -56,20 +65,20 @@ class GameEventNotifier {
   receiveEvent(event) {
     console.log("[WS] Received event:", event);
     if (event.type === MsgTypes.connect) {
-      this.connected = true;
+      this.connectedSetter(true);
       console.log("[WS] Connected to server:", event.value.msg);
     } else if (event.type === MsgTypes.disconnect) {
-      this.connected = false;
+      this.connectedSetter(false);
       console.log("[WS] Disconnected from server:", event.value.msg);
     } else if (event.type === MsgTypes.gameConnect) {
       console.log("[WS] Game connected: ", event.value.msg);
-      this.gameConnected = true;
+      this.gameConnectedSetter(true);
       this.broadcastEvent(this.email, MsgTypes.ConnectionData, {
         msg: "GET",
       });
     } else if (event.type === MsgTypes.gameDisconnect) {
       console.log("[WS] Game disconnected:", event.value.msg);
-      this.gameConnected = false;
+      this.gameConnectedSetter(false);
     } else if (event.type === MsgTypes.ConnectionData) {
       if (this.newConnectionDataHandler) {
         this.newConnectionDataHandler(event.value);
@@ -84,11 +93,10 @@ class GameEventNotifier {
     }
   }
 
-  connectToGame(email, authToken) {
+  connectToGameServer(email, authToken) {
     this.email = email;
     this.broadcastEvent(email, MsgTypes.gameConnect, { authToken: authToken });
   }
 }
 
-const GameNotifier = new GameEventNotifier();
-export { MsgTypes, GameNotifier };
+export { MsgTypes, GameEventNotifier };
