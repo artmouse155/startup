@@ -62,30 +62,38 @@ class GameEventNotifier {
 
   receiveEvent(event) {
     // console.log("[WS] Received event:", event);
-    if (event.type === MsgTypes.connect) {
-      this.connectedSetter(true);
-      // console.log("[WS] Connected to server:", event.value.msg);
-    } else if (event.type === MsgTypes.disconnect) {
-      this.connectedSetter(false);
-      // console.log("[WS] Disconnected from server:", event.value.msg);
-    } else if (event.type === MsgTypes.gameConnect) {
-      // console.log("[WS] Game connected: ", event.value.msg);
-      this.gameConnectedSetter(true);
-      this.requestConnectionData();
-    } else if (event.type === MsgTypes.gameDisconnect) {
-      // console.log("[WS] Game disconnected:", event.value.msg);
-      this.gameConnectedSetter(false);
-    } else if (event.type === MsgTypes.ConnectionData) {
-      if (this.newConnectionDataHandler) {
-        this.newConnectionDataHandler(event.value);
-      }
-    } else if (event.type === MsgTypes.System) {
-      // console.log(event.value.msg);
-      if (this.newMessageHandler) {
-        this.newMessageHandler(event.value.msg);
-      }
-    } else {
-      // console.log(event);
+    switch (event.type) {
+      case MsgTypes.connect:
+        this.connectedSetter(true);
+        // console.log("[WS] Connected to server:", event.value.msg);
+        break;
+      case MsgTypes.disconnect:
+        this.connectedSetter(false);
+        // console.log("[WS] Disconnected from server:", event.value.msg);
+        break;
+      case MsgTypes.gameConnect:
+        // console.log("[WS] Game connected: ", event.value.msg);
+        this.gameConnectedSetter(true);
+        this.requestConnectionData();
+        break;
+      case MsgTypes.gameDisconnect:
+        // console.log("[WS] Game disconnected:", event.value.msg);
+        this.gameConnectedSetter(false);
+        break;
+      case MsgTypes.ConnectionData:
+        if (this.newConnectionDataHandler) {
+          this.newConnectionDataHandler(event.value);
+        }
+        break;
+      case MsgTypes.System:
+        // console.log(event.value.msg);
+        if (this.newMessageHandler) {
+          this.newMessageHandler(event.value.msg);
+        }
+        break;
+      default:
+        // console.log(event);
+        break;
     }
   }
 
