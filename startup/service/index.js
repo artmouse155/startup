@@ -320,21 +320,23 @@ gameServerRouter.post("/connection/get", async (req, res) => {
 
 // Removes a player from game
 async function removePlayerFromGame(email) {
-  const roomCode = await findRoomCodeByPlayerEmail(email);
-  if (!roomCode) {
-    return false;
-  }
   //console.log(`[${roomCode}]`, `removing ${email} from game`, getGame(roomCode));
-  const game = await DB.getGame(roomCode);
+  const game = await DB.getGameByPlayerEmail(email);
+  if (!game) return false;
+  const roomCode = game.roomCode;
   const players = game.players;
   const playerIndex = players.findIndex((item) => item.email == email);
   if (playerIndex != -1) {
     // If (game in progress) or (email was host) or (no players left), delete game
-    if (
-      game.gameState != gameConstants.GAME_STATES.END &&
-      (players.length <= 1 || game.host == email)
+    if (players.length <= 1) {
+      await DB.deleteGame(roomCode);
+      updateRoomConnection(null, roomCode);
+      console.log(`[${roomCode}]`, "was deleted (all players left)");
+    } else if (
+      (game.gameState == gameConstants.GAME_STATES.LOBBY &&
+        game.host == email) ||
+      game.gameState == gameConstants.GAME_STATES.PLAY
     ) {
-      console.log(`[${roomCode}]`, "was deleted");
       await DB.deleteGame(roomCode);
       if (players.length > 1) {
         sendRoomAlert(
@@ -343,12 +345,13 @@ async function removePlayerFromGame(email) {
         );
       }
       updateRoomConnection(null, roomCode);
+      console.log(`[${roomCode}]`, "was deleted (critical player left)");
     } else {
-      console.log(`[${roomCode}]`, email, "left the game");
       game.players.splice(playerIndex, 1);
       // Actually remove player from game
       await DB.setGame(roomCode, game);
       updateRoomConnection(game);
+      console.log(`[${roomCode}]`, email, "left the game");
     }
 
     return true;

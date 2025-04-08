@@ -65,7 +65,7 @@ function peerProxy(
 
   socketServer.on("connection", async (socket) => {
     socket.isAlive = true;
-    console.log(`[     ] New websocket connection`);
+    // console.log(`[     ] New websocket connection`);
 
     // Properly set up our client with an email and room code
     socket.on("message", async function message(data) {
