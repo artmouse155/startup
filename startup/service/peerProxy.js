@@ -161,10 +161,10 @@ function peerProxy(
 
     // Respond to pong messages by marking the connection alive
     socket.on("pong", () => {
-      console
-        .log
-        // `[${socket.roomCode}] Received pong message from ${socket.email}`
-        ();
+      // console
+      //   .log(
+      //   `[${socket.roomCode}] Received pong message from ${socket.email}`
+      //   );
       socket.isAlive = true;
     });
   });
