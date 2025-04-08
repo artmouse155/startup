@@ -181,10 +181,10 @@ function peerProxy(
       }
 
       client.isAlive = false;
-      console
-        .log
-        // `[${client.roomCode}] Sending ping message to ${client.email}`
-        ();
+      // console
+      //   .log(
+      //   `[${client.roomCode}] Sending ping message to ${client.email}`
+      //   );
       client.ping();
     });
   }, 10000);
