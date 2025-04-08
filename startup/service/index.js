@@ -116,6 +116,8 @@ var gameRouter = express.Router(); // Must be authenticated to use
 apiRouter.use(`/game`, gameRouter);
 
 let sendEvent = null;
+let updateRoomConnection = null;
+let sendRoomAlert = null;
 
 const GameEvent = {
   System: "system",
@@ -333,6 +335,10 @@ async function removePlayerFromGame(email) {
     ) {
       console.log(`[${roomCode}]`, "was deleted");
       await DB.deleteGame(roomCode);
+      sendRoomAlert(
+        game,
+        `${gameLogic.displayName(email)} left the game. Game ended.`
+      );
     } else {
       console.log(`[${roomCode}]`, email, "left the game");
       game.players.splice(playerIndex, 1);
@@ -401,13 +407,15 @@ const proxy = peerProxy(
   httpService,
   findRoomCodeByPlayerEmail,
   gameLogic.getConnectionData,
-  DB.getGameByPlayerEmail
+  DB.getGameByPlayerEmail,
+  removePlayerFromGame
 );
 
 if (proxy) {
   console.log("Connected to Peer Proxy");
   sendEvent = proxy.sendEvent;
   updateRoomConnection = proxy.updateRoomConnection;
+  sendRoomAlert = proxy.sendRoomAlert;
 } else {
   console.log("No proxy found.");
 }

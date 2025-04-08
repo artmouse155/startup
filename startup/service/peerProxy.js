@@ -4,7 +4,8 @@ function peerProxy(
   httpServer,
   roomCodeByEmail,
   getConnectionData,
-  getGameByPlayerEmail
+  getGameByPlayerEmail,
+  removePlayerFromGame
 ) {
   // Create a websocket object
   const MsgTypes = {
@@ -40,6 +41,25 @@ function peerProxy(
           JSON.stringify({
             type: MsgTypes.ConnectionData,
             value: getConnectionData(game, client.email),
+          })
+        );
+      }
+    });
+  }
+
+  function sendRoomAlert(game, alert) {
+    console.log(`[${game.roomCode}] Sending alert to all players in the room`);
+    if (!game) return;
+
+    const roomCode = game.roomCode;
+    socketServer.clients.forEach((client) => {
+      if (client.roomCode === roomCode) {
+        client.send(
+          JSON.stringify({
+            type: MsgTypes.System,
+            value: {
+              msg: alert,
+            },
           })
         );
       }
@@ -95,6 +115,15 @@ function peerProxy(
     });
     // });
 
+    socket.on("close", () => {
+      console.log(
+        `[${
+          socket.roomCode || `     `
+        }] Terminated closed websocket connection from ${socket.email}`
+      );
+      removePlayerFromGame(socket.email);
+    });
+
     // Respond to pong messages by marking the connection alive
     socket.on("pong", () => {
       socket.isAlive = true;
@@ -106,8 +135,9 @@ function peerProxy(
     socketServer.clients.forEach(function each(client) {
       if (client.isAlive === false) {
         console.log(
-          `[${socket.roomCode}] Terminated websocket connection from ${socket.email} `
+          `[${socket.roomCode}] Terminated unresponsive websocket connection from ${socket.email} `
         );
+        removePlayerFromGame(socket.email);
         return client.terminate();
       }
 
@@ -119,6 +149,7 @@ function peerProxy(
   return {
     sendEvent: sendEvent,
     updateRoomConnection: updateRoomConnection,
+    sendRoomAlert: sendRoomAlert,
   };
 }
 

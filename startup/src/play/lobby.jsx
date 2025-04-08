@@ -69,7 +69,9 @@ export function Lobby({
     if (response?.status === 200) {
       // const body = await response.json();
       connectToGameServer();
-      console.log("Game hosted!");
+      if (debug) {
+        console.log("Game hosted!");
+      }
     } else {
       if (response?.status === 409) {
         const body = await response.json();
