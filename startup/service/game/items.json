@@ -5,8 +5,78 @@
     "icon": "🔭",
     "outcomes": []
   },
-  { "id": "mysterious-potion", "name": "Mysterious Potion", "icon": "🧪" },
-  { "id": "gold-treasure", "name": "Gold Treasure", "icon": "🪙" },
-  { "id": "clothing-item", "name": "Clothing Item", "icon": "🎩" },
-  { "id": "spider-buddy", "name": "Spider Buddy", "icon": "🕷️" }
+  {
+    "id": "mysterious-potion",
+    "name": "Mysterious Potion",
+    "icon": "🧪",
+    "outcomes": []
+  },
+  { "id": "magic-wand", "name": "Magic Wand", "icon": "🪄", "outcomes": [] },
+  {
+    "id": "boxing-glove",
+    "name": "Boxing Glove",
+    "icon": "🥊",
+    "outcomes": []
+  },
+  {
+    "id": "curious-sphere",
+    "name": "curious-sphere",
+    "icon": "⚾",
+    "outcomes": []
+  },
+  {
+    "id": "savory-salad",
+    "name": "Savory Salad",
+    "icon": "🥗",
+    "outcomes": []
+  },
+  {
+    "id": "regal-microscope",
+    "name": "Regal Microscope",
+    "icon": "🔬",
+    "outcomes": []
+  },
+  {
+    "id": "intriguing-puzzle",
+    "name": "Intriguing Puzzle",
+    "icon": "🧩",
+    "outcomes": []
+  },
+  {
+    "id": "hefty-notebook",
+    "name": "Hefty Notebook",
+    "icon": "📓",
+    "outcomes": []
+  },
+  {
+    "id": "luxurious-hat",
+    "name": "Luxurious Hat",
+    "icon": "🎩",
+    "outcomes": []
+  },
+  {
+    "id": "stylish-shades",
+    "name": "Stylish Shades",
+    "icon": "🕶️",
+    "outcomes": []
+  },
+  {
+    "id": "fuzzy-socks",
+    "name": "Fuzzy Socks",
+    "icon": "🧦",
+    "outcomes": []
+  },
+  {
+    "id": "gold-treasure",
+    "name": "Gold Treasure",
+    "icon": "🪙",
+    "outcomes": []
+  },
+  {
+    "id": "strange-disc",
+    "name": "Strange Disc",
+    "icon": "💿",
+    "outcomes": []
+  },
+  { "id": "spider-buddy", "name": "Spider Buddy", "icon": "🕷️", "outcomes": [] }
 ]

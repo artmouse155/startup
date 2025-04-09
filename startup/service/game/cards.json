@@ -216,6 +216,21 @@
           ]
         }
       ]
+    },
+    {
+      "id": "obtain-random-item",
+      "desc": "Obtain a random item from the inventory",
+      "outcomes": [
+        {
+          "conditions": [],
+          "text": ["$n$ found a random item!"],
+          "results": [
+            {
+              "type": "item-obtained-random"
+            }
+          ]
+        }
+      ]
     }
   ],
   "null": {
