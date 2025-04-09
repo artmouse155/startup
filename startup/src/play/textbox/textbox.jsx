@@ -60,13 +60,20 @@ export function TextBox({
       }
       s += `${text.join("\n\n")}\n\n`;
       for (let j = 0; j < resultArr.length; j++) {
-        const { type: resultType, item, amt, aspect } = resultArr[j];
+        const { type: resultType, itemData, amt, aspect } = resultArr[j];
         switch (resultType) {
           case "aspect-points":
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
             break;
           case "item-obtained":
-            s += `<i class= "item">${item ? item.name : `❔`} obtained</i>\n\n`;
+            s += `<i class= "item">${
+              itemData ? itemData.name : `❔`
+            } obtained</i>\n\n`;
+            break;
+          case "item-used-firstmost":
+            s += `<i class= "item">${
+              itemData ? itemData.name : `❔`
+            } used</i>\n\n`;
             break;
         }
       }

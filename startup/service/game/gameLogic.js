@@ -201,7 +201,8 @@ async function evalCard(
 
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];
-    const conditions = outcome.conditions;
+    const { conditions = [], results = [] } = outcome || {};
+    let text = [...outcome.text] || [];
 
     let conditionsMet = true;
     for (let j = 0; j < conditions.length; j++) {
@@ -224,8 +225,7 @@ async function evalCard(
 
     if (conditionsMet) {
       // Evaluate the result of outcome
-      if (outcome.results) {
-        const results = outcome.results;
+      if (results) {
         for (let j = 0; j < results.length; j++) {
           const result = results[j];
           const resultType = result.type;
@@ -242,25 +242,22 @@ async function evalCard(
                 game.gameData.inventory.length >= game.constants.num_item_slots
               ) {
                 const removed = game.gameData.inventory.shift(); // Remove the first item
-                outcome.text.push(
+                text.push(
                   `_Too many items. Discarded ${getItemData(removed)?.name}_` // Optional chaining! WOOHOO
                 );
               }
+              const itemData = getItemData(result.item);
+              result.itemData = itemData;
               game.gameData.inventory.push(result.item); // Add the new item
-              result.item = getItemData(result.item);
               break;
             case "item-used-firstmost":
               // Remove the first item from the inventory
               if (game.gameData.inventory.length > 0) {
                 const item = game.gameData.inventory.shift(); // Remove the first item
                 const itemData = getItemData(item);
-                if (itemData) {
-                  outcome.text.push(`_Used ${itemData.name}_`);
-                } else {
-                  outcome.text.push(`**Used an unknown item**`);
-                }
+                result.itemData = itemData; // Add the item data to the result
               } else {
-                outcome.text.push(`_No items to use_`);
+                text.push(`_No items to use_`);
               }
               break;
             default:
@@ -283,8 +280,8 @@ async function evalCard(
         {
           type: "turn",
           playerTurnName: getCardUserName(),
-          text: outcome.text,
-          results: outcome.results,
+          text: text,
+          results: results,
         },
         game.heroData
       );
