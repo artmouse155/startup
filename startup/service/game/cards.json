@@ -1,210 +1,234 @@
-[
-  {
-    "id": "magic-inscription",
-    "desc": "Read a magic inscription on the wall",
-    "effects": [
+{
+  "aspects": {
+    "MAGIC": [
       {
-        "amt": 5,
-        "type": "MAGIC"
-      }
-    ],
-    "outcomes": [
-      {
-        "conditions": [],
-        "text": [
-          "$n$ peered closely and read a magic inscription on the wall. $n$ wasn't sure what it meant, but $they$ felt a surge of *magic energy*..."
-        ],
-        "results": [
+        "id": "magic-telescope",
+        "desc": "Add Magic Telescope to inventory",
+        "outcomes": [
           {
-            "type": "aspect-points",
-            "amt": 5,
-            "aspect": "MAGIC"
+            "conditions": [],
+            "text": [
+              "$n$ found a Magic Telescope! It's a telescope that's magic."
+            ],
+            "results": [
+              {
+                "type": "item-obtained",
+                "item": "magic-telescope"
+              }
+            ]
           }
         ]
-      }
-    ]
-  },
-  {
-    "id": "magic-telescope",
-    "desc": "Add Magic Telescope to inventory",
-    "outcomes": [
-      {
-        "conditions": [],
-        "text": ["$n$ found a Magic Telescope! It's a telescope that's magic."],
-        "results": [
-          {
-            "type": "item-obtained",
-            "item": "magic-telescope"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "use-firstmost-item",
-    "desc": "Use firstmost item in inventory",
-    "outcomes": [
-      {
-        "conditions": [],
-        "text": [
-          "$n$ used the firstmost item in $their$ inventory. $They$ felt it was a good choice."
-        ],
-        "results": [
-          {
-            "type": "item-used-firstmost"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "cobweb-room",
-    "desc": "Enter cobweb-infested room",
-    "effects": [
-      {
-        "amt": 3,
-        "type": "STRENGTH"
       },
       {
-        "amt": 2,
-        "type": "UNKNOWN"
+        "id": "magic-inscription",
+        "desc": "Read a magic inscription on the wall",
+        "effects": [
+          {
+            "amt": 5,
+            "type": "MAGIC"
+          }
+        ],
+        "outcomes": [
+          {
+            "conditions": [],
+            "text": [
+              "$n$ peered closely and read a magic inscription on the wall. $n$ wasn't sure what it meant, but $they$ felt a surge of *magic energy*..."
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 5,
+                "aspect": "MAGIC"
+              }
+            ]
+          }
+        ]
       }
     ],
-    "outcomes": [
+    "STRENGTH": [
       {
-        "conditions": [],
-        "text": [
-          "$n$ entered a cobweb-infested room. It was very dusty in there.",
-          "Nothing much happened. Except...",
-          "$n$ found a new friend! It was a spider. $They$ named it Spider Buddy."
-        ],
-        "results": [
+        "id": "cobweb-room",
+        "desc": "Enter cobweb-infested room",
+        "effects": [
           {
-            "type": "aspect-points",
             "amt": 3,
-            "aspect": "STRENGTH"
+            "type": "STRENGTH"
           },
           {
-            "type": "aspect-points",
             "amt": 2,
-            "aspect": "MAGIC"
-          },
+            "type": "UNKNOWN"
+          }
+        ],
+        "outcomes": [
           {
-            "type": "item-obtained",
-            "item": "spider-buddy"
+            "conditions": [],
+            "text": [
+              "$n$ entered a cobweb-infested room. It was very dusty in there.",
+              "Nothing much happened. Except...",
+              "$n$ found a new friend! It was a spider. $They$ named it Spider Buddy."
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 3,
+                "aspect": "STRENGTH"
+              },
+              {
+                "type": "aspect-points",
+                "amt": 2,
+                "aspect": "MAGIC"
+              },
+              {
+                "type": "item-obtained",
+                "item": "spider-buddy"
+              }
+            ]
           }
         ]
-      }
-    ]
-  },
-  {
-    "id": "wild-bear",
-    "desc": "Encounter a wild bear",
-    "effects": [
-      {
-        "amt": 5,
-        "type": "UNKNOWN"
       }
     ],
-    "outcomes": [
+    "INTELLIGENCE": [
       {
-        "conditions": [{ "randomChance": ".7" }],
-        "text": [
-          "\"This encounter will be a piece of cake,\" $exclamation$ $n$. $They$ walked right up to the bear and punched it square in the nose.",
-          "Yeah so... the bear mauled $n$.",
-          "What did you think would happen?"
-        ],
-        "results": [
+        "id": "wild-bear",
+        "desc": "Encounter a wild bear",
+        "effects": [
           {
-            "type": "aspect-points",
             "amt": 5,
-            "aspect": "INTELLIGENCE"
+            "type": "UNKNOWN"
           }
-        ]
-      },
-      {
-        "conditions": [],
-        "text": [
-          " \"Bear? no sweat!\" $exclamation$ $n$. Feeling $feeling$, $n$ walked up to the bear.",
-          "\"How's it going?\" $n$ asked. The bear looked at $them$ and they became instant friends.",
-          "The power of friendship gave $n$ a boost in $their$ abilities!"
         ],
-        "results": [
+        "outcomes": [
           {
-            "type": "aspect-points",
-            "amt": 3,
-            "aspect": "CHARISMA"
+            "conditions": [{ "randomChance": ".7" }],
+            "text": [
+              "\"This encounter will be a piece of cake,\" $exclamation$ $n$. $They$ walked right up to the bear and punched it square in the nose.",
+              "Yeah so... the bear mauled $n$.",
+              "What did you think would happen?"
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 5,
+                "aspect": "INTELLIGENCE"
+              }
+            ]
           },
           {
-            "type": "aspect-points",
-            "amt": 2,
-            "aspect": "INTELLIGENCE"
+            "conditions": [],
+            "text": [
+              " \"Bear? no sweat!\" $exclamation$ $n$. Feeling $feeling$, $n$ walked up to the bear.",
+              "\"How's it going?\" $n$ asked. The bear looked at $them$ and they became instant friends.",
+              "The power of friendship gave $n$ a boost in $their$ abilities!"
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 3,
+                "aspect": "CHARISMA"
+              },
+              {
+                "type": "aspect-points",
+                "amt": 2,
+                "aspect": "INTELLIGENCE"
+              }
+            ]
           }
         ]
-      }
-    ]
-  },
-  {
-    "id": "enchanted-maze",
-    "desc": "Navigate through an enchanted maze",
-    "effects": [
+      },
       {
-        "amt": 5,
-        "type": "UNKNOWN"
+        "id": "enchanted-maze",
+        "desc": "Navigate through an enchanted maze",
+        "effects": [
+          {
+            "amt": 5,
+            "type": "UNKNOWN"
+          }
+        ],
+        "outcomes": [
+          {
+            "conditions": [{ "hasItem": "magic-telescope" }],
+            "text": [
+              "Using the Magic Telescope, $n$ easily navigated through the maze, avoiding all traps and pitfalls."
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 5,
+                "aspect": "INTELLIGENCE"
+              }
+            ]
+          },
+          {
+            "conditions": [{ "hasItem": "mysterious-potion" }],
+            "text": [
+              "$n$ drank the Mysterious Potion and suddenly saw the correct path through the maze. $They$ quickly made $their$ way to the exit."
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 5,
+                "aspect": "INTELLIGENCE"
+              }
+            ]
+          },
+          {
+            "conditions": [{ "randomChance": ".5" }],
+            "text": [
+              "$n$ took a random turn and found a hidden treasure chest filled with gold!"
+            ],
+            "results": [
+              {
+                "type": "item-obtained",
+                "item": "gold-treasure"
+              }
+            ]
+          },
+          {
+            "conditions": [],
+            "text": [
+              "$n$ wandered aimlessly through the maze, encountering dead ends and traps. After hours of frustration, $they$ found find the exit, exhausted but wiser."
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 2,
+                "aspect": "INTELLIGENCE"
+              }
+            ]
+          }
+        ]
       }
     ],
+    "CHARISMA": []
+  },
+  "misc": [
+    {
+      "id": "use-firstmost-item",
+      "desc": "Use firstmost item in inventory",
+      "outcomes": [
+        {
+          "conditions": [],
+          "text": [
+            "$n$ used the firstmost item in $their$ inventory. $They$ felt it was a good choice."
+          ],
+          "results": [
+            {
+              "type": "item-used-firstmost"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "null": {
+    "id": "nothing-happens",
+    "desc": "Nothing happens",
     "outcomes": [
       {
-        "conditions": [{ "hasItem": "magic-telescope" }],
-        "text": [
-          "Using the Magic Telescope, $n$ easily navigated through the maze, avoiding all traps and pitfalls."
-        ],
-        "results": [
-          {
-            "type": "aspect-points",
-            "amt": 5,
-            "aspect": "INTELLIGENCE"
-          }
-        ]
-      },
-      {
-        "conditions": [{ "hasItem": "mysterious-potion" }],
-        "text": [
-          "$n$ drank the Mysterious Potion and suddenly saw the correct path through the maze. $They$ quickly made $their$ way to the exit."
-        ],
-        "results": [
-          {
-            "type": "aspect-points",
-            "amt": 5,
-            "aspect": "INTELLIGENCE"
-          }
-        ]
-      },
-      {
-        "conditions": [{ "randomChance": ".5" }],
-        "text": [
-          "$n$ took a random turn and found a hidden treasure chest filled with gold!"
-        ],
-        "results": [
-          {
-            "type": "item-obtained",
-            "item": "gold-treasure"
-          }
-        ]
-      },
-      {
         "conditions": [],
-        "text": [
-          "$n$ wandered aimlessly through the maze, encountering dead ends and traps. After hours of frustration, $they$ found find the exit, exhausted but wiser."
-        ],
-        "results": [
-          {
-            "type": "aspect-points",
-            "amt": 2,
-            "aspect": "INTELLIGENCE"
-          }
-        ]
+        "text": ["$n$ did nothing. Nothing happened."],
+        "results": []
       }
     ]
   }
-]
+}

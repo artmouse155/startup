@@ -132,16 +132,22 @@ async function setupGame(game) {
 
   for (let i = 0; i < game.gameData.players.length; i++) {
     const email = game.gameData.players[i].email;
-    //console.log("email:", email);
-    // Generate 5 random cards for each player
-    // PLACEHOLDER: Variation based on the current aspect of the player
+    const aspect = game.gameData.players[i].aspect;
     let cardsExport = [];
     for (let j = 0; j < game.constants.num_cards; j++) {
-      let { outcomes, ...cardWithoutOutcomes } = shuffler.getRandom(cards);
-      let n = { num_id: j, ...cardWithoutOutcomes };
+      let card = cards.null;
+      // Draw misc cards first, then rest are aspect cards
+      if (j < gameConstants.NUM_MISC_CARDS) {
+        card = shuffler.getRandom(cards.misc);
+      } else {
+        card = shuffler.getRandom(cards.aspects[aspect]);
+      }
+      const { outcomes, ...cardWithoutOutcomes } = card;
+      const n = { num_id: j, ...cardWithoutOutcomes };
       cardsExport.push(n);
     }
-    game.players.find((item) => item.email == email).cards = cardsExport;
+    game.players.find((item) => item.email == email).cards =
+      shuffler.shuffled(cardsExport);
   }
 
   // Set the story to the introJSON
@@ -158,6 +164,22 @@ async function setupGame(game) {
 
   // Push the intro story, using storyAPI.apiCall to replace $stuff$.
   await pushOutcome(game, intro_outcome, game.heroData);
+}
+
+function findCard(card_id) {
+  // Search for the card in aspects and misc categories
+  for (const aspect in cards.aspects) {
+    const card = cards.aspects[aspect].find((card) => card.id === card_id);
+    if (card) return card;
+  }
+
+  // Search in misc cards
+  const miscCard = cards.misc.find((card) => card.id === card_id);
+  if (miscCard) return miscCard;
+
+  // If not found, return null
+  console.log("<FCARD> No card found for card_id:", card_id);
+  return null;
 }
 
 // Evaluates the card and updates the game
@@ -184,7 +206,7 @@ async function evalCard(
   const card_id = game.players.find((item) => item.email == email).cards[
     card_num_id
   ].id;
-  const card = cards.find((card) => card.id == card_id);
+  const card = findCard(card_id);
   if (!card) {
     console.log(`[${roomCode}]`, "No card found for card", card_num_id);
     return false;
@@ -375,7 +397,7 @@ async function evalCard(
 // Format the connection data for the client
 function getConnectionData(game, email) {
   if (!game) {
-    console.log(`[     ] no game found for email`, email);
+    console.log(`<GETCD> no game found for email`, email);
     return null;
   }
   const roomCode = game.roomCode;

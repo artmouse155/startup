@@ -86,13 +86,13 @@ function peerProxy(
         if (user && user.email) {
           socket.email = user.email;
           socket.authenticated = true;
-          console.log(`[     ] WS User authenticated: ${user.email}`);
+          console.log(`<WSRVR> WS User authenticated: ${user.email}`);
         }
       }
     }
 
     if (!socket.authenticated) {
-      console.log("[     ] Client not authenticated, ignoring request");
+      console.log("<WSRVR> Client not authenticated, ignoring request");
       socket.send(
         JSON.stringify({
           type: MsgTypes.System,
@@ -104,7 +104,7 @@ function peerProxy(
       socket.close();
       return;
     }
-    console.log(`[     ] New websocket connection`);
+    console.log(`<WSRVR> New websocket connection`);
 
     // Properly set up our client with an email and room code
     socket.on("message", async function message(data) {
@@ -152,9 +152,7 @@ function peerProxy(
 
     socket.on("close", () => {
       console.log(
-        `[${
-          socket.roomCode || `     `
-        }] Terminated closed websocket connection from ${socket.email}`
+        `<WSRVR> Terminated closed websocket connection from ${socket.email}`
       );
       removePlayerFromGame(socket.email);
     });

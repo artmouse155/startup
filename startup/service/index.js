@@ -359,11 +359,11 @@ async function removePlayerFromGame(email) {
 }
 
 async function findRoomCodeByPlayerEmail(email) {
-  console.log("[     ] Finding room code for", email);
+  console.log("<FROOM> Finding room code for", email);
   if (!email) return null;
   const game = await DB.getGameByPlayerEmail(email);
   if (game) {
-    console.log("[     ] Game found", game.roomCode);
+    console.log("<FROOM> Game found", game.roomCode);
     return game.roomCode;
   }
   return null;

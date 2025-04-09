@@ -30,6 +30,21 @@ const Card = () => {
   };
 };
 
+// Cards
+const Cards = () => {
+  return {
+    // groups: [{ id: String, cards: [Card] }],
+    aspects: {
+      MAGIC: [Card],
+      STRENGTH: [Card],
+      INTELLIGENCE: [Card],
+      CHARISMA: [Card],
+    },
+    misc: [Card],
+    null: Card,
+  };
+};
+
 // GameData
 const GameData = () => {
   return {
