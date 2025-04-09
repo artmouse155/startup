@@ -208,9 +208,7 @@
       "outcomes": [
         {
           "conditions": [],
-          "text": [
-            "$n$ used the firstmost item in $their$ inventory. $They$ felt it was a good choice."
-          ],
+          "text": [],
           "results": [
             {
               "type": "item-used-firstmost"
@@ -221,7 +219,7 @@
     }
   ],
   "null": {
-    "id": "nothing-happens",
+    "id": "null",
     "desc": "Nothing happens",
     "outcomes": [
       {

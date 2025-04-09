@@ -72,8 +72,8 @@ export function TextBox({
             break;
           case "item-used-firstmost":
             s += `<i class= "item">${
-              itemData ? itemData.name : `❔`
-            } used</i>\n\n`;
+              itemData ? `${itemData.name} used` : `No item to use`
+            }</i>\n\n`;
             break;
         }
       }

@@ -135,19 +135,25 @@ async function setupGame(game) {
     const aspect = game.gameData.players[i].aspect;
     let cardsExport = [];
     for (let j = 0; j < game.constants.num_cards; j++) {
-      let card = cards.null;
+      let card;
       // Draw misc cards first, then rest are aspect cards
       if (j < gameConstants.NUM_MISC_CARDS) {
-        card = shuffler.getRandom(cards.misc);
+        card = shuffler.getRandom(cards.misc) || cards.null;
       } else {
-        card = shuffler.getRandom(cards.aspects[aspect]);
+        card = shuffler.getRandom(cards.aspects[aspect]) || cards.null;
       }
       const { outcomes, ...cardWithoutOutcomes } = card;
-      const n = { num_id: j, ...cardWithoutOutcomes };
-      cardsExport.push(n);
+      cardsExport.push(cardWithoutOutcomes);
     }
-    game.players.find((item) => item.email == email).cards =
-      shuffler.shuffled(cardsExport);
+    // Shuffle cardsExport and assign num_id to the card
+    cardsExport = shuffler.shuffled(cardsExport).map((card, index) => {
+      return {
+        ...card,
+        num_id: index,
+      };
+    });
+
+    game.players.find((item) => item.email == email).cards = cardsExport;
   }
 
   // Set the story to the introJSON
@@ -168,7 +174,7 @@ async function setupGame(game) {
 
 function findCard(card_id) {
   // Search for the card in aspects and misc categories
-  for (const aspect in cards.aspects) {
+  for (const aspect of gameConstants.ASPECTS) {
     const card = cards.aspects[aspect].find((card) => card.id === card_id);
     if (card) return card;
   }
@@ -177,6 +183,10 @@ function findCard(card_id) {
   const miscCard = cards.misc.find((card) => card.id === card_id);
   if (miscCard) return miscCard;
 
+  // Is it the null card?
+  if (card_id == cards.null.id) {
+    return cards.null;
+  }
   // If not found, return null
   console.log("<FCARD> No card found for card_id:", card_id);
   return null;
@@ -206,6 +216,8 @@ async function evalCard(
   const card_id = game.players.find((item) => item.email == email).cards[
     card_num_id
   ].id;
+  console.log(`[${roomCode}]`, "Card num ID:", card_num_id);
+  console.log(`[${roomCode}]`, "Card ID:", card_id);
   const card = findCard(card_id);
   if (!card) {
     console.log(`[${roomCode}]`, "No card found for card", card_num_id);
@@ -279,7 +291,7 @@ async function evalCard(
                 const itemData = getItemData(item);
                 result.itemData = itemData; // Add the item data to the result
               } else {
-                text.push(`_No items to use_`);
+                result.itemData = null; // No item to remove
               }
               break;
             default:

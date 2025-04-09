@@ -1,5 +1,10 @@
 [
-  { "id": "magic-telescope", "name": "Magic Telescope", "icon": "🔭" },
+  {
+    "id": "magic-telescope",
+    "name": "Magic Telescope",
+    "icon": "🔭",
+    "outcomes": []
+  },
   { "id": "mysterious-potion", "name": "Mysterious Potion", "icon": "🧪" },
   { "id": "gold-treasure", "name": "Gold Treasure", "icon": "🪙" },
   { "id": "clothing-item", "name": "Clothing Item", "icon": "🎩" },
