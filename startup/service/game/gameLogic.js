@@ -147,21 +147,21 @@ async function setupGame(game) {
     }
 
     // FOR DEBUG PURPOSES ONLY
-    //#region DEBUG DEBUG DEBUG
-    const debug_cards = [
-      "magic-telescope",
-      "obtain-random-item",
-      "use-firstmost-item",
-      "magic-telescope",
-    ];
-    for (const card_id of debug_cards) {
-      const card = findCard(card_id) || cards.null;
-      const { outcomes, ...cardWithoutOutcomes } = card;
-      cardsExport.push(cardWithoutOutcomes);
-      game.constants.num_cards += 1;
-    }
-    game.gameData.players[i].cards = Array(game.constants.num_cards).fill(1);
-    //#endregion
+    // //#region DEBUG DEBUG DEBUG
+    // const debug_cards = [
+    //   "magic-telescope",
+    //   "obtain-random-item",
+    //   "use-firstmost-item",
+    //   "magic-telescope",
+    // ];
+    // for (const card_id of debug_cards) {
+    //   const card = findCard(card_id) || cards.null;
+    //   const { outcomes, ...cardWithoutOutcomes } = card;
+    //   cardsExport.push(cardWithoutOutcomes);
+    //   game.constants.num_cards += 1;
+    // }
+    // game.gameData.players[i].cards = Array(game.constants.num_cards).fill(1);
+    // //#endregion
 
     // Shuffle cardsExport and assign num_id to the card
     cardsExport = shuffler.shuffled(cardsExport).map((card, index) => {
@@ -213,6 +213,7 @@ function findCard(card_id) {
 // USES PASS BY REF
 async function evalOutcomes(game, outcomes, cardUserName) {
   if (!(game && outcomes)) return false;
+  let gameData = game.gameData;
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];
     const { conditions = [], results = [] } = outcome || {};
@@ -287,8 +288,8 @@ async function evalOutcomes(game, outcomes, cardUserName) {
                 const item = game.gameData.inventory.shift(); // Remove the first item
                 const itemData = getItemData(item);
                 // Use item
-                await evalOutcomes(game, itemData?.outcomes, cardUserName);
                 result.itemData = itemData; // Add the item data to the result
+                return evalOutcomes(game, itemData?.outcomes, cardUserName);
               } else {
                 result.itemData = null; // No item to remove
               }

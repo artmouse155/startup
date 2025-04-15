@@ -7,6 +7,14 @@ const heroes = [
     name: "Jamie",
     gender: "female",
   },
+  {
+    name: "Cosmo",
+    gender: "male",
+  },
+  {
+    name: "Galadriel",
+    gender: "female",
+  },
 ];
 
 const adventureNames = [
@@ -26,6 +34,7 @@ const wowLongQuotes = [
   "This doesn't look like Kansas anymore!",
   "I've never seen anything like it in my life!",
   "Holy cabooses and call me a monkey's great grandpappy!",
+  "I can't believe my vision pupils!",
 ];
 
 const exclaimations = [

@@ -199,7 +199,50 @@
         ]
       }
     ],
-    "CHARISMA": []
+    "CHARISMA": [
+      {
+        "id": "mysterious-wardrobe",
+        "desc": "Search through a mysterious wardrobe",
+        "effects": [
+          {
+            "amt": 5,
+            "type": "CHARISMA"
+          }
+        ],
+        "outcomes": [
+          {
+            "conditions": [{ "randomChance": "0.5" }],
+            "text": [
+              "$n$ opened the mysterious wardrobe and found a dazzling item! $They$ felt a surge of confidence as $they$ pulled it out."
+            ],
+            "results": [
+              {
+                "type": "item-obtained-random",
+                "aspect": "CHARISMA"
+              },
+              {
+                "type": "aspect-points",
+                "amt": 5,
+                "aspect": "CHARISMA"
+              }
+            ]
+          },
+          {
+            "conditions": [],
+            "text": [
+              "$n$ rummaged through the mysterious wardrobe but found nothing of interest. Still, $they$ felt a bit more confident for trying."
+            ],
+            "results": [
+              {
+                "type": "aspect-points",
+                "amt": 5,
+                "aspect": "CHARISMA"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   "misc": [
     {
