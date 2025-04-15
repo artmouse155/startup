@@ -11,7 +11,12 @@
     "icon": "🧪",
     "outcomes": []
   },
-  { "id": "magic-wand", "name": "Magic Wand", "icon": "🪄", "outcomes": [] },
+  {
+    "id": "sorcerers-wand",
+    "name": "Sorcerer's Wand",
+    "icon": "🪄",
+    "outcomes": []
+  },
   {
     "id": "boxing-glove",
     "name": "Boxing Glove",

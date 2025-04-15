@@ -219,11 +219,15 @@
     },
     {
       "id": "obtain-random-item",
-      "desc": "Obtain a random item from the inventory",
+      "desc": "Find a mysterous item",
       "outcomes": [
         {
           "conditions": [],
-          "text": ["$n$ found a random item!"],
+          "text": [
+            "$n$ suddenly found a table with a small slip of paper illuminated by candlelight. $n$ peered down at the slip. It read:",
+            "\"_You will find something mysterious in your pocket today._\" - $famous-person$",
+            "\"$wow-quote$\" $exclamation$ $n$. $They$ reached into $their$ pocket and found an item that was, indeed, mysterious..."
+          ],
           "results": [
             {
               "type": "item-obtained-random"

@@ -66,6 +66,7 @@ export function TextBox({
             s += `<b style="color: ${Aspects[aspect].color}">+${amt} ${Aspects[aspect].text}</b>\n\n`;
             break;
           case "item-obtained":
+          case "item-obtained-random":
             s += `<i class= "item">${
               itemData ? itemData.name : `❔`
             } obtained</i>\n\n`;

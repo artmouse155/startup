@@ -263,6 +263,7 @@ async function evalCard(
         for (let j = 0; j < results.length; j++) {
           const result = results[j];
           const resultType = result.type;
+          let itemData = null;
           switch (resultType) {
             case "aspect-points":
               game.gameData.aspects[result.aspect] += parseInt(result.amt);
@@ -280,9 +281,25 @@ async function evalCard(
                   `_Too many items. Discarded ${getItemData(removed)?.name}_` // Optional chaining! WOOHOO
                 );
               }
-              const itemData = getItemData(result.item);
+              itemData = getItemData(result.item);
               result.itemData = itemData;
-              game.gameData.inventory.push(result.item); // Add the new item
+              game.gameData.inventory.push(itemData?.id); // Add the new item
+              break;
+            case "item-obtained-random":
+              // Add random item to inventory. The inventory is a list of strings that represent the item names.
+              // If you try to add an item to a full inventory, the oldest item disappears.
+              // If the inventory is full, remove the first item
+              if (
+                game.gameData.inventory.length >= game.constants.num_item_slots
+              ) {
+                const removed = game.gameData.inventory.shift(); // Remove the first item
+                text.push(
+                  `_Too many items. Discarded ${getItemData(removed)?.name}_` // Optional chaining! WOOHOO
+                );
+              }
+              itemData = getItemData(shuffler.getRandom(items));
+              result.itemData = itemData;
+              game.gameData.inventory.push(itemData?.id); // Add the new item
               break;
             case "item-used-firstmost":
               // Remove the first item from the inventory

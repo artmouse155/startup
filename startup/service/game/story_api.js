@@ -100,6 +100,16 @@ const clothingItems = [
   "A spunky pair of orange shades",
 ];
 
+const famousPeople = [
+  "Ghandi",
+  "Lee Jensen",
+  "Daniel the Hacker Man",
+  "Kermit",
+  "George Lucas",
+  "C. Shane Reese",
+  "",
+];
+
 function getRandomInt(max) {
   // From Mozilla docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
   return Math.floor(Math.random() * max);
@@ -152,6 +162,8 @@ async function apiCallSegment(call) {
       return getRandom(bookTitles);
     case "$clothing-item$":
       return getRandom(clothingItems);
+    case "$famous-person$":
+      return getRandom(famousPeople);
     default:
       return `[⚠️ undefined API call: "${call}" ⚠️]`;
   }
