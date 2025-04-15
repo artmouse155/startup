@@ -6,7 +6,9 @@
     "outcomes": [
       {
         "conditions": [],
-        "text": ["Wow! You can see a whole lot now."],
+        "text": [
+          "$n$ used the Magic Telescope and felt a surge of magical insight!"
+        ],
         "results": [
           {
             "type": "aspect-points",
@@ -21,79 +23,315 @@
     "id": "mysterious-potion",
     "name": "Mysterious Potion",
     "icon": "🧪",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ drank the Mysterious Potion and felt $their$ magical energy grow."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "MAGIC"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "sorcerers-wand",
     "name": "Sorcerer's Wand",
     "icon": "🪄",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ waved the Sorcerer's Wand and felt a burst of magical power."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "MAGIC"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "boxing-glove",
     "name": "Boxing Glove",
     "icon": "🥊",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ put on the Boxing Glove and felt $their$ strength surge."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "STRENGTH"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "curious-sphere",
     "name": "curious-sphere",
     "icon": "⚾",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ examined the Curious Sphere and felt $their$ strength grow."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "STRENGTH"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "savory-salad",
     "name": "Savory Salad",
     "icon": "🥗",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["$n$ ate the Savory Salad and felt a boost in strength."],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "STRENGTH"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "regal-microscope",
     "name": "Regal Microscope",
     "icon": "🔬",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ used the Regal Microscope and gained a spark of intelligence."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "INTELLIGENCE"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "intriguing-puzzle",
     "name": "Intriguing Puzzle",
     "icon": "🧩",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["$n$ solved the Intriguing Puzzle and felt smarter."],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "INTELLIGENCE"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "hefty-notebook",
     "name": "Hefty Notebook",
     "icon": "📓",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["$n$ read through the Hefty Notebook and gained knowledge."],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "INTELLIGENCE"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "luxurious-hat",
     "name": "Luxurious Hat",
     "icon": "🎩",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ donned the Luxurious Hat and felt a surge of confidence."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "CHARISMA"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "stylish-shades",
     "name": "Stylish Shades",
     "icon": "🕶️",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["$n$ wore the Stylish Shades and felt incredibly charming."],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "CHARISMA"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "fuzzy-socks",
     "name": "Fuzzy Socks",
     "icon": "🧦",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["$n$ put on the Fuzzy Socks and felt warm and charismatic."],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "CHARISMA"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "gold-treasure",
     "name": "Gold Treasure",
     "icon": "🪙",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ discovered the Gold Treasure and felt a boost in all aspects."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "MAGIC"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "STRENGTH"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "INTELLIGENCE"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "CHARISMA"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "strange-disc",
     "name": "Strange Disc",
     "icon": "💿",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ examined the Strange Disc and felt a boost in all aspects."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "MAGIC"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "STRENGTH"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "INTELLIGENCE"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "CHARISMA"
+          }
+        ]
+      }
+    ]
   },
-  { "id": "spider-buddy", "name": "Spider Buddy", "icon": "🕷️", "outcomes": [] }
+  {
+    "id": "spider-buddy",
+    "name": "Spider Buddy",
+    "icon": "🕷️",
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": [
+          "$n$ befriended the Spider Buddy and felt a boost in all aspects."
+        ],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "MAGIC"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "STRENGTH"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "INTELLIGENCE"
+          },
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "CHARISMA"
+          }
+        ]
+      }
+    ]
+  }
 ]
