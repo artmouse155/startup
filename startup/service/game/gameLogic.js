@@ -192,6 +192,9 @@ function findCard(card_id) {
   return null;
 }
 
+// USES PASS BY REF
+async function evalOutcomes() {}
+
 // Evaluates the card and updates the game
 async function evalCard(
   game,
@@ -207,6 +210,7 @@ async function evalCard(
   const roomCode = game.roomCode;
   let gameData = game.gameData;
   const current_turn_id = gameData.current_turn_id;
+  let outcomeOccurred = false;
 
   console.log(
     `[${roomCode}] Player ${email} is playing card ${card_num_id} from their hand.`
@@ -231,6 +235,9 @@ async function evalCard(
   }
 
   // This card is no longer playable.
+  const getCardUserName = () => {
+    return displayName(gameData.players[gameData.current_turn_id].email);
+  };
   game.gameData.players[current_turn_id].cards[card_num_id] = 0;
 
   for (let i = 0; i < outcomes.length; i++) {
@@ -321,9 +328,6 @@ async function evalCard(
           }
         }
       }
-      const getCardUserName = () => {
-        return displayName(gameData.players[gameData.current_turn_id].email);
-      };
 
       // Push outcome to story
       await pushOutcome(
@@ -337,90 +341,96 @@ async function evalCard(
         game.heroData
       );
 
-      // Go to next player's turn
-      if (doNextTurn) {
-        game.gameData.current_turn_id++;
-        if (game.gameData.current_turn_id >= game.players.length) {
-          game.gameData.current_turn_id = 0;
-        }
-        game.gameData.turns++;
-        if (
-          game.gameData.turns >=
-          game.constants.num_cards * game.players.length
-        ) {
-          if (game.gameState != gameConstants.GAME_STATES.END) {
-            game.gameState = gameConstants.GAME_STATES.END;
-
-            const ending_outcome = shuffler.getRandom(endingJSON.sections);
-
-            // Push the intro story, using storyAPI.apiCall to replace $stuff$.
-            await pushOutcome(game, ending_outcome, game.heroData);
-            function getStandings(aspects, players, player_count) {
-              // PlayerID, Standing
-              let standings = Array(player_count);
-              // This needs to equal the true number of players, not just the capacity.
-              for (let i = 0; i < player_count; i++) {
-                standings[i] = 0;
-                for (let j = 0; j < player_count; j++) {
-                  // console.log("Comparing", players[i].aspect, players[j].aspect);
-                  if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
-                    standings[i]++;
-                  }
-                }
-              }
-              return standings;
-            }
-
-            const standings = getStandings(
-              game.gameData.aspects,
-              game.gameData.players,
-              game.gameData.players.length
-            );
-
-            const trophy_counts =
-              gameConstants.TROPHY_COUNTS[game.gameData.players.length];
-            // console.log("Standings", standings);
-            // console.log("Trophy Counts:", trophy_counts);
-            // console.log("Trophy Counts at 1:", trophy_counts[1]);
-
-            for (let i = 0; i < game.players.length; i++) {
-              const player = game.gameData.players[i];
-              const trophiesEarned = trophy_counts
-                ? trophy_counts[standings[i] + 1] ||
-                  gameConstants.TROPHY_COUNT_FALLBACK
-                : gameConstants.TROPHY_COUNT_FALLBACK;
-              const email = player.email;
-              game.gameData.players[i] = {
-                trophiesEarned: trophiesEarned,
-                ...player,
-              };
-              await addTrophies({ email: email, trophies: trophiesEarned });
-            }
-            console.log(`[${roomCode}]`, "Game ended");
-          }
-        }
-      }
-
-      // Set tempStory
-      game.tempStory =
-        game.gameState == gameConstants.GAME_STATES.END
-          ? { type: "empty" }
-          : {
-              type: "turn",
-              playerTurnName: getCardUserName(),
-              text: [],
-            };
-
-      // Set the game with MongoDB
-      await setGame(roomCode, game);
-
-      updateRoomConnection(game);
-
-      return true;
+      outcomeOccurred = true;
+      break;
     }
   }
-  console.log(`[${roomCode}]`, "No outcome found for card", card);
-  return false;
+
+  if (outcomeOccurred) {
+    // Go to next player's turn
+    if (doNextTurn) {
+      game.gameData.current_turn_id++;
+      if (game.gameData.current_turn_id >= game.players.length) {
+        game.gameData.current_turn_id = 0;
+      }
+      game.gameData.turns++;
+      if (
+        game.gameData.turns >=
+        game.constants.num_cards * game.players.length
+      ) {
+        if (game.gameState != gameConstants.GAME_STATES.END) {
+          game.gameState = gameConstants.GAME_STATES.END;
+
+          const ending_outcome = shuffler.getRandom(endingJSON.sections);
+
+          // Push the intro story, using storyAPI.apiCall to replace $stuff$.
+          await pushOutcome(game, ending_outcome, game.heroData);
+          function getStandings(aspects, players, player_count) {
+            // PlayerID, Standing
+            let standings = Array(player_count);
+            // This needs to equal the true number of players, not just the capacity.
+            for (let i = 0; i < player_count; i++) {
+              standings[i] = 0;
+              for (let j = 0; j < player_count; j++) {
+                // console.log("Comparing", players[i].aspect, players[j].aspect);
+                if (aspects[players[i].aspect] < aspects[players[j].aspect]) {
+                  standings[i]++;
+                }
+              }
+            }
+            return standings;
+          }
+
+          const standings = getStandings(
+            game.gameData.aspects,
+            game.gameData.players,
+            game.gameData.players.length
+          );
+
+          const trophy_counts =
+            gameConstants.TROPHY_COUNTS[game.gameData.players.length];
+          // console.log("Standings", standings);
+          // console.log("Trophy Counts:", trophy_counts);
+          // console.log("Trophy Counts at 1:", trophy_counts[1]);
+
+          for (let i = 0; i < game.players.length; i++) {
+            const player = game.gameData.players[i];
+            const trophiesEarned = trophy_counts
+              ? trophy_counts[standings[i] + 1] ||
+                gameConstants.TROPHY_COUNT_FALLBACK
+              : gameConstants.TROPHY_COUNT_FALLBACK;
+            const email = player.email;
+            game.gameData.players[i] = {
+              trophiesEarned: trophiesEarned,
+              ...player,
+            };
+            await addTrophies({ email: email, trophies: trophiesEarned });
+          }
+          console.log(`[${roomCode}]`, "Game ended");
+        }
+      }
+    }
+
+    // Set tempStory
+    game.tempStory =
+      game.gameState == gameConstants.GAME_STATES.END
+        ? { type: "empty" }
+        : {
+            type: "turn",
+            playerTurnName: getCardUserName(),
+            text: [],
+          };
+
+    // Set the game with MongoDB
+    await setGame(roomCode, game);
+
+    updateRoomConnection(game);
+
+    return true;
+  } else {
+    console.log(`[${roomCode}]`, "No outcome found for card", card);
+    return false;
+  }
 }
 
 // Format the connection data for the client
