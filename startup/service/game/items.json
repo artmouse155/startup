@@ -3,7 +3,19 @@
     "id": "magic-telescope",
     "name": "Magic Telescope",
     "icon": "🔭",
-    "outcomes": []
+    "outcomes": [
+      {
+        "conditions": [],
+        "text": ["Wow! You can see a whole lot now."],
+        "results": [
+          {
+            "type": "aspect-points",
+            "amt": 5,
+            "aspect": "MAGIC"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "mysterious-potion",

@@ -145,6 +145,24 @@ async function setupGame(game) {
       const { outcomes, ...cardWithoutOutcomes } = card;
       cardsExport.push(cardWithoutOutcomes);
     }
+
+    // FOR DEBUG PURPOSES ONLY
+    //#region DEBUG DEBUG DEBUG
+    const debug_cards = [
+      "magic-telescope",
+      "obtain-random-item",
+      "use-firstmost-item",
+      "magic-telescope",
+    ];
+    for (const card_id of debug_cards) {
+      const card = findCard(card_id) || cards.null;
+      const { outcomes, ...cardWithoutOutcomes } = card;
+      cardsExport.push(cardWithoutOutcomes);
+      game.constants.num_cards += 1;
+    }
+    game.gameData.players[i].cards = Array(game.constants.num_cards).fill(1);
+    //#endregion
+
     // Shuffle cardsExport and assign num_id to the card
     cardsExport = shuffler.shuffled(cardsExport).map((card, index) => {
       return {
@@ -193,53 +211,8 @@ function findCard(card_id) {
 }
 
 // USES PASS BY REF
-async function evalOutcomes() {}
-
-// Evaluates the card and updates the game
-async function evalCard(
-  game,
-  email,
-  card_num_id,
-  updateRoomConnection,
-  setGame,
-  addTrophies,
-  doNextTurn = true
-) {
-  // get result object from card based on checking conditions
-  // console.log("Checking card", card_id);
-  const roomCode = game.roomCode;
-  let gameData = game.gameData;
-  const current_turn_id = gameData.current_turn_id;
-  let outcomeOccurred = false;
-
-  console.log(
-    `[${roomCode}] Player ${email} is playing card ${card_num_id} from their hand.`
-  );
-
-  // If this card has already been played, something crazy is going on!
-  const card_id = game.players.find((item) => item.email == email).cards[
-    card_num_id
-  ].id;
-  console.log(`[${roomCode}]`, "Card num ID:", card_num_id);
-  console.log(`[${roomCode}]`, "Card ID:", card_id);
-  const card = findCard(card_id);
-  if (!card) {
-    console.log(`[${roomCode}]`, "No card found for card", card_num_id);
-    return false;
-  }
-
-  const outcomes = card.outcomes;
-  if (!outcomes) {
-    console.log(`[${roomCode}]`, "No outcomes found for card", card);
-    return false;
-  }
-
-  // This card is no longer playable.
-  const getCardUserName = () => {
-    return displayName(gameData.players[gameData.current_turn_id].email);
-  };
-  game.gameData.players[current_turn_id].cards[card_num_id] = 0;
-
+async function evalOutcomes(game, outcomes, cardUserName) {
+  if (!(game && outcomes)) return false;
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];
     const { conditions = [], results = [] } = outcome || {};
@@ -313,6 +286,8 @@ async function evalCard(
               if (game.gameData.inventory.length > 0) {
                 const item = game.gameData.inventory.shift(); // Remove the first item
                 const itemData = getItemData(item);
+                // Use item
+                await evalOutcomes(game, itemData?.outcomes, cardUserName);
                 result.itemData = itemData; // Add the item data to the result
               } else {
                 result.itemData = null; // No item to remove
@@ -334,19 +309,66 @@ async function evalCard(
         game,
         {
           type: "turn",
-          playerTurnName: getCardUserName(),
+          playerTurnName: cardUserName,
           text: text,
           results: results,
         },
         game.heroData
       );
 
-      outcomeOccurred = true;
-      break;
+      return true;
     }
   }
+  return false;
+}
 
-  if (outcomeOccurred) {
+// Evaluates the card and updates the game
+async function evalCard(
+  game,
+  email,
+  card_num_id,
+  updateRoomConnection,
+  setGame,
+  addTrophies,
+  doNextTurn = true
+) {
+  // get result object from card based on checking conditions
+  // console.log("Checking card", card_id);
+  const roomCode = game.roomCode;
+  let gameData = game.gameData;
+  const current_turn_id = gameData.current_turn_id;
+
+  console.log(
+    `[${roomCode}] Player ${email} is playing card ${card_num_id} from their hand.`
+  );
+
+  // If this card has already been played, something crazy is going on!
+  const card_id = game.players.find((item) => item.email == email).cards[
+    card_num_id
+  ].id;
+  console.log(`[${roomCode}]`, "Card num ID:", card_num_id);
+  console.log(`[${roomCode}]`, "Card ID:", card_id);
+  const card = findCard(card_id);
+  if (!card) {
+    console.log(`[${roomCode}]`, "No card found for card", card_num_id);
+    return false;
+  }
+
+  // Get outcomes and check that exists
+  const outcomes = card.outcomes;
+  if (!outcomes) {
+    console.log(`[${roomCode}]`, "No outcomes found for card", card);
+    return false;
+  }
+
+  // This card is no longer playable.
+  game.gameData.players[current_turn_id].cards[card_num_id] = 0;
+
+  const cardUserName = displayName(
+    gameData.players[gameData.current_turn_id].email
+  );
+
+  if (await evalOutcomes(game, outcomes, cardUserName)) {
     // Go to next player's turn
     if (doNextTurn) {
       game.gameData.current_turn_id++;
@@ -417,7 +439,7 @@ async function evalCard(
         ? { type: "empty" }
         : {
             type: "turn",
-            playerTurnName: getCardUserName(),
+            playerTurnName: cardUserName,
             text: [],
           };
 

@@ -3,7 +3,7 @@
 // Outcome
 const Outcome = () => {
   return {
-    conditions: [{ condition: String }],
+    conditions: [{ condition: String }], //{ "randomChance": ".7" } OR { "hasItem": "mysterious-potion" } OR
     text: [String],
     results: [
       {
