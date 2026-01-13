@@ -2,6 +2,9 @@
 
 The cold iron gate **SLAMS** down behind you. You've entered into... **Text Dungeon Showdown!**: the browser game where you and up to three friends write the story! Create the story of a brave hero facing traps and treasure in a dungeon. In this fun and strategic multiplayer experience, all of you must work together to drive the story forward, while at the same time competing in an epic battle to level up the hero in a way that will help you to win! Players must level up either the hero's ✨ Magic, 🦾 Strength, 📖 Intelligence or 💄 Charisma. But watch out! If you don't play your cards in the correct order, you might be foiled!
 
+![Screenshot of Text Dungeon Showdown](screenshot.png)
+*Screenshot of the game*
+
 ## 🚀 Specification Deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
@@ -14,7 +17,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-If there's three things that make video games awesome, it's teamwork, competition, and monster-infested dungeons. So why can't a video game have all three? In **Text Dungeon Showdown!**, Players must work together to help a common hero brave a mysterious adventure, while simeotaneously influencing the path of the character in a way that will help you win. Filled to the brim with epic battles, strategic maneuvers and text adventure shenanigans, **Text Dungeon Showdown!** is the _perfect_ game for people to play, whether it be family and friends, or factions and foes. Settle it all... once and for all in: **Text Dungeon Showdown!**
+If there's three things that make video games awesome, it's teamwork, competition, and monster-infested dungeons. So why can't a video game have all three? In **Text Dungeon Showdown!**, Players must work together to help a common hero brave a mysterious adventure, while simeotaneously influencing the path of the character in a way that will help you win. Filled to the brim with epic battles, strategic maneuvers and text adventure shenanigans, **Text Dungeon Showdown!** is the *perfect* game for people to play, whether it be family and friends, or factions and foes. Settle it all... once and for all in: **Text Dungeon Showdown!**
 
 ### Design
 
@@ -109,7 +112,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Node.js/Express HTTP service** - Node.js is successfully used as the backend of my deliverable.
 - [x] **Static middleware for frontend** - I utilize static middleware for my front end by serving up the contents of the public folder.
 - For the Startup Service deliverable please specify the file in which you wrote your Third Party Endpoint, thanks!
-- [x] **Calls to third party endpoints** - I have a call to https://quoteslate.vercel.app/api/quotes/random in my api_stub.jsx file.
+- [x] **Calls to third party endpoints** - I have a call to <https://quoteslate.vercel.app/api/quotes/random> in my api_stub.jsx file.
 - [x] **Backend service endpoints** - I use backend service endpoints using `/api/*`.
 - [x] **Frontend calls service endpoints** - I have multiple frontend service endpoints.
 - [x] **Supports registration, login, logout, and restricted endpoint** - My registration, login, and logout is fully functional!
